@@ -1,0 +1,17 @@
+{
+    "agents": [
+        "claude_code",
+        "copilot",
+        "gemini",
+        "opencode"
+    ],
+    "editors": [
+        "gemini",
+        "opencode",
+        "vscode"
+    ],
+    "guidelines": [
+        "laravel/fortify"
+    ],
+    "herd_mcp": true
+}

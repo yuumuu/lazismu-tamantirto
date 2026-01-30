@@ -1,0 +1,66 @@
+<x-layouts.auth>
+    <div class="flex flex-col gap-6">
+        <div class="space-y-2 text-center">
+            <h1 class="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+                {{ __('Masuk ke Akun Anda') }}
+            </h1>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm">
+                {{ __('Masukkan email dan kata sandi untuk melanjutkan.') }}
+            </p>
+        </div>
+
+        <!-- Session Status -->
+        <x-auth-session-status class="text-center" :status="session('status')" />
+
+        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
+            @csrf
+
+            <!-- Email Address -->
+            <flux:input
+                name="email"
+                label="Alamat Email"
+                :value="old('email')"
+                type="email"
+                icon="envelope"
+                required
+                autofocus
+                autocomplete="email"
+                placeholder="nama@email.com"
+            />
+
+            <!-- Password -->
+            <div class="relative">
+                <flux:input
+                    name="password"
+                    label="Kata Sandi"
+                    type="password"
+                    icon="lock-closed"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Masukkan kata sandi"
+                    viewable
+                />
+
+                @if (Route::has('password.request'))
+                    <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
+                        {{ __('Lupa kata sandi?') }}
+                    </flux:link>
+                @endif
+            </div>
+
+            <!-- Remember Me -->
+            <flux:checkbox name="remember" label="Ingat saya" :checked="old('remember')" />
+
+            <flux:button variant="primary" type="submit" class="w-full font-bold shadow-md hover:shadow-lg transition-all" icon="arrow-right-end-on-rectangle">
+                {{ __('Masuk Sekarang') }}
+            </flux:button>
+        </form>
+
+        @if (Route::has('register'))
+            <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400 font-medium">
+                <span>{{ __('Belum punya akun?') }}</span>
+                <flux:link :href="route('register')" wire:navigate class="text-primary hover:text-primary-dark">{{ __('Daftar disini') }}</flux:link>
+            </div>
+        @endif
+    </div>
+</x-layouts.auth>
