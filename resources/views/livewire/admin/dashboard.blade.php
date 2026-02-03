@@ -31,6 +31,10 @@ new class extends Component {
     }
 } ?>
 
+@push('head')
+    <title>Dashboard - {{ ucwords(config('app.name')) }}</title>
+@endpush
+
 <div class="p-3 md:p-6 lg:p-10 space-y-10">
     <!-- Header Misi: Minimalist & Clean -->
     <div class="flex flex-col md:flex-row items-start justify-between gap-8">
@@ -56,7 +60,7 @@ new class extends Component {
     </div>
 
     <!-- Metrik Utama: Minimalist Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-tour="dashboard-stats">
         <div class="premium-card p-6 group hover:border-primary/50 transition-colors">
             <div class="flex justify-between items-start mb-4">
                 <div class="p-2 bg-zinc-50 dark:bg-zinc-800 rounded-lg text-zinc-400 group-hover:text-primary transition-colors">
@@ -104,7 +108,7 @@ new class extends Component {
 
     <!-- Analitik & Aktivitas -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-6" data-tour="recent-donations">
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-bold text-zinc-900 dark:text-white">{{ __('Aktivitas Terakhir') }}</h2>
                 <flux:button variant="ghost" size="sm" :href="route('admin.donations.index')" wire:navigate>{{ __('Lihat Semua') }}</flux:button>

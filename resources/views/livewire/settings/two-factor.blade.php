@@ -242,15 +242,15 @@ new class extends Component {
                 <div class="p-0.5 w-auto rounded-full border border-stone-100 dark:border-stone-600 bg-white dark:bg-stone-800 shadow-sm">
                     <div class="p-2.5 rounded-full border border-stone-200 dark:border-stone-600 overflow-hidden bg-stone-100 dark:bg-stone-200 relative">
                         <div class="flex items-stretch absolute inset-0 w-full h-full divide-x [&>div]:flex-1 divide-stone-200 dark:divide-stone-300 justify-around opacity-50">
-                            @for ($i = 1; $i <= 5; $i++)
+                            @foreach (range(1, 5) as $i)
                                 <div></div>
-                            @endfor
+                            @endforeach
                         </div>
 
                         <div class="flex flex-col items-stretch absolute w-full h-full divide-y [&>div]:flex-1 inset-0 divide-stone-200 dark:divide-stone-300 justify-around opacity-50">
-                            @for ($i = 1; $i <= 5; $i++)
+                            @foreach (range(1, 5) as $i)
                                 <div></div>
-                            @endfor
+                            @endforeach
                         </div>
 
                         <flux:icon.qr-code class="relative z-20 dark:text-accent-foreground"/>

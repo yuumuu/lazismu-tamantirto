@@ -134,6 +134,11 @@ return [
     'teams' => false,
 
     /*
+     * Testing flag for SQLite compatibility
+     */
+    'testing' => true,
+
+    /*
      * The class to use to resolve the permissions team id
      */
     'team_resolver' => \Spatie\Permission\DefaultTeamResolver::class,

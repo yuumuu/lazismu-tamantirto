@@ -114,22 +114,18 @@ new class extends Component {
     }
 } ?>
 
-<div class="p-3 md:p-6 lg:p-10 space-y-8">
+<div class="p-3 md:p-6 lg:p-10 space-y-6 md:space-y-8">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-        <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <div class="h-6 w-1 bg-primary rounded-full"></div>
-                <h1 class="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">{{ __('Berita & Artikel') }}</h1>
-            </div>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-lg leading-relaxed border-l pl-4 border-zinc-200 dark:border-zinc-800">
-                {{ __('Kelola berita, artikel edukasi, dan inspirasi donasi.') }}
-            </p>
-        </div>
-        <flux:button variant="primary" icon="plus" :href="route('admin.posts.create')" wire:navigate>
-            {{ __('Tulis Artikel') }}
-        </flux:button>
-    </div>
+    <x-admin.page-header 
+        title="Berita & Artikel"
+        description="Kelola berita, artikel edukasi, dan inspirasi donasi."
+    >
+        <x-slot:action>
+            <flux:button variant="primary" icon="plus" :href="route('admin.posts.create')" wire:navigate>
+                {{ __('Tulis Artikel') }}
+            </flux:button>
+        </x-slot:action>
+    </x-admin.page-header>
 
     <!-- Toolbar -->
     <div class="flex flex-col md:flex-row gap-4 items-center">

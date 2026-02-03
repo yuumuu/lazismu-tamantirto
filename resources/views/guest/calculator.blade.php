@@ -1,4 +1,4 @@
-<x-layouts.guest>
+<x-layouts.guest title="Kalkulator Zakat">
     @php
         $goldPrice = setting('zakat_gold_price', 1200000);
         $goldNisab = setting('zakat_gold_nisab', 85);

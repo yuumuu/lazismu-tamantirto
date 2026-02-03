@@ -48,17 +48,14 @@ new class extends Component {
     }
 }; ?>
 
-<div class="p-3 md:p-6 lg:p-10 max-w-4xl mx-auto space-y-8">
-    <header class="space-y-2">
-        <div class="flex items-center gap-4">
-            <flux:button icon="arrow-left" variant="ghost" size="sm" :href="route('admin.users.index')" wire:navigate />
-            <div class="h-6 w-1 bg-primary rounded-full"></div>
-            <h1 class="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">{{ __('Tambah Pengguna Baru') }}</h1>
-        </div>
-        <p class="text-zinc-500 dark:text-zinc-400 text-sm pl-12">
-            {{ __('Daftarkan administrator atau operator baru ke dalam sistem.') }}
-        </p>
-    </header>
+<div>
+    <x-admin.page-header 
+        title="Tambah Pengguna Baru" 
+        description="Daftarkan administrator atau operator baru ke dalam sistem."
+        backRoute="admin.users.index"
+    />
+
+    <div class="p-3 md:p-6 lg:p-10 max-w-4xl mx-auto space-y-8">
 
     <form wire:submit="save" class="space-y-6">
         <div class="premium-card p-8 space-y-8">

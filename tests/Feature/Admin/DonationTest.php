@@ -1,13 +1,15 @@
 <?php
 
-use App\Models\Donation;
-use App\Models\Campaign;
-use App\Models\User;
 use App\Enums\DonationStatus;
+use App\Models\Campaign;
+use App\Models\Donation;
+use App\Models\User;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
     $this->user = User::factory()->create();
+    $this->user->assignRole('admin');
     // Ensure user has permission if needed, but for now we use auth
     $this->campaign = Campaign::factory()->create();
 });
@@ -23,7 +25,7 @@ test('can verify donation', function () {
     $donation = Donation::factory()->create([
         'campaign_id' => $this->campaign->id,
         'status' => DonationStatus::Pending,
-        'amount' => 50000,
+        'amount' => 50000.0,
     ]);
 
     $this->actingAs($this->user);
@@ -37,7 +39,7 @@ test('can verify donation', function () {
 
     $donation->refresh();
     expect($donation->status)->toBe(DonationStatus::Verified);
-    expect($this->campaign->refresh()->current_amount)->toBe(50000.0);
+    expect((float) $this->campaign->refresh()->current_amount)->toBe(50000.0);
 });
 
 test('can reject donation', function () {

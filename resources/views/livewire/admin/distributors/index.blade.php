@@ -47,6 +47,10 @@ new class extends Component {
     }
 } ?>
 
+@push('head')
+    <title>Jaringan Distributor - {{ ucwords(config('app.name')) }}</title>
+@endpush
+
 <div class="p-3 md:p-6 lg:p-10 space-y-8">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">

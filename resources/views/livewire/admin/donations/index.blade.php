@@ -155,7 +155,7 @@ new class extends Component {
             <flux:input icon="magnifying-glass" wire:model.live.debounce.300ms="search" placeholder="Cari donatur, ID transaksi..." />
         </div>
         <div>
-            <flux:select wire:model.live="status" placeholder="Semua Status">
+            <flux:select wire:model.live="status" placeholder="Semua Status" data-tour="donation-status-filter">
                 <option value="">{{ __('Semua Status') }}</option>
                 @foreach($statuses as $s)
                     <option value="{{ $s->value }}">{{ $s->label() }}</option>

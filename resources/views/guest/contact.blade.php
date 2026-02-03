@@ -1,4 +1,4 @@
-<x-layouts.guest>
+<x-layouts.guest title="Kontak">
     <div class="py-12 md:py-24 bg-zinc-50 dark:bg-zinc-950 min-h-screen">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">

@@ -40,5 +40,5 @@
 </div>
 
 @push('head')
-    <title>{{ $title }} - {{ config('app.name') }}</title>
+    <title>{{ $title }} - {{ ucwords(config('app.name')) }}</title>
 @endpush

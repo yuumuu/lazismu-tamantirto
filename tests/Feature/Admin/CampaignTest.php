@@ -3,11 +3,12 @@
 use App\Models\Campaign;
 use App\Models\CampaignCategory;
 use App\Models\User;
-use App\Enums\CampaignStatus;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
     $this->user = User::factory()->create();
+    $this->user->assignRole('admin');
     $this->category = CampaignCategory::factory()->create();
 });
 
@@ -52,7 +53,7 @@ test('can delete campaign', function () {
     $this->actingAs($this->user);
 
     Volt::test('admin.campaigns.index')
-        ->call('deleteCampaign', $campaign->id)
+        ->call('delete', $campaign->id)
         ->assertHasNoErrors();
 
     expect(Campaign::find($campaign->id))->toBeNull();

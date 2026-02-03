@@ -1,4 +1,4 @@
-<x-layouts.guest>
+<x-layouts.guest title="Beranda">
     <!-- Hero Section -->
     @include('partials.guest.hero')
 

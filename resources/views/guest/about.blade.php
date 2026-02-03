@@ -1,4 +1,4 @@
-<x-layouts.guest>
+<x-layouts.guest title="Tentang Kami">
     <!-- Page Header -->
     <header class="py-24 bg-zinc-900 border-b border-white/5 relative overflow-hidden">
         <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 size-full object-cover opacity-20 blur-sm">

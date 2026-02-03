@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    @include('partials.app.head')
+    @include('partials.app.head', ['title' => $title])
 </head>
 
 <body class="min-h-screen bg-zinc-50 dark:bg-zinc-950 antialiased font-sans p-3">
@@ -22,7 +22,7 @@
             </a>
         </div>
 
-        <flux:navlist variant="outline" class="space-y-1">
+        <flux:navlist variant="outline" class="space-y-1" data-tour="navigation-menu">
             <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                 wire:navigate>
                 {{ __('Dashboard') }}
@@ -117,6 +117,11 @@
             </flux:navlist.item>
         </flux:navlist>
 
+        <!-- Tutorial Menu -->
+        <div class="px-2 py-2">
+            <livewire:admin.tutorial-menu />
+        </div>
+
         <!-- Bottom User context: Minimalist -->
         <div class="py-3 border-t border-zinc-100 dark:border-zinc-800 mx-2">
             <flux:dropdown position="bottom" align="start">
@@ -145,6 +150,10 @@
             <span class="font-black text-xl tracking-tighter text-amber-500">LAZISMU</span>
         </a>
         <flux:spacer />
+        
+        <!-- Tutorial Menu for Mobile -->
+        <livewire:admin.tutorial-menu />
+        
         <flux:dropdown position="top" align="end">
             <flux:profile :initials="auth()->user()->initials()" />
             <flux:menu>

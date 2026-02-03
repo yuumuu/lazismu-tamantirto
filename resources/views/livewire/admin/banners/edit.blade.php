@@ -54,6 +54,20 @@ new class extends Component {
         $this->dispatch('notify', message: 'Banner berhasil diperbarui.', type: 'success');
         $this->redirect(route('admin.banners.index'), navigate: true);
     }
+
+    public function with(): array
+    {
+        $bannerStats = Banner::where('id', '!=', $this->banner->id)
+            ->selectRaw('MIN(`order`) as min_order, MAX(`order`) as max_order, COUNT(*) as total')
+            ->first();
+
+        return [
+            'minOrder' => $bannerStats->min_order ?? 1,
+            'maxOrder' => $bannerStats->max_order ?? 1,
+            'totalBanners' => $bannerStats->total ?? 0,
+            'currentOrder' => $this->banner->order,
+        ];
+    }
 } ?>
 
 <div class="p-3 md:p-6 lg:p-10 space-y-8">
@@ -122,8 +136,46 @@ new class extends Component {
         <!-- Sidebar Options -->
         <div class="space-y-6">
             <div class="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-8">
-                <div>
-                     <flux:input wire:model="order" type="number" label="Urutan Tampil" description="Angka lebih kecil tampil lebih dulu." />
+                <div class="space-y-4">
+                    <flux:field>
+                        <flux:label>{{ __('Urutan Tampil') }}</flux:label>
+                        <flux:input 
+                            wire:model.live="order" 
+                            type="number" 
+                            min="1" 
+                            step="1"
+                        />
+                        <flux:error name="order" />
+                        <flux:description>
+                            @if($totalBanners > 0)
+                                {{ __('Banner lain: :min - :max. Saat ini: :current', [
+                                    'min' => $minOrder, 
+                                    'max' => $maxOrder, 
+                                    'current' => $currentOrder
+                                ]) }}
+                            @else
+                                {{ __('Ini adalah satu-satunya banner') }}
+                            @endif
+                            <br>
+                            <span class="text-xs">{{ __('Angka lebih kecil tampil lebih dulu.') }}</span>
+                        </flux:description>
+                    </flux:field>
+                    
+                    @if($totalBanners > 0)
+                        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                            <div class="flex items-start gap-2">
+                                <flux:icon name="information-circle" class="size-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                <div class="text-xs text-amber-700 dark:text-amber-300">
+                                    <p class="font-medium mb-1">{{ __('Tips Pengurutan:') }}</p>
+                                    <ul class="space-y-1 list-disc list-inside ml-2">
+                                        <li>{{ __('Gunakan angka di antara :min-:max untuk menyisipkan', ['min' => $minOrder, 'max' => $maxOrder]) }}</li>
+                                        <li>{{ __('Gunakan angka > :max untuk pindah ke akhir', ['max' => $maxOrder]) }}</li>
+                                        <li>{{ __('Gunakan angka < :min untuk pindah ke awal', ['min' => $minOrder]) }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="space-y-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">

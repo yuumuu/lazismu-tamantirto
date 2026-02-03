@@ -1,4 +1,4 @@
-<x-layouts.guest>
+<x-layouts.guest title="Berita & Artikel">
     <!-- Page Header -->
     <header class="py-20 bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-white/5">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">

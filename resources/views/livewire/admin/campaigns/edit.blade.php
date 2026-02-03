@@ -105,14 +105,14 @@ new class extends Component {
     }
 }; ?>
 
-<div class="p-3 md:p-6 lg:p-10 space-y-8">
-    <div class="flex items-center gap-4">
-        <flux:button variant="ghost" icon="arrow-left" :href="route('admin.campaigns.index')" wire:navigate />
-        <div>
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">{{ __('Edit Campaign') }}</h1>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">{{ __('Perbarui informasi program donasi.') }}</p>
-        </div>
-    </div>
+<div>
+    <x-admin.page-header 
+        title="Edit Campaign" 
+        description="Perbarui informasi program donasi."
+        backRoute="admin.campaigns.index"
+    />
+
+    <div class="p-3 md:p-6 lg:p-10 space-y-8">
 
     <form wire:submit="save" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-6">
