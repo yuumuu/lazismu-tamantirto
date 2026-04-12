@@ -26,6 +26,22 @@
     @if($step === 1)
     <!-- Step 1: Amount & Campaign -->
     <div class="space-y-10 animate-fade-in">
+        <!-- Calculator Info Banner (if from calculator) -->
+        @if($from_calculator && $donation_subtype)
+        <div class="p-6 rounded-[28px] bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 flex items-center gap-4 animate-fade-in">
+            <div class="size-12 rounded-2xl bg-primary/20 flex items-center justify-center">
+                <flux:icon.calculator class="size-6 text-primary" />
+            </div>
+            <div class="flex-1">
+                <h4 class="font-black text-zinc-900 dark:text-white text-sm mb-1">Dari Kalkulator Zakat</h4>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+                    Nominal {{ $this->getZakatSubtypeLabel() }} Anda: <span class="font-black text-primary">{{ format_rupiah($amount) }}</span>
+                </p>
+            </div>
+            <a href="{{ route('guest.calculator') }}" class="text-xs text-primary font-bold hover:underline">Hitung Ulang</a>
+        </div>
+        @endif
+
         <div class="text-center space-y-2">
             <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Pilih Nominal Donasi</h2>
             <p class="text-zinc-500 font-medium">Berapa banyak kebaikan yang ingin Anda alirkan hari ini?</p>
@@ -33,7 +49,12 @@
 
         <!-- Donation Type Cards -->
         <div class="space-y-4">
-            <label class="text-sm font-black text-zinc-400 uppercase tracking-widest">Jenis Donasi</label>
+            <div class="flex items-center justify-between">
+                <label class="text-sm font-black text-zinc-400 uppercase tracking-widest">Jenis Donasi</label>
+                @if($from_calculator && $donation_type === 'zakat')
+                <span class="text-xs text-primary font-bold">✓ Dipilih dari kalkulator</span>
+                @endif
+            </div>
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 @foreach(\App\Enums\CampaignType::cases() as $type)
                 <button type="button"

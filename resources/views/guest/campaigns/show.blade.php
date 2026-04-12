@@ -1,6 +1,6 @@
 @php
-    $donors = $campaign->verifiedDonations()->latest()->take(10)->get();
-    $donorsCount = $campaign->verifiedDonations()->count();
+    // Use eager loaded count instead of separate query
+    $donorsCount = $campaign->verified_donations_count;
 @endphp
 
 <x-layouts.guest>
@@ -13,7 +13,7 @@
     <!-- Main Content -->
     <div class="mx-auto max-w-7xl px-6 lg:px-8 -mt-64 md:-mt-80 relative z-10 pb-24">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            
+
             <!-- Left Column: Details -->
             <div class="lg:col-span-2 space-y-12">
                 <!-- Hero Card -->
@@ -129,8 +129,8 @@
                             <flux:button href="{{ route('guest.donate.form', $campaign->slug) }}" variant="primary"  class="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/30">
                                 Donasi Sekarang
                             </flux:button>
-                            
-                            <div class="grid grid-cols-2 gap-4" x-data="{ 
+
+                            <div class="grid grid-cols-2 gap-4" x-data="{
                                 copied: false,
                                 copyUrl() {
                                     navigator.clipboard.writeText(window.location.href);
@@ -156,7 +156,7 @@
                             <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=1974&auto=format&fit=crop" class="size-10 rounded-full object-cover">
                             <div>
                                 <p class="text-[10px] text-zinc-400 font-black uppercase tracking-widest leading-none mb-1">Dikelola Oleh</p>
-                                <p class="text-sm font-bold text-zinc-900 dark:text-white underline decoration-primary underline-offset-4 decoration-2">Admin Lazismu Tamantirto</p>
+                                <p class="text-sm font-bold text-zinc-900 dark:text-white underline decoration-primary underline-offset-4 decoration-2">Admin {{ setting('site_name', 'Lazismu') }} {{ setting('site_tagline', 'Tamantirto') }}</p>
                             </div>
                         </div>
                     </div>
@@ -173,7 +173,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </x-layouts.guest>

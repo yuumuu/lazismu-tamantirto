@@ -10,11 +10,11 @@
             @if($donation->payment_method->value === 'qris')
                 <div class="flex flex-col items-center gap-8">
                     <div class="p-6 bg-white rounded-3xl shadow-xl border border-zinc-100 flex flex-col items-center gap-4">
-                        <img src="{{ setting('qris_image') ? asset('storage/'.setting('qris_image')) : 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=LAZISMU-TAMANTIRTO' }}" class="size-64 object-contain">
+                        <img src="{{ setting('site_qris') ?: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=LAZISMU-TAMANTIRTO' }}" class="size-64 object-contain">
                         <span class="text-xs font-black text-zinc-400 uppercase tracking-widest">Pindai Dengan E-Wallet Apa Saja</span>
                     </div>
                     <div class="text-center">
-                        <p class="text-lg font-black text-zinc-900 dark:text-white">QRIS LazisMU Tamantirto</p>
+                        <p class="text-lg font-black text-zinc-900 dark:text-white">QRIS {{ setting('site_name', 'LazisMU Tamantirto') }}</p>
                         <p class="text-sm font-bold text-primary">ID: LZM000123456</p>
                     </div>
                 </div>

@@ -21,38 +21,46 @@
     <section class="py-12 bg-white dark:bg-zinc-950 min-h-screen">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <!-- Toolbar -->
-            <div class="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
+            <form method="GET" action="{{ route('guest.campaigns.index') }}" class="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
                 <div class="w-full lg:w-1/3">
-                    <flux:input placeholder="Cari program donasi..." icon="magnifying-glass" class="rounded-2xl" />
+                    <flux:input
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Cari program donasi..."
+                        icon="magnifying-glass"
+                        class="rounded-2xl" />
                 </div>
-                
+
                 <div class="flex items-center gap-4 w-full lg:w-auto">
                     <div class="flex-1 lg:w-48">
-                        <flux:select placeholder="Semua Kategori" class="rounded-2xl">
+                        <flux:select
+                            name="category"
+                            placeholder="Semua Kategori"
+                            class="rounded-2xl"
+                            onchange="this.form.submit()">
                             <option value="">Semua Kategori</option>
-                            @foreach(\App\Models\CampaignCategory::all() as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
                             @endforeach
                         </flux:select>
                     </div>
                     <div class="flex-1 lg:w-48">
-                        <flux:select placeholder="Urutkan" class="rounded-2xl">
-                            <option value="latest">Terbaru</option>
-                            <option value="urgent">Mendesak</option>
-                            <option value="target">Target Terdekat</option>
+                        <flux:select
+                            name="sort"
+                            placeholder="Urutkan"
+                            class="rounded-2xl"
+                            onchange="this.form.submit()">
+                            <option value="latest" {{ request('sort', 'latest') == 'latest' ? 'selected' : '' }}>Terbaru</option>
+                            <option value="urgent" {{ request('sort') == 'urgent' ? 'selected' : '' }}>Mendesak</option>
+                            <option value="target" {{ request('sort') == 'target' ? 'selected' : '' }}>Target Terbesar</option>
                         </flux:select>
                     </div>
                 </div>
-            </div>
+            </form>
 
-            <!-- Campaigns Grid (Vertical Stack for Horizontal Cards) -->
             <div class="space-y-8">
-                @php
-                    $campaigns = \App\Models\Campaign::active()
-                        ->latest()
-                        ->paginate(9);
-                @endphp
-
                 @forelse($campaigns as $campaign)
                     @include('partials.guest.campaign-card', ['campaign' => $campaign])
                 @empty
@@ -62,13 +70,33 @@
                         </div>
                         <h4 class="text-xl font-black text-zinc-900 dark:text-white mb-2 tracking-tight">Tidak Ada Program Ditemukan</h4>
                         <p class="text-zinc-500 font-medium italic">Coba cari dengan kata kunci lain atau ubah filter Anda.</p>
+                        @if(request()->hasAny(['search', 'category', 'sort']))
+                            <div class="mt-6">
+                                <a href="{{ route('guest.campaigns.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition-colors">
+                                    <flux:icon.arrow-path class="size-5" />
+                                    Reset Filter
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endforelse
             </div>
 
             <!-- Pagination -->
-            <div class="mt-20 flex justify-center">
-                {{ $campaigns->links() }}
+            @if($campaigns->hasPages())
+                <div class="mt-20 flex justify-center">
+                    {{ $campaigns->links() }}
+                </div>
+            @endif
+
+            <!-- Results Info -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-zinc-400 italic">
+                    Menampilkan {{ $campaigns->count() }} dari {{ $campaigns->total() }} program
+                    @if(request()->hasAny(['search', 'category', 'sort']))
+                        <span class="text-primary">dengan filter aktif</span>
+                    @endif
+                </p>
             </div>
         </div>
     </section>

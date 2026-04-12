@@ -13,6 +13,7 @@ class UploadProof extends Component
     use WithFileUploads;
 
     public Donation $donation;
+
     public $proof_image;
 
     public function mount(Donation $donation)
@@ -34,7 +35,7 @@ class UploadProof extends Component
         ]);
 
         $this->dispatch('notify', message: 'Bukti pembayaran berhasil diunggah.', type: 'success');
-        $this->redirect(route('guest.donate.success'), navigate: true);
+        $this->redirect(route('guest.donate.success', $this->donation->id), navigate: true);
     }
 
     public function render()

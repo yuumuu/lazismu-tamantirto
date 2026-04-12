@@ -8,13 +8,13 @@
                             <x-app-logo-icon class="size-8 fill-current" />
                         </div>
                         <div class="flex flex-col leading-tight">
-                            <span class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">Lazismu</span>
-                            <span class="text-primary font-bold text-[10px] tracking-[0.2em] uppercase">Tamantirto</span>
+                            <span class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">{{ setting('site_name', 'Lazismu') }}</span>
+                            <span class="text-primary font-bold text-[10px] tracking-[0.2em] uppercase">{{ setting('site_tagline', 'Tamantirto') }}</span>
                         </div>
                     </a>
                 </div>
                 <div class="hidden sm:ml-6 sm:block">
-                    <div class="flex space-x-1 items-center bg-zinc-100 dark:bg-white/5 p-1 rounded-xl border border-zinc-200 dark:border-white/10">
+                    <div class="flex space-x-1.5 items-center bg-zinc-100/80 dark:bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-inner">
                         <x-guest.navigation.top-bar-link route="guest.home">
                             Beranda
                         </x-guest.navigation.top-bar-link>
@@ -33,8 +33,10 @@
                     </div>
                 </div>
 
-                <div class="hidden sm:flex items-center gap-4 ml-6">
-                    <x-guest.partials.toggle-theme />
+                <div class="hidden sm:flex items-center gap-3 ml-6">
+                    <div class="flex items-center">
+                        <x-guest.partials.toggle-theme />
+                    </div>
                     @auth
                         <flux:button href="{{ route('dashboard') }}" variant="ghost" class="font-bold">
                             Dashboard

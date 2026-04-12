@@ -35,6 +35,7 @@ new class extends Component {
         return [
             'campaigns' => Campaign::query()
                 ->with(['category', 'creator'])
+                ->withSum('verifiedDonations', 'amount')  // Eager load sum to prevent N+1
                 ->when($this->search, fn($q) => $q->where('title', 'like', '%' . $this->search . '%'))
                 ->when($this->status, fn($q) => $q->where('status', $this->status))
                 ->when($this->category, fn($q) => $q->where('category_id', $this->category))
@@ -48,7 +49,7 @@ new class extends Component {
 
 <div class="p-3 md:p-6 lg:p-10 space-y-6 md:space-y-8">
     <!-- Header -->
-    <x-admin.page-header 
+    <x-admin.page-header
         title="Program Campaign"
         description="Manajemen penggalangan dana terpadu untuk penyaluran zakat, infaq, dan sedekah."
     >
@@ -146,7 +147,7 @@ new class extends Component {
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
         <div class="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-4">
             {{ $campaigns->links() }}

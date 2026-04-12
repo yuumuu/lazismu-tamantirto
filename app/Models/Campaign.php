@@ -111,7 +111,10 @@ class Campaign extends Model
 
     public function getProgressPercentageAttribute(): float
     {
-        return $this->calculateProgress();
+        // Use eager loaded sum if available, otherwise calculate
+        $raised = $this->verified_donations_sum_amount ?? $this->totalVerifiedDonations();
+
+        return $this->calculateProgressPercentage((float) $raised);
     }
 
     public function getRemainingAmountAttribute(): float
@@ -123,7 +126,7 @@ class Campaign extends Model
 
     public function getDaysRemainingAttribute(): int
     {
-        if (!$this->end_date || $this->end_date->isPast()) {
+        if (! $this->end_date || $this->end_date->isPast()) {
             return 0;
         }
 
@@ -139,9 +142,10 @@ class Campaign extends Model
 
     public function calculateProgress(): float
     {
-        $raised = $this->totalVerifiedDonations();
+        // Use eager loaded sum if available, otherwise query
+        $raised = $this->verified_donations_sum_amount ?? $this->totalVerifiedDonations();
 
-        return $this->calculateProgressPercentage($raised);
+        return $this->calculateProgressPercentage((float) $raised);
     }
 
     public function canReceiveDonations(): bool

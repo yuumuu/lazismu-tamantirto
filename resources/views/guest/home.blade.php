@@ -22,14 +22,6 @@
             </div>
 
             <div class="space-y-6">
-                @php
-                    $featuredCampaigns = \App\Models\Campaign::active()
-                        ->featured()
-                        ->latest()
-                        ->take(3)
-                        ->get();
-                @endphp
-
                 @forelse($featuredCampaigns as $campaign)
                     @include('partials.guest.campaign-card', ['campaign' => $campaign])
                 @empty
@@ -52,17 +44,10 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="text-center space-y-4 mb-16">
                 <h2 class="text-primary font-black uppercase tracking-[0.3em] text-xs">Berita Terbaru</h2>
-                <h3 class="text-3xl md:text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Kabar Lazismu Tamantirto</h3>
+                <h3 class="text-3xl md:text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Kabar {{ setting('site_name', 'Lazismu') }} {{ setting('site_tagline', 'Tamantirto') }}</h3>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @php
-                    $latestPosts = \App\Models\BlogPost::published()
-                        ->latest()
-                        ->take(3)
-                        ->get();
-                @endphp
-
                 @foreach($latestPosts as $post)
                     <article class="flex flex-col bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200 dark:border-white/5 shadow-sm hover:shadow-xl transition-all group">
                         <div class="relative aspect-video overflow-hidden">

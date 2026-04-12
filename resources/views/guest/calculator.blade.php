@@ -3,12 +3,12 @@
         $goldPrice = setting('zakat_gold_price', 1200000);
         $goldNisab = setting('zakat_gold_nisab', 85);
         $silverNisab = setting('zakat_silver_nisab', 595);
-        
+
         $nisabMaal = $goldPrice * $goldNisab;
         $nisabProfesi = $nisabMaal / 12;
     @endphp
 
-    <div x-data="{ 
+    <div x-data="{
         tab: 'profesi',
         goldPrice: {{ $goldPrice }},
         goldNisab: {{ $goldNisab }},
@@ -17,10 +17,10 @@
         maalAsset: 0,
         fitrahQty: 1,
         ricePrice: 15000,
-        
+
         get nisabProfesi() { return this.goldNisab * this.goldPrice / 12 },
         get totalIncome() { return Number(this.income) + Number(this.otherIncome) },
-        get zakatProfesi() { 
+        get zakatProfesi() {
             if (this.totalIncome >= this.nisabProfesi) return Math.floor(this.totalIncome * 0.025);
             return 0;
         },
@@ -32,7 +32,7 @@
         },
 
         get zakatFitrah() { return this.fitrahQty * 2.5 * this.ricePrice },
-        
+
         get currentZakat() {
             if (this.tab === 'profesi') return this.zakatProfesi;
             if (this.tab === 'maal') return this.zakatMaal;
@@ -41,10 +41,20 @@
 
         get donationUrl() {
             let type = 'zakat';
-            return `{{ route('guest.donate.form') }}?amount=${this.currentZakat}&type=${type}`;
+            let subtype = '';
+
+            if (this.tab === 'profesi') {
+                subtype = 'profesi';
+            } else if (this.tab === 'maal') {
+                subtype = 'maal';
+            } else if (this.tab === 'fitrah') {
+                subtype = 'fitrah';
+            }
+
+            return `{{ route('guest.donate.form') }}?amount=${this.currentZakat}&type=${type}&subtype=${subtype}&from=calculator`;
         }
     }" class="py-12 md:py-24 bg-zinc-50 dark:bg-zinc-950 min-h-screen">
-        
+
         <div class="mx-auto max-w-4xl px-6 lg:px-8">
             <div class="text-center space-y-4 mb-16">
                 <h2 class="text-primary font-black uppercase tracking-[0.3em] text-xs">Simulasi Zakat</h2>
@@ -106,7 +116,7 @@
 
                                 <div class="pt-8 border-t border-primary/10">
                                     <template x-if="currentZakat > 0">
-                                        <flux:button x-bind:href="donationUrl" variant="primary"  class="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30">
+                                        <flux:button x-bind:href="donationUrl" variant="primary" class="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30">
                                             Tunaikan Sekarang
                                         </flux:button>
                                     </template>

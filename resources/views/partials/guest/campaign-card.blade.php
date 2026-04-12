@@ -1,10 +1,11 @@
 @props(['campaign'])
 
+{{-- Campaign card with eager loaded data --}}
 <div class="bg-white dark:bg-zinc-900 rounded-[32px] overflow-hidden border border-zinc-200 dark:border-white/5 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all group flex flex-col md:flex-row h-full">
     <!-- Image Section -->
     <div class="relative w-full md:w-[40%] aspect-[4/3] md:aspect-auto overflow-hidden">
         <img src="{{ $campaign->featured_image ? asset('storage/' . $campaign->featured_image) : 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070&auto=format&fit=crop' }}" class="size-full object-cover group-hover:scale-105 transition-transform duration-700">
-        
+
         <!-- Badges -->
         <div class="absolute top-4 left-4 flex flex-col gap-2">
             @if($campaign->is_urgent)
@@ -19,7 +20,7 @@
             <div class="absolute bottom-4 left-4 right-4">
                 <div class="px-3 py-2 rounded-xl bg-zinc-900/60 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold flex items-center gap-2 w-fit">
                     <flux:icon.clock class="size-3.5 text-primary" />
-                    <span>{{ now()->diffInDays($campaign->end_date) }} Hari Lagi</span>
+                    <span>{{ $campaign->days_remaining }} Hari Lagi</span>
                 </div>
             </div>
         @endif
@@ -42,7 +43,7 @@
                 <div class="flex justify-between items-end">
                     <div class="flex flex-col">
                         <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Terkumpul</span>
-                        <span class="text-lg font-black text-primary tracking-tight">{{ format_rupiah_short($campaign->current_amount) }}</span>
+                        <span class="text-lg font-black text-primary tracking-tight">{{ format_rupiah_short($campaign->verified_donations_sum_amount ?? $campaign->current_amount) }}</span>
                     </div>
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Target</span>
@@ -56,7 +57,7 @@
                 </div>
                 <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest">
                     <span class="text-primary">{{ $campaign->progress_percentage }}% Tercapai</span>
-                    <span class="text-zinc-500">{{ $campaign->verifiedDonations()->count() }} Donatur</span>
+                    <span class="text-zinc-500">{{ $campaign->verified_donations_count ?? 0 }} Donatur</span>
                 </div>
             </div>
 

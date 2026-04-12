@@ -122,47 +122,23 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
 
 // Guest / Public Routes
 Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function () {
-    Route::get('/', function () {
-        return view('guest.home');
-    })->name('home');
+    Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'home'])->name('home');
 
     Route::prefix('program')->name('campaigns.')->group(function () {
-        Route::get('/', function () {
-            return view('guest.campaigns.index');
-        })->name('index');
-        Route::get('/{slug}', function ($slug) {
-            $campaign = \App\Models\Campaign::active()->where('slug', $slug)->firstOrFail();
-
-            return view('guest.campaigns.show', compact('campaign'));
-        })->name('show');
+        Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'campaignsIndex'])->name('index');
+        Route::get('/{slug}', [App\Http\Controllers\Guest\GuestController::class, 'campaignShow'])->name('show');
     });
 
     Route::prefix('berita')->name('posts.')->group(function () {
-        Route::get('/', function () {
-            return view('guest.posts.index');
-        })->name('index');
-        Route::get('/{slug}', function ($slug) {
-            $post = \App\Models\BlogPost::published()->where('slug', $slug)->firstOrFail();
-
-            return view('guest.posts.show', compact('post'));
-        })->name('show');
+        Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'postsIndex'])->name('index');
+        Route::get('/{slug}', [App\Http\Controllers\Guest\GuestController::class, 'postShow'])->name('show');
     });
 
-    Route::get('/tentang', function () {
-        return view('guest.about');
-    })->name('about');
-    Route::get('/struktur', function () {
-        return view('guest.structure');
-    })->name('structure');
-    Route::get('/kontak', function () {
-        return view('guest.contact');
-    })->name('contact');
-    Route::get('/laporan', function () {
-        return view('guest.reports');
-    })->name('reports');
-    Route::get('/zakat-kalkulator', function () {
-        return view('guest.calculator');
-    })->name('calculator');
+    Route::get('/tentang', [App\Http\Controllers\Guest\GuestController::class, 'about'])->name('about');
+    Route::get('/struktur', [App\Http\Controllers\Guest\GuestController::class, 'structure'])->name('structure');
+    Route::get('/kontak', [App\Http\Controllers\Guest\GuestController::class, 'contact'])->name('contact');
+    Route::get('/laporan', [App\Http\Controllers\Guest\GuestController::class, 'reports'])->name('reports');
+    Route::get('/zakat-kalkulator', [App\Http\Controllers\Guest\GuestController::class, 'calculator'])->name('calculator');
 
     Route::get('/halaman/{slug}', function () {
         return view('guest.pages.show');
@@ -179,8 +155,8 @@ Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function
         Route::get('/konfirmasi', function () {
             return view('guest.donate.confirm');
         })->name('confirm');
-        Route::get('/berhasil', function () {
-            return view('guest.donate.success');
+        Route::get('/berhasil/{donation}', function (\App\Models\Donation $donation) {
+            return view('guest.donate.success', compact('donation'));
         })->name('success');
         Route::get('/status/{id}', function () {
             return view('guest.donate.status');
@@ -191,25 +167,6 @@ Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function
     Route::get('/dashboard', function () {
         return redirect()->route('dashboard');
     })->middleware(['auth']);
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
-
-    Volt::route('settings/profile', 'settings.profile')->name('profile.edit');
-    Volt::route('settings/password', 'settings.password')->name('user-password.edit');
-    Volt::route('settings/appearance', 'settings.appearance')->name('appearance.edit');
-
-    Volt::route('settings/two-factor', 'settings.two-factor')
-        ->middleware(
-            when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('two-factor.show');
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -81,7 +81,7 @@ document.addEventListener("alpine:init", () => {
             const pendingTutorial = sessionStorage.getItem('startTutorialAfterNavigation');
             if (pendingTutorial) {
                 sessionStorage.removeItem('startTutorialAfterNavigation');
-                
+
                 // Wait a bit for the page to fully load
                 setTimeout(() => {
                     this.startActualTour(pendingTutorial);
@@ -157,18 +157,14 @@ document.addEventListener("alpine:init", () => {
                         title: `Tutorial ${tourTitle}`,
                         description: `Untuk memulai tutorial ${tourTitle}, Anda perlu berada di halaman yang tepat. Klik tombol "Pergi ke Halaman" untuk diarahkan ke halaman yang sesuai.`,
                         showButtons: ['next', 'close'],
-                        nextBtnText: 'Pergi ke Halaman',
+                        nextBtnText: `<a href="${requiredPage}">Pergi ke Halaman</a>`,
                         onNextClick: () => {
                             this.driver.destroy();
-                            // Navigate to the required page
-                            if (window.Livewire) {
-                                // Use Livewire navigation if available
-                                window.Livewire.visit(requiredPage);
-                            } else {
-                                // Fallback to regular navigation
-                                window.location.href = requiredPage;
-                            }
-                            
+
+                            window.Livewire
+                                ? window.Livewire.visit(requiredPage)
+                                : window.location.href = requiredPage;
+
                             // Set a flag to start tutorial after navigation
                             sessionStorage.setItem('startTutorialAfterNavigation', tourName);
                         }
@@ -182,7 +178,7 @@ document.addEventListener("alpine:init", () => {
         startActualTour(tourName) {
             this.currentTour = tourName;
             const tour = this.getTourSteps(tourName);
-            
+
             if (tour && tour.length > 0) {
                 this.driver.setSteps(tour);
                 this.driver.drive();
@@ -357,7 +353,7 @@ document.addEventListener("alpine:init", () => {
 // Re-initialize icons after Livewire navigation
 document.addEventListener("livewire:navigated", () => {
     createIcons({ icons });
-    
+
     // Check for pending tutorials after Livewire navigation
     const tutorialStore = Alpine.store("tutorial");
     if (tutorialStore) {
@@ -375,7 +371,7 @@ window.startTutorial = (tourName) => {
 
 window.showTutorialMenu = () => {
     const tutorials = Alpine.store("tutorial").getAvailableTours();
-    
+
     if (tutorials.length === 0) {
         alert("Tidak ada tutorial yang tersedia untuk role Anda.");
         return;

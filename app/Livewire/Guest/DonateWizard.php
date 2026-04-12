@@ -2,13 +2,10 @@
 
 namespace App\Livewire\Guest;
 
-use App\Enums\CampaignType;
 use App\Enums\DonationStatus;
-use App\Enums\PaymentMethod;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Route;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -20,16 +17,31 @@ class DonateWizard extends Component
 
     // Form Fields
     public $campaign_id;
+
     public $amount;
+
     public $donor_name = '';
+
     public $donor_email = '';
+
     public $donor_phone = '';
+
     public $donor_message = '';
+
     public $is_anonymous = false;
+
     public $payment_method = 'bank_transfer';
+
     public $bank_accounts = [];
+
     public $donation_type = 'infaq';
+
+    public $donation_subtype = null;
+
+    public $from_calculator = false;
+
     public $is_specific_campaign = false;
+
     public $selected_bank = null;
 
     public function selectSpecificCampaign(): void
@@ -43,6 +55,8 @@ class DonateWizard extends Component
             'campaign_id' => ['except' => ''],
             'amount' => ['except' => ''],
             'donation_type' => ['as' => 'type', 'except' => ''],
+            'donation_subtype' => ['as' => 'subtype', 'except' => ''],
+            'from_calculator' => ['as' => 'from', 'except' => false],
             'is_specific_campaign' => ['as' => 'specific', 'except' => false],
         ];
     }
@@ -58,13 +72,23 @@ class DonateWizard extends Component
         }
 
         // Handle pre-filled amount from calculator
-        if (request('amount') && !$this->amount) {
+        if (request('amount') && ! $this->amount) {
             $this->amount = request('amount');
         }
 
         // Handle pre-filled campaign type via query string
         if (request('type')) {
             $this->donation_type = request('type');
+        }
+
+        // Handle zakat subtype from calculator
+        if (request('subtype')) {
+            $this->donation_subtype = request('subtype');
+        }
+
+        // Check if coming from calculator
+        if (request('from') === 'calculator') {
+            $this->from_calculator = true;
         }
 
         if ($this->campaign_id) {
@@ -112,6 +136,15 @@ class DonateWizard extends Component
         $this->selected_bank = null;
     }
 
+    public function getZakatSubtypeLabel(): string
+    {
+        return match ($this->donation_subtype) {
+            'profesi' => 'Zakat Profesi',
+            'maal' => 'Zakat Maal',
+            'fitrah' => 'Zakat Fitrah',
+            default => 'Zakat',
+        };
+    }
 
     public function nextStep()
     {
@@ -168,7 +201,7 @@ class DonateWizard extends Component
             'status' => DonationStatus::Pending,
         ]);
 
-        $this->redirect(route('guest.donate.status', $donation->id), navigate: true);
+        $this->redirect(route('guest.donate.success', $donation->id), navigate: true);
     }
 
     public function render()

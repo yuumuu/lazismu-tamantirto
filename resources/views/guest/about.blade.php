@@ -82,7 +82,7 @@
                         <h2 class="text-primary font-black uppercase tracking-[0.3em] text-xs">Struktur Organisasi</h2>
                         <h3 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight">Dikelola Oleh Tim Profesional & Amanah</h3>
                         <p class="text-lg text-zinc-500 font-medium leading-relaxed">
-                            LazisMU Tamantirto didukung oleh individu-individu yang berdedikasi tinggi untuk melayani umat. Kami memastikan setiap proses pengelolaan dana dilakukan dengan standar profesionalisme yang ketat.
+                            {{ setting('site_name', 'LazisMU') }} {{ setting('site_tagline', 'Tamantirto') }} didukung oleh individu-individu yang berdedikasi tinggi untuk melayani umat. Kami memastikan setiap proses pengelolaan dana dilakukan dengan standar profesionalisme yang ketat.
                         </p>
                     </div>
                     <div class="flex flex-wrap gap-4">
@@ -122,7 +122,7 @@
                 <flux:button :href="route('guest.campaigns.index')" variant="primary"  class="h-16 rounded-2xl px-12 font-black uppercase tracking-widest shadow-2xl shadow-primary/40">
                     Mulai Berdonasi
                 </flux:button>
-                <flux:button :href="route('guest.contact')" variant="ghost"  class="h-16 rounded-2xl px-12 font-black uppercase tracking-widest border-white/10 text-white hover:bg-white/5">
+                <flux:button :href="route('guest.contact')" variant="ghost"  class="h-16 rounded-2xl px-12 font-black uppercase tracking-widest border-white/10 !text-white hover:!bg-white/10">
                     Hubungi Kami
                 </flux:button>
             </div>

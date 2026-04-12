@@ -8,23 +8,29 @@
                         <x-app-logo-icon class="size-8 fill-current" />
                     </div>
                     <div class="flex flex-col leading-tight">
-                        <span class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">Lazismu</span>
-                        <span class="text-primary font-bold text-[10px] tracking-[0.2em] uppercase">Tamantirto</span>
+                        <span class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">{{ setting('site_name', 'Lazismu') }}</span>
+                        <span class="text-primary font-bold text-[10px] tracking-[0.2em] uppercase">{{ setting('site_tagline', 'Tamantirto') }}</span>
                     </div>
                 </a>
                 <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                    Memberi untuk negeri. Lazismu Tamantirto berkomitmen untuk mengelola zakat, infaq dan sedekah secara profesional dan amanah.
+                    {{ setting('site_description', 'Memberi untuk negeri. Lazismu Tamantirto berkomitmen untuk mengelola zakat, infaq dan sedekah secara profesional dan amanah.') }}
                 </p>
                 <div class="flex gap-4">
-                    <a href="#" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
+                    @if(setting('social_facebook'))
+                    <a href="{{ setting('social_facebook') }}" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
                         <flux:icon.facebook class="size-5" />
                     </a>
-                    <a href="#" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
+                    @endif
+                    @if(setting('social_instagram'))
+                    <a href="{{ setting('social_instagram') }}" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
                         <flux:icon.instagram class="size-5" />
                     </a>
-                    <a href="#" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
+                    @endif
+                    @if(setting('social_twitter'))
+                    <a href="{{ setting('social_twitter') }}" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors">
                         <flux:icon.twitter class="size-5" />
                     </a>
+                    @endif
                 </div>
             </div>
 
@@ -32,10 +38,10 @@
             <div>
                 <h3 class="text-zinc-900 dark:text-white font-bold mb-6">Tautan Cepat</h3>
                 <ul class="space-y-4">
-                    <li><a href="{{ route('guest.home') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Beranda</a></li>
                     <li><a href="{{ route('guest.campaigns.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Program Donasi</a></li>
                     <li><a href="{{ route('guest.posts.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Berita & Artikel</a></li>
                     <li><a href="{{ route('guest.about') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Tentang Kami</a></li>
+                    <li><a href="{{ route('guest.contact') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Hubungi Kami</a></li>
                 </ul>
             </div>
 
@@ -56,15 +62,15 @@
                 <ul class="space-y-4">
                     <li class="flex items-start gap-3">
                         <flux:icon.map-pin class="size-5 text-primary shrink-0" />
-                        <span class="text-zinc-500 dark:text-zinc-400 text-sm italic">Jl. Brawijaya, Tamantirto, Kasihan, Bantul, DIY</span>
+                        <span class="text-zinc-500 dark:text-zinc-400 text-sm italic">{{ setting('contact_address', 'Jl. Brawijaya, Tamantirto, Kasihan, Bantul, DIY') }}</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <flux:icon.phone class="size-5 text-primary shrink-0" />
-                        <span class="text-zinc-500 dark:text-zinc-400 text-sm">0812-3456-7890</span>
+                        <span class="text-zinc-500 dark:text-zinc-400 text-sm">{{ setting('contact_phone', '0812-3456-7890') }}</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <flux:icon.envelope class="size-5 text-primary shrink-0" />
-                        <span class="text-zinc-500 dark:text-zinc-400 text-sm">lazismu@umy.ac.id</span>
+                        <span class="text-zinc-500 dark:text-zinc-400 text-sm">{{ setting('contact_email', 'lazismu@umy.ac.id') }}</span>
                     </li>
                 </ul>
             </div>
@@ -72,7 +78,7 @@
 
         <div class="mt-16 pt-8 border-t border-zinc-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-zinc-400 dark:text-zinc-500 text-xs">
-                &copy; {{ date('Y') }} Lazismu Tamantirto. All rights reserved.
+                {{ setting('footer_text', '© ' . date('Y') . ' Lazismu Tamantirto. All rights reserved.') }}
             </p>
             <div class="flex gap-6">
                 <a href="#" class="text-zinc-400 dark:text-zinc-500 hover:text-primary text-xs transition-colors tracking-tight">Kebijakan Privasi</a>

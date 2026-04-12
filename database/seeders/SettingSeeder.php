@@ -18,7 +18,7 @@ class SettingSeeder extends Seeder
             // General Settings
             [
                 'key'           => 'site_name',
-                'value'         => 'LazisMU Tamantirto',
+                'value'         => 'LazisMU',
                 'type'          => 'text',
                 'group_name'    => 'general',
                 'label'         => 'Nama Situs',
@@ -27,7 +27,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key'           => 'site_tagline',
-                'value'         => 'Lembaga Amil Zakat Terpercaya',
+                'value'         => 'Tamantirto',
                 'type'          => 'text',
                 'group_name'    => 'general',
                 'label'         => 'Tagline',
@@ -251,6 +251,6 @@ class SettingSeeder extends Seeder
             );
         }
 
-        $this->command->info('Created '.count($settings).' settings.');
+        $this->command->info('Created ' . count($settings) . ' settings.');
     }
 }

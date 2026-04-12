@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="user-role" content="{{ auth()->check() ? (auth()->user()->roles->first()?->name ?? 'viewer') : 'guest' }}" />
 
-<title>{{ $title ?? config('app.name') }}</title>
+<title>{{ $title ?? setting('site_name', config('app.name')) }}</title>
 
 <link rel="icon" href="/favicon.png?t={{ time() }}" type="image/png">
 <link rel="icon" href="/favicon.ico?t={{ time() }}" sizes="any">

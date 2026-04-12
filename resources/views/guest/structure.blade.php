@@ -4,7 +4,7 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="max-w-3xl space-y-6 text-center mx-auto">
                 <h2 class="text-primary font-black uppercase tracking-[0.3em] text-xs">Struktur Organisasi</h2>
-                <h1 class="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight">Keluarga Besar Lazismu Tamantirto</h1>
+                <h1 class="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight">Keluarga Besar {{ setting('site_name', 'Lazismu') }} {{ setting('site_tagline', 'Tamantirto') }}</h1>
                 <p class="text-lg text-zinc-500 font-medium leading-relaxed">
                     Dipimpin oleh tim yang berdedikasi dan amanah untuk menjamin ketepatan penyaluran donasi Anda.
                 </p>

@@ -87,7 +87,7 @@ new class extends Component {
             ->limit(20) // Get more to check if we need "View All" button
             ->get()
             ->map(function ($log) {
-                $changes = json_decode($log->changes, true);
+                $changes = is_array($log->changes) ? $log->changes : json_decode($log->changes, true);
                 return [
                     'type' => 'verification',
                     'id' => $log->id,
