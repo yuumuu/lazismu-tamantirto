@@ -13,7 +13,7 @@ class RoleTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            ->setThAttributes(fn(Column $column) => ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'])
+            ->setThAttributes(fn (Column $column) => ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'])
             ->setTableAttributes(['class' => 'min-w-full divide-y divide-zinc-100 dark:divide-zinc-800'])
             ->setSearchBlur();
     }
@@ -21,20 +21,20 @@ class RoleTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Nama Role", "name")
+            Column::make('Nama Role', 'name')
                 ->sortable()
                 ->searchable()
-                ->format(fn($value) => view('components.admin.table.entity-cell', ['name' => strtoupper($value), 'meta' => 'GUARD: web'])),
+                ->format(fn ($value) => view('components.admin.table.entity-cell', ['name' => strtoupper($value), 'meta' => 'GUARD: web'])),
 
-            Column::make("Izin Aktif", "id")
-                ->format(fn($value, $row) => '<span class="text-xs font-mono text-zinc-500">' . $row->permissions_count . ' Permission</span>')
+            Column::make('Izin Aktif', 'id')
+                ->format(fn ($value, $row) => '<span class="text-xs font-mono text-zinc-500">'.$row->permissions_count.' Permission</span>')
                 ->html(),
 
-            Column::make("Aksi", "id")
-                ->format(fn($value, $row) => view('components.admin.table.actions-cell', [
+            Column::make('Aksi', 'id')
+                ->format(fn ($value, $row) => view('components.admin.table.actions-cell', [
                     'edit' => route('admin.roles.edit', $row),
                     'delete' => $value,
-                    'confirm' => 'Hapus role ini?'
+                    'confirm' => 'Hapus role ini?',
                 ])),
         ];
     }

@@ -87,7 +87,6 @@ class RolePermissionSeeder extends Seeder
 
         $this->createPermissions();
         $this->createRoles();
-        $this->createDefaultSuperAdmin();
     }
 
     private function createPermissions(): void
@@ -165,10 +164,11 @@ class RolePermissionSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'admin@lazismu.org'],
             [
-                'name'              => 'Super Administrator',
-                'password'          => Hash::make('SuperAdmin123!'),
+                'name' => 'Super Administrator',
+                'password' => Hash::make('SuperAdmin123!'),
                 'email_verified_at' => now(),
-                'is_active'         => true,
+                'is_active' => true,
+                'masjid_id' => 1,
             ]
         );
 

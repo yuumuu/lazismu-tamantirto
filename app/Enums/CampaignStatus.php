@@ -9,11 +9,11 @@ namespace App\Enums;
  */
 enum CampaignStatus: string
 {
-    case Draft       = 'draft';
-    case Active      = 'active';
-    case Completed   = 'completed';
-    case Paused      = 'paused';
-    case Cancelled   = 'cancelled';
+    case Draft = 'draft';
+    case Active = 'active';
+    case Completed = 'completed';
+    case Paused = 'paused';
+    case Cancelled = 'cancelled';
 
     /**
      * Get human-readable label.
@@ -21,11 +21,11 @@ enum CampaignStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Draft       => 'Draft',
-            self::Active      => 'Aktif',
-            self::Completed   => 'Selesai',
-            self::Paused      => 'Dijeda',
-            self::Cancelled   => 'Dibatalkan',
+            self::Draft => 'Draft',
+            self::Active => 'Aktif',
+            self::Completed => 'Selesai',
+            self::Paused => 'Dijeda',
+            self::Cancelled => 'Dibatalkan',
         };
     }
 
@@ -35,11 +35,11 @@ enum CampaignStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Draft       => 'zinc',
-            self::Active      => 'lime',
-            self::Completed   => 'sky',
-            self::Paused      => 'amber',
-            self::Cancelled   => 'red',
+            self::Draft => 'zinc',
+            self::Active => 'lime',
+            self::Completed => 'sky',
+            self::Paused => 'amber',
+            self::Cancelled => 'red',
         };
     }
 

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PostStatus;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\User;
-use App\Enums\PostStatus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -62,7 +62,7 @@ class BlogPostSeeder extends Seeder
                 'title' => $postData['title'],
                 'slug' => Str::slug($postData['title']),
                 'excerpt' => $postData['excerpt'],
-                'content' => '<p>' . $postData['content'] . '</p>',
+                'content' => '<p>'.$postData['content'].'</p>',
                 'status' => PostStatus::Published,
                 'is_featured' => $index === 0,
                 'published_at' => now()->subDays($index * 2),

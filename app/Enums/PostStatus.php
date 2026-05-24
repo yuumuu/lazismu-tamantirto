@@ -19,7 +19,7 @@ enum PostStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Draft     => 'Draft',
+            self::Draft => 'Draft',
             self::Published => 'Dipublikasikan',
             self::Scheduled => 'Dijadwalkan',
         };
@@ -31,7 +31,7 @@ enum PostStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Draft     => 'zinc',
+            self::Draft => 'zinc',
             self::Published => 'lime',
             self::Scheduled => 'sky',
         };

@@ -1,11 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Traits\BelongsToMasjid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FinancialReport extends Model
 {
+    use BelongsToMasjid, HasFactory;
+
     protected $fillable = [
         'title',
         'year',
@@ -26,11 +32,11 @@ class FinancialReport extends Model
 
     public function getFileUrlAttribute(): string
     {
-        return asset('storage/' . $this->file_path);
+        return asset('storage/'.$this->file_path);
     }
 
     public function getCoverUrlAttribute(): ?string
     {
-        return $this->cover_image ? asset('storage/' . $this->cover_image) : null;
+        return $this->cover_image ? asset('storage/'.$this->cover_image) : null;
     }
 }

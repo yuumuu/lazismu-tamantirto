@@ -1,9 +1,9 @@
 <footer class="bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-white/5 pt-16 pb-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
             <!-- Branding -->
-            <div class="space-y-6">
-                <a href="{{ route('guest.home') }}" class="flex items-center gap-3">
+            <div class="space-y-6 lg:col-span-2">
+                <a href="{{ guest_route('guest.home') }}" class="flex items-center gap-3">
                     <div class="flex aspect-square size-10 items-center justify-center rounded-xl bg-transparent text-white shadow-none">
                         <x-app-logo-icon class="size-8 fill-current" />
                     </div>
@@ -38,21 +38,36 @@
             <div>
                 <h3 class="text-zinc-900 dark:text-white font-bold mb-6">Tautan Cepat</h3>
                 <ul class="space-y-4">
-                    <li><a href="{{ route('guest.campaigns.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Program Donasi</a></li>
-                    <li><a href="{{ route('guest.posts.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Berita & Artikel</a></li>
-                    <li><a href="{{ route('guest.about') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Tentang Kami</a></li>
-                    <li><a href="{{ route('guest.contact') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Hubungi Kami</a></li>
+                    <li><a href="{{ guest_route('guest.campaigns.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Program Donasi</a></li>
+                    <li><a href="{{ guest_route('guest.posts.index') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Berita & Artikel</a></li>
+                    <li><a href="{{ guest_route('guest.about') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Tentang Kami</a></li>
+                    <li><a href="{{ guest_route('guest.contact') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Hubungi Kami</a></li>
                 </ul>
             </div>
+
+            <!-- Our Pages -->
+            @php
+                $pages = App\Models\Page::where('status', App\Enums\PageStatus::Published)->get();
+            @endphp
+            @if ($pages->count() > 0)
+            <div>
+                <h3 class="text-zinc-900 dark:text-white font-bold mb-6">Halaman Kami</h3>
+                <ul class="space-y-4">
+                    @foreach($pages as $page)
+                    <li><a href="{{ guest_route('guest.page', $page->slug) }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">{{ $page->title }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
             <!-- Services -->
             <div>
                 <h3 class="text-zinc-900 dark:text-white font-bold mb-6">Layanan</h3>
                 <ul class="space-y-4">
-                    <li><a href="{{ route('guest.donate.form') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Zakat Online</a></li>
-                    <li><a href="{{ route('guest.donate.form') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Infaq & Sedekah</a></li>
-                    <li><a href="{{ route('guest.calculator') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Kalkulator Zakat</a></li>
-                    <li><a href="{{ route('guest.reports') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Laporan Keuangan</a></li>
+                    <li><a href="{{ guest_route('guest.donate.form') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Zakat Online</a></li>
+                    <li><a href="{{ guest_route('guest.donate.form') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Infaq & Sedekah</a></li>
+                    <li><a href="{{ guest_route('guest.calculator') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Kalkulator Zakat</a></li>
+                    <li><a href="{{ guest_route('guest.reports') }}" class="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-sm">Laporan Keuangan</a></li>
                 </ul>
             </div>
 
@@ -80,10 +95,6 @@
             <p class="text-zinc-400 dark:text-zinc-500 text-xs">
                 {{ setting('footer_text', '© ' . date('Y') . ' Lazismu Tamantirto. All rights reserved.') }}
             </p>
-            <div class="flex gap-6">
-                <a href="#" class="text-zinc-400 dark:text-zinc-500 hover:text-primary text-xs transition-colors tracking-tight">Kebijakan Privasi</a>
-                <a href="#" class="text-zinc-400 dark:text-zinc-500 hover:text-primary text-xs transition-colors tracking-tight">Syarat & Ketentuan</a>
-            </div>
         </div>
     </div>
 </footer>

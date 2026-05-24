@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UserRole;
-use Illuminate\Support\Str;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Builder;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
+    use BelongsToMasjid, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
+        'masjid_id',
         'name',
         'email',
         'password',

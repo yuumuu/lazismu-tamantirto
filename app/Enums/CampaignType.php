@@ -10,11 +10,11 @@ namespace App\Enums;
  */
 enum CampaignType: string
 {
-    case Zakat      = 'zakat';
-    case Infaq      = 'infaq';
-    case Sedekah    = 'sedekah';
-    case Wakaf      = 'wakaf';
-    case Fidyah     = 'fidyah';
+    case Zakat = 'zakat';
+    case Infaq = 'infaq';
+    case Sedekah = 'sedekah';
+    case Wakaf = 'wakaf';
+    case Fidyah = 'fidyah';
 
     /**
      * Get human-readable label.
@@ -22,11 +22,11 @@ enum CampaignType: string
     public function label(): string
     {
         return match ($this) {
-            self::Zakat      => 'Zakat',
-            self::Infaq      => 'Infaq',
-            self::Sedekah    => 'Sedekah',
-            self::Wakaf      => 'Wakaf',
-            self::Fidyah     => 'Fidyah',
+            self::Zakat => 'Zakat',
+            self::Infaq => 'Infaq',
+            self::Sedekah => 'Sedekah',
+            self::Wakaf => 'Wakaf',
+            self::Fidyah => 'Fidyah',
         };
     }
 
@@ -36,11 +36,11 @@ enum CampaignType: string
     public function description(): string
     {
         return match ($this) {
-            self::Zakat      => 'Kewajiban membersihkan harta bagi muslim yang mampu',
-            self::Infaq      => 'Sumbangan sukarela untuk kebaikan',
-            self::Sedekah    => 'Pemberian ikhlas tanpa mengharap imbalan',
-            self::Wakaf      => 'Menyerahkan harta untuk kepentingan umum',
-            self::Fidyah     => 'Pengganti puasa bagi yang tidak mampu',
+            self::Zakat => 'Kewajiban membersihkan harta bagi muslim yang mampu',
+            self::Infaq => 'Sumbangan sukarela untuk kebaikan',
+            self::Sedekah => 'Pemberian ikhlas tanpa mengharap imbalan',
+            self::Wakaf => 'Menyerahkan harta untuk kepentingan umum',
+            self::Fidyah => 'Pengganti puasa bagi yang tidak mampu',
         };
     }
 
@@ -50,11 +50,11 @@ enum CampaignType: string
     public function icon(): string
     {
         return match ($this) {
-            self::Zakat      => 'hand-coins',
-            self::Infaq      => 'heart-handshake',
-            self::Sedekah    => 'gift',
-            self::Wakaf      => 'building-2',
-            self::Fidyah     => 'utensils',
+            self::Zakat => 'hand-coins',
+            self::Infaq => 'heart-handshake',
+            self::Sedekah => 'gift',
+            self::Wakaf => 'building-2',
+            self::Fidyah => 'utensils',
         };
     }
 
@@ -72,7 +72,7 @@ enum CampaignType: string
     public static function options(): array
     {
         return collect(self::cases())
-            ->mapWithKeys(fn(self $case) => [$case->value => $case->label()])
+            ->mapWithKeys(fn (self $case) => [$case->value => $case->label()])
             ->toArray();
     }
 }

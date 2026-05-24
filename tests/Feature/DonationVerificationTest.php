@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Enums\DonationStatus;
-use App\Models\{User, Donation, Campaign};
+use App\Models\Campaign;
+use App\Models\Donation;
+use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Livewire\Volt\Volt;
 
@@ -72,13 +74,13 @@ test('verification buttons only show for verifiable donations', function () {
     $this->actingAs($this->user);
 
     $response = $this->get(route('admin.donations.index'));
-    
-    $response->assertSee('wire:click="openVerifyModal(' . $pendingDonation->id . ')"', false);
-    $response->assertSee('wire:click="openRejectModal(' . $pendingDonation->id . ')"', false);
-    
+
+    $response->assertSee('wire:click="openVerifyModal('.$pendingDonation->id.')"', false);
+    $response->assertSee('wire:click="openRejectModal('.$pendingDonation->id.')"', false);
+
     // Should not show verification buttons for verified donation
-    $response->assertDontSee('wire:click="openVerifyModal(' . $verifiedDonation->id . ')"', false);
-    $response->assertDontSee('wire:click="openRejectModal(' . $verifiedDonation->id . ')"', false);
+    $response->assertDontSee('wire:click="openVerifyModal('.$verifiedDonation->id.')"', false);
+    $response->assertDontSee('wire:click="openRejectModal('.$verifiedDonation->id.')"', false);
 });
 
 test('rejection requires reason', function () {

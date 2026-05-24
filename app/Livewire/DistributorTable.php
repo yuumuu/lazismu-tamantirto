@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Distributor;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Distributor;
 
 class DistributorTable extends DataTableComponent
 {
@@ -13,7 +13,7 @@ class DistributorTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            ->setThAttributes(function(Column $column) {
+            ->setThAttributes(function (Column $column) {
                 return ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'];
             })
             ->setTableAttributes(['class' => 'min-w-full divide-y divide-zinc-100 dark:divide-zinc-800'])
@@ -23,24 +23,24 @@ class DistributorTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Nama", "name")
+            Column::make('Nama', 'name')
                 ->sortable()
                 ->searchable()
-                ->format(fn($value, $row) => view('components.admin.table.entity-cell', ['name' => $value, 'meta' => $row->phone ?? 'TANPA_KONTAK'])),
-            
-            Column::make("Tipe", "type")
-                ->sortable()
-                ->format(fn($value) => view('components.admin.table.badge-cell', ['label' => ucfirst($value)])),
+                ->format(fn ($value, $row) => view('components.admin.table.entity-cell', ['name' => $value, 'meta' => $row->phone ?? 'TANPA_KONTAK'])),
 
-            Column::make("Status", "is_active")
+            Column::make('Tipe', 'type')
                 ->sortable()
-                ->format(fn($value, $row) => view('components.admin.table.toggle-cell', ['active' => $value, 'id' => $row->id, 'action' => 'toggleStatus'])),
+                ->format(fn ($value) => view('components.admin.table.badge-cell', ['label' => ucfirst($value)])),
 
-            Column::make("Aksi", "id")
-                ->format(fn($value, $row) => view('components.admin.table.actions-cell', [
+            Column::make('Status', 'is_active')
+                ->sortable()
+                ->format(fn ($value, $row) => view('components.admin.table.toggle-cell', ['active' => $value, 'id' => $row->id, 'action' => 'toggleStatus'])),
+
+            Column::make('Aksi', 'id')
+                ->format(fn ($value, $row) => view('components.admin.table.actions-cell', [
                     'edit' => route('admin.distributors.edit', $row),
                     'delete' => $value,
-                    'confirm' => 'Hapus data penyalur ini?'
+                    'confirm' => 'Hapus data penyalur ini?',
                 ])),
         ];
     }
@@ -48,7 +48,7 @@ class DistributorTable extends DataTableComponent
     public function toggleStatus(string $id): void
     {
         $distributor = Distributor::findOrFail($id);
-        $distributor->update(['is_active' => !$distributor->is_active]);
+        $distributor->update(['is_active' => ! $distributor->is_active]);
         $this->dispatch('notify', message: 'Status Penyalur diperbarui.', type: 'success');
     }
 

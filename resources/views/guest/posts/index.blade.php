@@ -22,6 +22,11 @@
         searchQuery: '',
         posts: @js($posts),
         categories: @js($categories),
+        masjidSlug: @js(request()->route('masjid_slug')),
+
+        getPrefix() {
+            return this.masjidSlug ? '/' + this.masjidSlug : '';
+        },
 
         get filteredPosts() {
             let filtered = this.posts;
@@ -107,14 +112,14 @@
                                         </span>
                                     </div>
                                     <h4 class="text-2xl font-black text-zinc-900 dark:text-white leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                                        <a :href="`/berita/${post.slug}`" x-text="post.title"></a>
+                                        <a :href="getPrefix() + '/berita/' + post.slug" x-text="post.title"></a>
                                     </h4>
                                     <p class="text-sm text-zinc-500 line-clamp-3 leading-relaxed font-medium" x-text="post.excerpt">
                                     </p>
                                 </div>
 
                                 <div class="pt-6 border-t border-zinc-100 dark:border-white/5">
-                                    <a :href="`/berita/${post.slug}`" class="inline-flex items-center gap-2 text-xs font-black text-primary uppercase tracking-[0.2em] group/link">
+                                    <a :href="getPrefix() + '/berita/' + post.slug" class="inline-flex items-center gap-2 text-xs font-black text-primary uppercase tracking-[0.2em] group/link">
                                         Baca Selengkapnya
                                         <flux:icon.arrow-right class="size-4 group-hover/link:translate-x-1 transition-transform" />
                                     </a>

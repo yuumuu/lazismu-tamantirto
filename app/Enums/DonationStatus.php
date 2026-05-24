@@ -9,10 +9,10 @@ namespace App\Enums;
  */
 enum DonationStatus: string
 {
-    case Pending       = 'pending';
-    case Verified      = 'verified';
-    case Rejected      = 'rejected';
-    case Expired       = 'expired';
+    case Pending = 'pending';
+    case Verified = 'verified';
+    case Rejected = 'rejected';
+    case Expired = 'expired';
     case PendingManual = 'pending_manual';
 
     /**
@@ -21,10 +21,10 @@ enum DonationStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Pending       => 'Menunggu Verifikasi',
-            self::Verified      => 'Terverifikasi',
-            self::Rejected      => 'Ditolak',
-            self::Expired       => 'Kedaluwarsa',
+            self::Pending => 'Menunggu Verifikasi',
+            self::Verified => 'Terverifikasi',
+            self::Rejected => 'Ditolak',
+            self::Expired => 'Kedaluwarsa',
             self::PendingManual => 'Perlu Verifikasi Manual',
         };
     }
@@ -35,10 +35,10 @@ enum DonationStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Pending       => 'amber',
-            self::Verified      => 'lime',
-            self::Rejected      => 'red',
-            self::Expired       => 'zinc',
+            self::Pending => 'amber',
+            self::Verified => 'lime',
+            self::Rejected => 'red',
+            self::Expired => 'zinc',
             self::PendingManual => 'orange',
         };
     }

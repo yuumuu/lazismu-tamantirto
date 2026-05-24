@@ -16,21 +16,23 @@ class GuestController extends Controller
     /**
      * Display the home page with optimized queries.
      */
-    public function home(): View
+    public function home(Request $request): View
     {
         // Optimized query: 5-7 queries total instead of 15-20
-        // 1. Featured campaigns with relationships
-        $featuredCampaigns = Campaign::active()
+        // 1. Featured campaigns with relationships (show all branches)
+        $featuredCampaigns = Campaign::withoutGlobalScope('masjid')
+            ->active()
             ->featured()
-            ->with(['category', 'creator'])
+            ->with(['category', 'creator', 'masjid'])
             ->withCount('verifiedDonations')
             ->withSum('verifiedDonations', 'amount')
             ->latest()
             ->take(3)
             ->get();
 
-        // 2. Latest blog posts with category
-        $latestPosts = BlogPost::published()
+        // 2. Latest blog posts with category (show all branches)
+        $latestPosts = BlogPost::withoutGlobalScope('masjid')
+            ->published()
             ->with('category')
             ->latest()
             ->take(3)
@@ -54,36 +56,21 @@ class GuestController extends Controller
     {
         // Get filter parameters
         $categoryId = $request->input('category');
-        $sortBy = $request->input('sort', 'latest');
+        $type = $request->input('type');
         $search = $request->input('search');
 
-        // Base query with optimizations
-        $query = Campaign::active()
-            ->with(['category', 'creator'])
+        $campaigns = Campaign::withoutGlobalScope('masjid')
+            ->active()
+            ->published()
+            ->with(['category', 'masjid'])
             ->withCount('verifiedDonations')
-            ->withSum('verifiedDonations', 'amount');
-
-        // Apply category filter
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-
-        // Apply search filter
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Apply sorting
-        match ($sortBy) {
-            'urgent' => $query->orderByRaw('DATEDIFF(end_date, NOW()) ASC'),
-            'target' => $query->orderByDesc('target_amount'),
-            default => $query->latest(),
-        };
-
-        $campaigns = $query->paginate(9)->withQueryString();
+            ->withSum('verifiedDonations', 'amount')
+            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
 
         // Use cached categories helper
         $categories = cached_campaign_categories();
@@ -94,12 +81,13 @@ class GuestController extends Controller
     /**
      * Display single campaign with optimized queries.
      */
-    public function campaignShow(string $slug): View
+    public function campaignShow(Request $request, string $slug): View
     {
         // Optimized query: 4-6 queries total instead of 8-12
-        $campaign = Campaign::active()
+        $campaign = Campaign::withoutGlobalScope('masjid')
+            ->active()
             ->where('slug', $slug)
-            ->with(['category', 'creator'])
+            ->with(['category', 'creator', 'masjid'])
             ->withCount('verifiedDonations')
             ->withSum('verifiedDonations', 'amount')
             ->firstOrFail();
@@ -119,12 +107,13 @@ class GuestController extends Controller
     /**
      * Display blog posts index.
      */
-    public function postsIndex(): View
+    public function postsIndex(Request $request): View
     {
-        $posts = BlogPost::published()
+        $posts = BlogPost::withoutGlobalScope('masjid')
+            ->published()
             ->with('category')
             ->latest()
-            ->get()
+            ->paginate(9)
             ->map(function ($post) {
                 return [
                     'id' => $post->id,
@@ -155,11 +144,12 @@ class GuestController extends Controller
     /**
      * Display single blog post.
      */
-    public function postShow(string $slug): View
+    public function postShow(Request $request, string $slug): View
     {
-        $post = BlogPost::published()
+        $post = BlogPost::withoutGlobalScope('masjid')
+            ->published()
             ->where('slug', $slug)
-            ->with('category')
+            ->with(['category', 'author'])
             ->firstOrFail();
 
         return view('guest.posts.show', compact('post'));
@@ -168,7 +158,7 @@ class GuestController extends Controller
     /**
      * Display about page.
      */
-    public function about(): View
+    public function about(?string $masjid_slug = null): View
     {
         return view('guest.about');
     }
@@ -176,7 +166,7 @@ class GuestController extends Controller
     /**
      * Display organization structure page.
      */
-    public function structure(): View
+    public function structure(?string $masjid_slug = null): View
     {
         return view('guest.structure');
     }
@@ -184,7 +174,7 @@ class GuestController extends Controller
     /**
      * Display contact page.
      */
-    public function contact(): View
+    public function contact(?string $masjid_slug = null): View
     {
         return view('guest.contact');
     }
@@ -192,7 +182,7 @@ class GuestController extends Controller
     /**
      * Display reports page.
      */
-    public function reports(): View
+    public function reports(?string $masjid_slug = null): View
     {
         return view('guest.reports');
     }
@@ -200,7 +190,7 @@ class GuestController extends Controller
     /**
      * Display zakat calculator page.
      */
-    public function calculator(): View
+    public function calculator(?string $masjid_slug = null): View
     {
         return view('guest.calculator');
     }

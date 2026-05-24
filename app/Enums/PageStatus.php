@@ -18,7 +18,7 @@ enum PageStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Draft     => 'Draft',
+            self::Draft => 'Draft',
             self::Published => 'Dipublikasikan',
         };
     }
@@ -29,7 +29,7 @@ enum PageStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Draft     => 'zinc',
+            self::Draft => 'zinc',
             self::Published => 'lime',
         };
     }

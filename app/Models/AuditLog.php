@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AuditLog extends Model
 {
+    use BelongsToMasjid;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -74,11 +77,11 @@ class AuditLog extends Model
             'create' => 'Membuat',
             'update' => 'Mengubah',
             'delete' => 'Menghapus',
-            'login'  => 'Login',
+            'login' => 'Login',
             'logout' => 'Logout',
             'verify' => 'Memverifikasi',
             'reject' => 'Menolak',
-            default  => ucfirst($this->action),
+            default => ucfirst($this->action),
         };
     }
 
@@ -100,11 +103,11 @@ class AuditLog extends Model
         ?array $changes = null
     ): self {
         return static::create([
-            'user_id'    => $userId,
-            'action'     => $action,
-            'model'      => $model,
-            'model_id'   => $modelId,
-            'changes'    => $changes,
+            'user_id' => $userId,
+            'action' => $action,
+            'model' => $model,
+            'model_id' => $modelId,
+            'changes' => $changes,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ]);

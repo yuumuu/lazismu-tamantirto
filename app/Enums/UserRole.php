@@ -21,9 +21,9 @@ enum UserRole: string
     {
         return match ($this) {
             self::SuperAdmin => 'Super Admin',
-            self::Admin      => 'Admin',
-            self::Editor     => 'Editor',
-            self::Viewer     => 'Viewer',
+            self::Admin => 'Admin',
+            self::Editor => 'Editor',
+            self::Viewer => 'Viewer',
         };
     }
 
@@ -34,9 +34,9 @@ enum UserRole: string
     {
         return match ($this) {
             self::SuperAdmin => 'Akses penuh ke seluruh sistem',
-            self::Admin      => 'Kelola konten, donasi, dan pengguna',
-            self::Editor     => 'Kelola konten dan artikel',
-            self::Viewer     => 'Lihat data tanpa bisa mengedit',
+            self::Admin => 'Kelola konten, donasi, dan pengguna',
+            self::Editor => 'Kelola konten dan artikel',
+            self::Viewer => 'Lihat data tanpa bisa mengedit',
         };
     }
 
@@ -47,9 +47,9 @@ enum UserRole: string
     {
         return match ($this) {
             self::SuperAdmin => 'red',
-            self::Admin      => 'violet',
-            self::Editor     => 'sky',
-            self::Viewer     => 'zinc',
+            self::Admin => 'violet',
+            self::Editor => 'sky',
+            self::Viewer => 'zinc',
         };
     }
 
@@ -60,9 +60,9 @@ enum UserRole: string
     {
         return match ($this) {
             self::SuperAdmin => 1,
-            self::Admin      => 2,
-            self::Editor     => 3,
-            self::Viewer     => 4,
+            self::Admin => 2,
+            self::Editor => 3,
+            self::Viewer => 4,
         };
     }
 

@@ -45,13 +45,20 @@ new class extends Component {
             ->whereBetween('date', [$this->startDate, $this->endDate])
             ->get();
 
-        $totalIncome = $donations->sum('amount');
-        $totalOutcome = $withdrawals->sum('amount');
+        // Income and outcome strictly for the selected period
+        $periodIncome = $donations->sum('amount');
+        $periodOutcome = $withdrawals->sum('amount');
+
+        // Cumulative totals up to end date to calculate true ending balance 
+        $cumulativeIncome = Donation::query()->verified()
+            ->where('verified_at', '<=', $this->endDate . ' 23:59:59')->sum('amount');
+        $cumulativeOutcome = Withdrawal::query()->where('status', WithdrawalStatus::Sent)
+            ->where('date', '<=', $this->endDate)->sum('amount');
 
         return [
-            'totalIncome' => $totalIncome,
-            'totalOutcome' => $totalOutcome,
-            'balance' => $totalIncome - $totalOutcome,
+            'totalIncome' => $periodIncome,
+            'totalOutcome' => $periodOutcome,
+            'balance' => $cumulativeIncome - $cumulativeOutcome,
             'incomeCount' => $donations->count(),
             'outcomeCount' => $withdrawals->count(),
             'incomeBySource' => $donations->groupBy('donation_type')->map->sum('amount'),
@@ -162,13 +169,13 @@ new class extends Component {
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="premium-card p-6">
-            <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{ __('Total Donasi Masuk') }}</p>
+            <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{ __('Donasi Masuk (Periode)') }}</p>
             <h2 class="text-2xl font-black text-green-600 mt-2">{{ format_rupiah($totalIncome) }}</h2>
             <p class="text-[10px] text-zinc-500 mt-1">{{ $incomeCount }} {{ __('transaksi terverifikasi') }}</p>
         </div>
 
         <div class="premium-card p-6">
-            <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{ __('Total Penyaluran') }}</p>
+            <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{ __('Penyaluran (Periode)') }}</p>
             <h2 class="text-2xl font-black text-red-600 mt-2">{{ format_rupiah($totalOutcome) }}</h2>
             <p class="text-[10px] text-zinc-500 mt-1">{{ $outcomeCount }} {{ __('penyaluran selesai') }}</p>
         </div>

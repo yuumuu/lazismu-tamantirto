@@ -2,10 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Muzakki;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Muzakki;
-use Illuminate\Database\Eloquent\Builder;
 
 class MuzakkiTable extends DataTableComponent
 {
@@ -14,7 +13,7 @@ class MuzakkiTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            ->setThAttributes(function(Column $column) {
+            ->setThAttributes(function (Column $column) {
                 return ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'];
             })
             ->setTableAttributes(['class' => 'min-w-full divide-y divide-zinc-100 dark:divide-zinc-800'])
@@ -24,29 +23,29 @@ class MuzakkiTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Nama", "name")
+            Column::make('Nama', 'name')
                 ->sortable()
                 ->searchable()
-                ->format(fn($value, $row) => view('components.admin.table.entity-cell', ['name' => $value, 'meta' => 'NIK: ' . ($row->nik ?? '-')])),
-            
-            Column::make("Kontak", "email")
+                ->format(fn ($value, $row) => view('components.admin.table.entity-cell', ['name' => $value, 'meta' => 'NIK: '.($row->nik ?? '-')])),
+
+            Column::make('Kontak', 'email')
                 ->sortable()
                 ->searchable()
-                ->format(fn($value, $row) => view('components.admin.table.contact-cell', ['email' => $value, 'phone' => $row->phone])),
+                ->format(fn ($value, $row) => view('components.admin.table.contact-cell', ['email' => $value, 'phone' => $row->phone])),
 
-            Column::make("Tipe", "type")
+            Column::make('Tipe', 'type')
                 ->sortable()
-                ->format(fn($value) => view('components.admin.table.badge-cell', ['label' => ucfirst($value)])),
+                ->format(fn ($value) => view('components.admin.table.badge-cell', ['label' => ucfirst($value)])),
 
-            Column::make("Status", "is_active")
+            Column::make('Status', 'is_active')
                 ->sortable()
-                ->format(fn($value, $row) => view('components.admin.table.toggle-cell', ['active' => $value, 'id' => $row->id, 'action' => 'toggleStatus'])),
+                ->format(fn ($value, $row) => view('components.admin.table.toggle-cell', ['active' => $value, 'id' => $row->id, 'action' => 'toggleStatus'])),
 
-            Column::make("Aksi", "id")
-                ->format(fn($value, $row) => view('components.admin.table.actions-cell', [
+            Column::make('Aksi', 'id')
+                ->format(fn ($value, $row) => view('components.admin.table.actions-cell', [
                     'edit' => route('admin.muzakkis.edit', $row),
                     'delete' => $value,
-                    'confirm' => 'Hapus data muzakki ini?'
+                    'confirm' => 'Hapus data muzakki ini?',
                 ])),
         ];
     }
@@ -54,7 +53,7 @@ class MuzakkiTable extends DataTableComponent
     public function toggleStatus(string $id): void
     {
         $muzakki = Muzakki::findOrFail($id);
-        $muzakki->update(['is_active' => !$muzakki->is_active]);
+        $muzakki->update(['is_active' => ! $muzakki->is_active]);
         $this->dispatch('notify', message: 'Status Muzakki diperbarui.', type: 'success');
     }
 

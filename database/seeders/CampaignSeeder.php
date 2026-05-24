@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\CampaignStatus;
+use App\Enums\CampaignType;
 use App\Models\Campaign;
 use App\Models\CampaignCategory;
 use App\Models\User;
-use App\Enums\CampaignStatus;
-use App\Enums\CampaignType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -75,7 +75,7 @@ class CampaignSeeder extends Seeder
                 'type' => CampaignType::Infaq,
                 'slug' => Str::slug($data['title']),
                 'short_description' => Str::limit($data['description'], 150),
-                'current_amount' => rand(0, (int)$data['target_amount'] / 2),
+                'current_amount' => rand(0, (int) $data['target_amount'] / 2),
                 'start_date' => now(),
                 'end_date' => now()->addDays(rand(30, 90)),
                 'status' => CampaignStatus::Active,

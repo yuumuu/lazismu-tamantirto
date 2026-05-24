@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
+
+// Impersonation Leave (Global to avoid domain/prefix issues)
+Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])->name('admin.impersonate.leave');
 
 // Favicon route with proper cache headers
 Route::get('/favicon.{ext}', function ($ext) {
@@ -26,8 +31,8 @@ Route::get('/favicon.{ext}', function ($ext) {
 })->where('ext', 'ico|png|svg');
 
 // Domain configuration
-$appDomain = env('APP_DOMAIN', 'lazismu.test');
-$adminDomain = env('ADMIN_DOMAIN', 'admin.lazismu.test');
+$appDomain = app()->runningUnitTests() ? 'localhost' : env('APP_DOMAIN', 'lazismu.test');
+$adminDomain = app()->runningUnitTests() ? 'localhost' : env('ADMIN_DOMAIN', 'admin.lazismu.test');
 $sameDomain = $appDomain === $adminDomain;
 
 // Admin Routes
@@ -85,6 +90,13 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                 Volt::route('/media', 'admin.media.index')->name('media.index');
                 Volt::route('/settings', 'admin.settings.index')->name('settings.index');
 
+                // User Management (accessible by tenant admins, scoped by masjid_id)
+                Route::prefix('users')->name('users.')->group(function () {
+                    Volt::route('/', 'admin.users.index')->name('index');
+                    Volt::route('/create', 'admin.users.create')->name('create');
+                    Volt::route('/{user}/edit', 'admin.users.edit')->name('edit');
+                });
+
                 // Campaign Categories
                 Route::prefix('campaign-categories')->name('campaign-categories.')->group(function () {
                     Volt::route('/', 'admin.campaign-categories.index')->name('index');
@@ -109,11 +121,19 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                     Volt::route('/permissions/create', 'admin.permissions.create')->name('permissions.create');
                     Volt::route('/permissions/{permission}/edit', 'admin.permissions.edit')->name('permissions.edit');
 
-                    Volt::route('/users', 'admin.users.index')->name('users.index');
-                    Volt::route('/users/create', 'admin.users.create')->name('users.create');
-                    Volt::route('/users/{user}/edit', 'admin.users.edit')->name('users.edit');
+                    Volt::route('/masjids', 'admin.masjids.index')->name('masjids.index');
+                    Volt::route('/masjids/create', 'admin.masjids.create')->name('masjids.create');
+                    Volt::route('/masjids/{masjid}/edit', 'admin.masjids.edit')->name('masjids.edit');
+
+                    // Impersonation Start
+                    Route::get('/impersonate/{user}', [App\Http\Controllers\Admin\ImpersonationController::class, 'impersonate'])->name('impersonate');
                 });
             });
+
+            // Monitoring & Logs
+            Volt::route('/monitoring', 'admin.monitoring.index')->name('admin.monitoring.index');
+            Volt::route('/monitoring/{masjid}', 'admin.monitoring.show')->name('admin.monitoring.show');
+            Volt::route('/activities', 'admin.activities.index')->name('admin.activities.index');
 
             // Reporting
             Volt::route('/reports', 'admin.reports.index')->name('admin.reports.index');
@@ -187,3 +207,10 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 });
+
+// 3. Fallback Page Routes (Must be at the very bottom)
+Route::get('/{slug}', function (string $slug) {
+    $page = App\Models\Page::where('slug', '=', $slug, true)->firstOrFail();
+
+    return view('guest.pages.show', compact('page'));
+})->name('guest.page');

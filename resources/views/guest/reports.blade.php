@@ -2,6 +2,14 @@
     $startDate = now()->startOfMonth();
     $endDate = now()->endOfMonth();
     
+    // All-time statistics for summary cards
+    $totalIncome = \App\Models\Donation::verified()->sum('amount');
+    $withdrawalsQuery = \App\Models\Withdrawal::where('status', \App\Enums\WithdrawalStatus::Sent);
+    $totalOutcome = $withdrawalsQuery->sum('amount');
+    $withdrawalCount = $withdrawalsQuery->count();
+    $balance = $totalIncome - $totalOutcome;
+
+    // Monthly data for recent activity
     $donations = \App\Models\Donation::verified()
         ->whereBetween('verified_at', [$startDate, $endDate])
         ->get();
@@ -9,10 +17,6 @@
     $withdrawals = \App\Models\Withdrawal::where('status', \App\Enums\WithdrawalStatus::Sent)
         ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
         ->get();
-
-    $totalIncome = $donations->sum('amount');
-    $totalOutcome = $withdrawals->sum('amount');
-    $balance = $totalIncome - $totalOutcome;
 
     $recentActivity = collect()
         ->concat($donations->map(fn($d) => ['type' => 'income', 'label' => 'Donasi: ' . ($d->is_anonymous ? 'Hamba Allah' : $d->donor_name), 'amount' => $d->amount, 'date' => $d->verified_at]))
@@ -39,19 +43,19 @@
             <!-- Summary Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="p-10 rounded-[48px] bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 space-y-4">
-                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Donasi Terkumpul</span>
+                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Total Donasi Terkumpul</span>
                     <h3 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">{{ format_rupiah($totalIncome) }}</h3>
-                    <p class="text-xs text-zinc-500 font-bold italic">Periode: {{ $startDate->format('M Y') }}</p>
+                    <p class="text-xs text-zinc-500 font-bold italic">Akumulasi seluruh dana donasi</p>
                 </div>
                 <div class="p-10 rounded-[48px] bg-primary/5 dark:bg-primary/20 border border-primary/10 space-y-4 shadow-xl shadow-primary/5">
-                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Telah Disalurkan</span>
+                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Total Telah Disalurkan</span>
                     <h3 class="text-4xl font-black text-primary tracking-tighter">{{ format_rupiah($totalOutcome) }}</h3>
-                    <p class="text-xs text-zinc-500 font-bold italic">Melalui {{ $withdrawals->count() }} program bantuan</p>
+                    <p class="text-xs text-zinc-500 font-bold italic">Melalui {{ $withdrawalCount }} program bantuan</p>
                 </div>
                 <div class="p-10 rounded-[48px] bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 space-y-4">
-                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Saldo Saat Ini</span>
+                    <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">Saldo Aktif Saat Ini</span>
                     <h3 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">{{ format_rupiah($balance) }}</h3>
-                    <p class="text-xs text-zinc-500 font-bold italic">Dana siap disalurkan</p>
+                    <p class="text-xs text-zinc-500 font-bold italic">Sisa dana siap disalurkan</p>
                 </div>
             </div>
 

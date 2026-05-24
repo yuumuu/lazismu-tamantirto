@@ -21,7 +21,7 @@
     <section class="py-12 bg-white dark:bg-zinc-950 min-h-screen">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <!-- Toolbar -->
-            <form method="GET" action="{{ route('guest.campaigns.index') }}" class="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
+            <form method="GET" action="{{ guest_route('guest.campaigns.index') }}" class="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
                 <div class="w-full lg:w-1/3">
                     <flux:input
                         name="search"
@@ -72,7 +72,7 @@
                         <p class="text-zinc-500 font-medium italic">Coba cari dengan kata kunci lain atau ubah filter Anda.</p>
                         @if(request()->hasAny(['search', 'category', 'sort']))
                             <div class="mt-6">
-                                <a href="{{ route('guest.campaigns.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition-colors">
+                                <a href="{{ guest_route('guest.campaigns.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition-colors">
                                     <flux:icon.arrow-path class="size-5" />
                                     Reset Filter
                                 </a>

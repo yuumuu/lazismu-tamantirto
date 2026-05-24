@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\DonationStatus;
-use App\Models\{User, Donation, Campaign, BlogPost, AuditLog};
+use App\Models\AuditLog;
+use App\Models\Campaign;
+use App\Models\Donation;
+use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 
 beforeEach(function () {

@@ -47,11 +47,11 @@
                 ['route' => 'guest.calculator', 'label' => 'Kalkulator Zakat', 'icon' => 'calculator'],
             ] as $nav)
                 <a
-                    href="{{ route($nav['route']) }}"
+                    href="{{ guest_route($nav['route']) }}"
                     @click="open = false"
-                    class="flex items-center gap-4 px-6 py-4 rounded-2xl text-lg font-black tracking-tight transition-all {{ request()->routeIs($nav['route']) ? 'bg-primary/10 text-primary shadow-sm' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5' }}"
+                    class="flex items-center gap-4 px-6 py-4 rounded-2xl text-lg font-black tracking-tight transition-all {{ request()->routeIs($nav['route']) || (request()->route('masjid_slug') && request()->routeIs('guest.tenant.'.str_replace('guest.', '', $nav['route']))) ? 'bg-primary/10 text-primary shadow-sm' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5' }}"
                 >
-                    <flux:icon name="{{ $nav['icon'] }}" class="size-6 {{ request()->routeIs($nav['route']) ? 'text-primary' : 'text-zinc-400' }}" />
+                    <flux:icon name="{{ $nav['icon'] }}" class="size-6 {{ request()->routeIs($nav['route']) || (request()->route('masjid_slug') && request()->routeIs('guest.tenant.'.str_replace('guest.', '', $nav['route']))) ? 'text-primary' : 'text-zinc-400' }}" />
                     {{ $nav['label'] }}
                 </a>
             @endforeach

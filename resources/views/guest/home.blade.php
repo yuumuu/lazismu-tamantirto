@@ -16,7 +16,7 @@
                     <h2 class="text-primary font-black uppercase tracking-[0.3em] text-xs">Program Pilihan</h2>
                     <h3 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight">Kebaikan yang Bisa<br>Anda Bantu Hari Ini</h3>
                 </div>
-                <flux:button href="{{ route('guest.campaigns.index') }}" variant="ghost"  icon-trailing="arrow-right" class="font-bold border-zinc-200 dark:border-white/10 rounded-2xl">
+                <flux:button href="{{ guest_route('guest.campaigns.index') }}" variant="ghost"  icon-trailing="arrow-right" class="font-bold border-zinc-200 dark:border-white/10 rounded-2xl">
                     Lihat Semua Program
                 </flux:button>
             </div>
@@ -61,7 +61,7 @@
                         <div class="p-8 space-y-4">
                             <span class="text-xs text-zinc-500 font-medium">{{ $post->published_at?->format('d M Y') }}</span>
                             <h4 class="text-xl font-black text-zinc-900 dark:text-white line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                                <a href="{{ route('guest.posts.show', $post->slug) }}">{{ $post->title }}</a>
+                                <a href="{{ guest_route('guest.posts.show', ['slug' => $post->slug]) }}">{{ $post->title }}</a>
                             </h4>
                             <p class="text-sm text-zinc-500 line-clamp-2 leading-relaxed">
                                 {{ $post->short_description }}

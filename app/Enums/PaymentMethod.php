@@ -20,10 +20,10 @@ enum PaymentMethod: string
     public function label(): string
     {
         return match ($this) {
-            self::Qris          => 'QRIS',
-            self::BankTransfer  => 'Transfer Bank',
-            self::Gopay         => 'GoPay',
-            self::Manual        => 'Manual',
+            self::Qris => 'QRIS',
+            self::BankTransfer => 'Transfer Bank',
+            self::Gopay => 'GoPay',
+            self::Manual => 'Manual',
         };
     }
 
@@ -33,10 +33,10 @@ enum PaymentMethod: string
     public function description(): string
     {
         return match ($this) {
-            self::Qris          => 'Scan QR code untuk pembayaran',
-            self::BankTransfer  => 'Transfer ke rekening bank',
-            self::Gopay         => 'Pembayaran via GoPay',
-            self::Manual        => 'Pembayaran langsung ke kantor',
+            self::Qris => 'Scan QR code untuk pembayaran',
+            self::BankTransfer => 'Transfer ke rekening bank',
+            self::Gopay => 'Pembayaran via GoPay',
+            self::Manual => 'Pembayaran langsung ke kantor',
         };
     }
 
@@ -46,10 +46,10 @@ enum PaymentMethod: string
     public function icon(): string
     {
         return match ($this) {
-            self::Qris          => 'qr-code',
-            self::BankTransfer  => 'building-columns',
-            self::Gopay         => 'wallet',
-            self::Manual        => 'hand-coins',
+            self::Qris => 'qr-code',
+            self::BankTransfer => 'building-columns',
+            self::Gopay => 'wallet',
+            self::Manual => 'hand-coins',
         };
     }
 

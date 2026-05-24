@@ -47,6 +47,18 @@
             <p class="text-zinc-500 font-medium">Berapa banyak kebaikan yang ingin Anda alirkan hari ini?</p>
         </div>
 
+        <!-- Cabang Selection -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <label class="text-sm font-black text-zinc-400 uppercase tracking-widest">Pilih Cabang Penyalur</label>
+            </div>
+            <flux:select wire:model.live="masjid_id" class="h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50">
+                @foreach(\App\Models\Masjid::where('is_active', true)->get() as $masjid)
+                    <option value="{{ $masjid->id }}">{{ $masjid->name }}</option>
+                @endforeach
+            </flux:select>
+        </div>
+
         <!-- Donation Type Cards -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">

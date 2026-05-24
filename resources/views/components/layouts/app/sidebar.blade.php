@@ -5,19 +5,50 @@
     @include('partials.app.head', ['title' => $title])
 </head>
 
-<body class="min-h-screen bg-zinc-50 dark:bg-zinc-950 antialiased font-sans p-3">
+<body
+    class="min-h-screen bg-zinc-50 dark:bg-zinc-950 antialiased font-sans p-3 {{ session()->has('impersonated_by') ? 'pt-14' : '' }}">
+    @if (session()->has('impersonated_by'))
+        <div
+            class="fixed top-0 left-0 right-0 z-[9999] bg-amber-500 text-white px-4 py-2 flex items-center justify-between shadow-lg animate-in fade-in slide-in-from-top duration-500">
+            <div class="flex items-center gap-3">
+                <flux:icon name="exclamation-triangle" class="size-5" />
+                <span class="text-sm font-bold">
+                    {{ __('Anda sedang masuk sebagai :name (:masjid)', [
+                        'name' => auth()->user()->name,
+                        'masjid' => auth()->user()->masjid->name ?? 'Cabang',
+                    ]) }}
+                </span>
+            </div>
+            <form action="{{ route('admin.impersonate.leave') }}" method="POST">
+                @csrf
+                <flux:button type="submit" size="xs" variant="filled"
+                    class="bg-white !text-amber-600 hover:bg-zinc-100">
+                    {{ __('Kembali ke Akun Saya') }}
+                </flux:button>
+            </form>
+        </div>
+    @endif
+
     <flux:sidebar sticky stashable
-        class="w-72 border border-zinc-300 bg-white dark:border-zinc-800 dark:bg-zinc-900 transition-all duration-300 rounded-xl">
+        class="w-72 border border-zinc-300 bg-white z-[100] dark:border-zinc-800 dark:bg-zinc-900 transition-all duration-300 rounded-xl">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
         <!-- Brand Identity: Minimalist -->
         <div class="px-6 py-4">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group" wire:navigate>
-                <img src="/favicon.png" class="size-8 rounded-lg group-hover:scale-105 transition-transform" />
+                @if (auth()->user()->masjid_id === 1)
+                    <img src="/favicon.png" class="size-8 rounded-lg group-hover:scale-105 transition-transform" />
+                @else
+                    <div
+                        class="size-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <flux:icon name="building-office" class="size-4 text-amber-600" />
+                    </div>
+                @endif
                 <div class="flex flex-col">
                     <span
-                        class="text-lg font-bold text-zinc-900 dark:text-white leading-none tracking-tight">LAZISMU</span>
-                    <span class="text-[10px] font-medium text-zinc-500 leading-none mt-1">Tamantirto</span>
+                        class="text-lg font-bold text-zinc-900 dark:text-white leading-none tracking-tight">{{ auth()->user()->masjid->name ?? 'LAZISMU' }}</span>
+                    <span
+                        class="text-[10px] font-medium text-zinc-500 leading-none mt-1">{{ auth()->user()->masjid_id === 1 ? 'Tamantirto' : 'Panel Admin' }}</span>
                 </div>
             </a>
         </div>
@@ -26,6 +57,10 @@
             <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                 wire:navigate>
                 {{ __('Dashboard') }}
+            </flux:navlist.item>
+
+            <flux:navlist.item icon="globe-alt" :href="route('guest.home')" target="_blank">
+                {{ __('Lihat Website') }}
             </flux:navlist.item>
 
             <flux:navlist.group :heading="__('Data Master')" expandable class="mt-4">
@@ -63,18 +98,22 @@
                     :current="request()->routeIs('admin.posts.*')" wire:navigate>
                     {{ __('Berita & Artikel') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="document-text" :href="route('admin.pages.index')"
-                    :current="request()->routeIs('admin.pages.*')" wire:navigate>
-                    {{ __('Halaman Statis') }}
-                </flux:navlist.item>
+                @if (auth()->user()->masjid_id === 1)
+                    <flux:navlist.item icon="document-text" :href="route('admin.pages.index')"
+                        :current="request()->routeIs('admin.pages.*')" wire:navigate>
+                        {{ __('Halaman Statis') }}
+                    </flux:navlist.item>
+                @endif
                 <flux:navlist.item icon="identification" :href="route('admin.structure.index')"
                     :current="request()->routeIs('admin.structure.*')" wire:navigate>
                     {{ __('Struktur Organisasi') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="photo" :href="route('admin.banners.index')"
-                    :current="request()->routeIs('admin.banners.*')" wire:navigate>
-                    {{ __('Hero Banners') }}
-                </flux:navlist.item>
+                @if (auth()->user()->masjid_id === 1)
+                    <flux:navlist.item icon="photo" :href="route('admin.banners.index')"
+                        :current="request()->routeIs('admin.banners.*')" wire:navigate>
+                        {{ __('Hero Banners') }}
+                    </flux:navlist.item>
+                @endif
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Operasional')" expandable class="mt-4">
@@ -93,19 +132,40 @@
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Akses Sistem')" expandable class="mt-4">
+                @if (auth()->user()->hasRole('super_admin'))
+                    <flux:navlist.item icon="building-office-2" :href="route('admin.masjids.index')"
+                        :current="request()->routeIs('admin.masjids.*')" wire:navigate>
+                        {{ __('Kelola Cabang') }}
+                    </flux:navlist.item>
+                @endif
                 <flux:navlist.item icon="users" :href="route('admin.users.index')"
                     :current="request()->routeIs('admin.users.*')" wire:navigate>
                     {{ __('Manajemen Pengguna') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')"
-                    :current="request()->routeIs('admin.roles.*')" wire:navigate>
-                    {{ __('Manajemen Akses') }}
+                @if (auth()->user()->masjid_id === 1)
+                    <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')"
+                        :current="request()->routeIs('admin.roles.*')" wire:navigate>
+                        {{ __('Manajemen Akses') }}
+                    </flux:navlist.item>
+                @endif
+                <flux:navlist.item icon="clock" :href="route('admin.activities.index')"
+                    :current="request()->routeIs('admin.activities.*')" wire:navigate>
+                    {{ __('Aktivitas Terbaru') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="cog-8-tooth" :href="route('admin.settings.index')"
                     :current="request()->routeIs('admin.settings.*')" wire:navigate>
                     {{ __('Pengaturan Sistem') }}
                 </flux:navlist.item>
             </flux:navlist.group>
+
+            @if (auth()->user()->hasRole('super_admin'))
+                <flux:navlist.group :heading="__('Monitoring')" expandable class="mt-4">
+                    <flux:navlist.item icon="chart-bar-square" :href="route('admin.monitoring.index')"
+                        :current="request()->routeIs('admin.monitoring.*')" wire:navigate>
+                        {{ __('Monitoring Cabang') }}
+                    </flux:navlist.item>
+                </flux:navlist.group>
+            @endif
         </flux:navlist>
 
         <flux:spacer />
@@ -150,10 +210,10 @@
             <span class="font-black text-xl tracking-tighter text-amber-500">LAZISMU</span>
         </a>
         <flux:spacer />
-        
+
         <!-- Tutorial Menu for Mobile -->
         <livewire:admin.tutorial-menu />
-        
+
         <flux:dropdown position="top" align="end">
             <flux:profile :initials="auth()->user()->initials()" />
             <flux:menu>

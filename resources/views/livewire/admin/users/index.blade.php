@@ -22,17 +22,30 @@ new class extends Component {
                 })
                 ->latest()
                 ->paginate(10),
+            'isSuperAdmin' => auth()->user()->isSuperAdmin(),
         ];
     }
 
-    public function toggleStatus(User $user): void
+    public function toggleStatus(int $userId): void
     {
+        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+
+        if (! auth()->user()->isSuperAdmin() && $user->masjid_id !== auth()->user()->masjid_id) {
+            abort(403);
+        }
+
         $user->update(['is_active' => !$user->is_active]);
         $this->dispatch('notify', message: 'Status pengguna berhasil diperbarui.', type: 'success');
     }
 
-    public function delete(User $user): void
+    public function delete(int $userId): void
     {
+        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+
+        if (! auth()->user()->isSuperAdmin() && $user->masjid_id !== auth()->user()->masjid_id) {
+            abort(403);
+        }
+
         if ($user->hasRole('super_admin')) {
             $this->dispatch('notify', message: 'Tidak dapat menghapus Super Admin.', type: 'error');
             return;
@@ -40,6 +53,17 @@ new class extends Component {
         
         $user->delete();
         $this->dispatch('notify', message: 'Pengguna berhasil dihapus.', type: 'success');
+    }
+
+    public function impersonate(int $userId): void
+    {
+        if (! auth()->user()->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang dapat melakukan impersonasi.');
+        }
+
+        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+
+        $this->redirect(route('admin.impersonate', $user->id), navigate: false);
     }
 }; ?>
 
@@ -105,8 +129,14 @@ new class extends Component {
                             </td>
                             <td class="px-6 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    @if($isSuperAdmin && !$user->hasRole('super_admin'))
+                                        <flux:button icon="user-circle" size="xs" variant="ghost" 
+                                            wire:click="impersonate('{{ $user->id }}')" 
+                                            onclick="if(!confirm('Masuk sebagai pengguna ini?')) { event.stopImmediatePropagation(); return false; }" 
+                                            title="Login sebagai Pengguna" />
+                                    @endif
                                     <flux:button icon="pencil-square" size="xs" variant="ghost" :href="route('admin.users.edit', $user)" wire:navigate />
-                                    <flux:button icon="trash" size="xs" variant="ghost" class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" wire:click="delete('{{ $user->id }}')" wire:confirm="Hapus pengguna ini selamanya?" />
+                                    <flux:button icon="trash" size="xs" variant="ghost" class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" wire:click="delete('{{ $user->id }}')" onclick="if(!confirm('Hapus pengguna ini selamanya?')) { event.stopImmediatePropagation(); return false; }" />
                                 </div>
                             </td>
                         </tr>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\Masjid;
 use Spatie\Permission\Models\Role;
 use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Hash;
@@ -15,29 +16,50 @@ new class extends Component {
     public string $password_confirmation = '';
     public array $roles = [];
     public bool $is_active = true;
+    public ?int $masjid_id = null;
+
+    public function mount()
+    {
+        $this->masjid_id = session('active_masjid_id');
+    }
 
     public function with(): array
     {
+        $isSuperAdmin = auth()->user()->isSuperAdmin();
+
         return [
-            'availableRoles' => Role::all(),
+            'availableRoles' => Role::when(! $isSuperAdmin, fn ($q) => $q->where('name', '!=', 'super_admin'))->get(),
+            'masjids' => $isSuperAdmin ? Masjid::all() : [],
+            'isSuperAdmin' => $isSuperAdmin,
         ];
     }
 
     public function save(): void
     {
+        if (! auth()->user()->isSuperAdmin()) {
+            $this->masjid_id = auth()->user()->masjid_id;
+        }
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'roles' => ['required', 'array', 'min:1'],
             'is_active' => ['boolean'],
+            'masjid_id' => ['required', 'exists:masjids,id'],
         ]);
+
+        // Security check: ensure non-super-admin can't assign super_admin role
+        if (! auth()->user()->isSuperAdmin() && in_array('super_admin', $this->roles)) {
+            abort(403, 'Anda tidak diizinkan membuat Super Admin.');
+        }
 
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'is_active' => $this->is_active,
+            'masjid_id' => $this->masjid_id,
             'email_verified_at' => now(), // Auto-verify for admin-created users
         ]);
 
@@ -49,8 +71,8 @@ new class extends Component {
 }; ?>
 
 <div>
-    <x-admin.page-header 
-        title="Tambah Pengguna Baru" 
+    <x-admin.page-header
+        title="Tambah Pengguna Baru"
         description="Daftarkan administrator atau operator baru ke dalam sistem."
         backRoute="admin.users.index"
     />
@@ -92,7 +114,16 @@ new class extends Component {
                 <div class="space-y-4">
                     <flux:label>Pengaturan Akun</flux:label>
                     <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 space-y-6">
-                        <div class="flex items-center justify-between">
+                        @if($isSuperAdmin)
+                            <!-- Masjid Selection -->
+                            <flux:select wire:model="masjid_id" label="Cabang / Masjid" placeholder="Pilih Cabang...">
+                                @foreach($masjids as $masjid)
+                                    <flux:select.option value="{{ $masjid->id }}">{{ $masjid->name }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        @endif
+
+                        <div class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-800">
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-zinc-900 dark:text-white">Status Aktif</span>
                                 <span class="text-[10px] text-zinc-500">Izinkan pengguna ini masuk ke sistem.</span>

@@ -11,7 +11,6 @@ use App\Models\Donation;
 use App\Models\PaymentLog;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class DonationService
 {
@@ -79,20 +78,20 @@ class DonationService
     private function buildDonation(array $data, Campaign $campaign, string $proofPath): Donation
     {
         return new Donation([
-            'campaign_id'       => $campaign->id,
-            'transaction_id'    => Donation::generateTransactionId(),
-            'donor_name'        => $data['donor_name'],
-            'donor_email'       => $data['donor_email'],
-            'donor_phone'       => $this->normalizePhoneNumber($data['donor_phone']),
-            'amount'            => $data['amount'],
-            'donation_type'     => $data['donation_type'] ?? $campaign->type,
-            'payment_method'    => PaymentMethod::from($data['payment_method']),
-            'bank_name'         => $data['bank_name'] ?? null,
-            'account_number'    => $data['account_number'] ?? null,
-            'proof_image'       => $proofPath,
-            'donor_message'     => $data['donor_message'] ?? null,
-            'is_anonymous'      => $data['is_anonymous'] ?? false,
-            'status'            => DonationStatus::Pending,
+            'campaign_id' => $campaign->id,
+            'transaction_id' => Donation::generateTransactionId(),
+            'donor_name' => $data['donor_name'],
+            'donor_email' => $data['donor_email'],
+            'donor_phone' => $this->normalizePhoneNumber($data['donor_phone']),
+            'amount' => $data['amount'],
+            'donation_type' => $data['donation_type'] ?? $campaign->type,
+            'payment_method' => PaymentMethod::from($data['payment_method']),
+            'bank_name' => $data['bank_name'] ?? null,
+            'account_number' => $data['account_number'] ?? null,
+            'proof_image' => $proofPath,
+            'donor_message' => $data['donor_message'] ?? null,
+            'is_anonymous' => $data['is_anonymous'] ?? false,
+            'status' => DonationStatus::Pending,
         ]);
     }
 
@@ -234,11 +233,11 @@ class DonationService
         $donations = Donation::query();
 
         return [
-            'total_verified'    => (clone $donations)->verified()->sum('amount'),
-            'total_pending'     => (clone $donations)->pending()->count(),
-            'total_donors'      => (clone $donations)->verified()->distinct('donor_email')->count(),
-            'today_donations'   => (clone $donations)->verified()->whereDate('created_at', today())->sum('amount'),
-            'this_month'        => (clone $donations)->verified()->whereMonth('created_at', now()->month)->sum('amount'),
+            'total_verified' => (clone $donations)->verified()->sum('amount'),
+            'total_pending' => (clone $donations)->pending()->count(),
+            'total_donors' => (clone $donations)->verified()->distinct('donor_email')->count(),
+            'today_donations' => (clone $donations)->verified()->whereDate('verified_at', today())->sum('amount'),
+            'this_month' => (clone $donations)->verified()->whereMonth('verified_at', now()->month)->sum('amount'),
         ];
     }
 }

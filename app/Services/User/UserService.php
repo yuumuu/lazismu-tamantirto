@@ -25,7 +25,7 @@ class UserService
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => bcrypt($data['password'])
+                'password' => bcrypt($data['password']),
             ]);
 
             if (isset($data['role'])) {
@@ -47,7 +47,7 @@ class UserService
                 'email' => $data['email'],
                 'password' => isset($data['password']) ? bcrypt($data['password']) : $user->password,
                 'photo' => $data['photo'] ?? $user->photo,
-                'is_active' => $data['is_active'] ?? $user->is_active
+                'is_active' => $data['is_active'] ?? $user->is_active,
             ]);
 
             if (isset($data['role'])) {

@@ -2,13 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Enums\WithdrawalStatus;
 use App\Models\User;
 use App\Models\Withdrawal;
-use App\Models\Campaign;
-use App\Models\Mustahik;
-use App\Models\Distributor;
-use App\Enums\WithdrawalStatus;
-use App\Enums\UserRole;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
@@ -57,13 +53,13 @@ test('withdrawal index shows appropriate actions based on status', function () {
     $draftWithdrawal = Withdrawal::factory()->create([
         'status' => WithdrawalStatus::Draft,
     ]);
-    
+
     $sentWithdrawal = Withdrawal::factory()->create([
         'status' => WithdrawalStatus::Sent,
     ]);
 
     $component = Volt::test('admin.withdrawals.index');
-    
+
     // Test that final status check works
     expect($sentWithdrawal->status->isFinal())->toBeTrue();
     expect($draftWithdrawal->status->isFinal())->toBeFalse();

@@ -16,6 +16,8 @@ class DonateWizard extends Component
     public $step = 1;
 
     // Form Fields
+    public $masjid_id;
+
     public $campaign_id;
 
     public $amount;
@@ -63,10 +65,13 @@ class DonateWizard extends Component
 
     public function mount($campaign_slug = null)
     {
+        $this->masjid_id = session('active_masjid_id', 1);
+
         if ($campaign_slug) {
-            $campaign = Campaign::where('slug', $campaign_slug)->first();
+            $campaign = Campaign::withoutGlobalScope('masjid')->where('slug', $campaign_slug)->first();
             if ($campaign) {
                 $this->campaign_id = $campaign->id;
+                $this->masjid_id = $campaign->masjid_id;
                 $this->donation_type = $campaign->type->value;
             }
         }
@@ -106,9 +111,10 @@ class DonateWizard extends Component
     public function updatedCampaignId($value)
     {
         if ($value) {
-            $campaign = Campaign::find($value);
+            $campaign = Campaign::withoutGlobalScope('masjid')->find($value);
             if ($campaign) {
                 $this->donation_type = $campaign->type->value;
+                $this->masjid_id = $campaign->masjid_id;
             }
         }
     }
@@ -161,7 +167,8 @@ class DonateWizard extends Component
     {
         if ($this->step === 1) {
             $this->validate([
-                'amount' => 'required|numeric|min:10000',
+                'masjid_id' => 'required|exists:masjids,id',
+                'amount' => 'required|numeric|max:10000000',
                 'donation_type' => 'required|string',
                 'campaign_id' => $this->is_specific_campaign ? 'required|exists:campaigns,id' : 'nullable|exists:campaigns,id',
             ]);
@@ -186,7 +193,8 @@ class DonateWizard extends Component
             ? $this->bank_accounts[$this->selected_bank]
             : null;
 
-        $donation = Donation::create([
+        $donation = new Donation([
+            'transaction_id' => Donation::generateTransactionId(),
             'campaign_id' => $this->campaign_id,
             'donor_name' => $this->donor_name,
             'donor_email' => $this->donor_email,
@@ -201,13 +209,16 @@ class DonateWizard extends Component
             'status' => DonationStatus::Pending,
         ]);
 
+        $donation->masjid_id = $this->masjid_id;
+        $donation->save();
+
         $this->redirect(route('guest.donate.success', $donation->id), navigate: true);
     }
 
     public function render()
     {
         return view('livewire.guest.donate-wizard', [
-            'selectedCampaign' => Campaign::find($this->campaign_id),
+            'selectedCampaign' => Campaign::withoutGlobalScope('masjid')->find($this->campaign_id),
         ]);
     }
 }

@@ -101,19 +101,19 @@ class StoreCampaignRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'category_id.required'          => 'Kategori wajib dipilih.',
-            'title.required'                => 'Judul campaign wajib diisi.',
-            'title.min'                     => 'Judul campaign minimal 10 karakter.',
-            'short_description.required'    => 'Deskripsi singkat wajib diisi.',
-            'short_description.min'         => 'Deskripsi singkat minimal 50 karakter.',
-            'description.required'          => 'Deskripsi lengkap wajib diisi.',
-            'description.min'               => 'Deskripsi lengkap minimal 100 karakter.',
-            'target_amount.required'        => 'Target donasi wajib diisi.',
-            'target_amount.min'             => 'Target donasi minimal Rp 100.000.',
-            'start_date.required'           => 'Tanggal mulai wajib diisi.',
-            'start_date.after_or_equal'     => 'Tanggal mulai tidak boleh di masa lalu.',
-            'end_date.required'             => 'Tanggal selesai wajib diisi.',
-            'end_date.after'                => 'Tanggal selesai harus setelah tanggal mulai.',
+            'category_id.required' => 'Kategori wajib dipilih.',
+            'title.required' => 'Judul campaign wajib diisi.',
+            'title.min' => 'Judul campaign minimal 10 karakter.',
+            'short_description.required' => 'Deskripsi singkat wajib diisi.',
+            'short_description.min' => 'Deskripsi singkat minimal 50 karakter.',
+            'description.required' => 'Deskripsi lengkap wajib diisi.',
+            'description.min' => 'Deskripsi lengkap minimal 100 karakter.',
+            'target_amount.required' => 'Target donasi wajib diisi.',
+            'target_amount.min' => 'Target donasi minimal Rp 100.000.',
+            'start_date.required' => 'Tanggal mulai wajib diisi.',
+            'start_date.after_or_equal' => 'Tanggal mulai tidak boleh di masa lalu.',
+            'end_date.required' => 'Tanggal selesai wajib diisi.',
+            'end_date.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ];
     }
 }

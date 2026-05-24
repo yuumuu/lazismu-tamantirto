@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WithdrawalStatus;
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Withdrawal extends Model
 {
-    use HasFactory, HasUlids, SoftDeletes;
+    use BelongsToMasjid, HasFactory, HasUlids, SoftDeletes;
 
     protected $fillable = [
         'campaign_id',

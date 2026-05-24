@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Withdrawal;
-use App\Models\Campaign;
-use App\Models\Mustahik;
-use App\Models\Distributor;
-use App\Models\User;
 use App\Enums\WithdrawalStatus;
+use App\Models\Campaign;
+use App\Models\Distributor;
+use App\Models\Mustahik;
+use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -70,7 +70,7 @@ class WithdrawalFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => WithdrawalStatus::Sent,
             'verified_by' => User::factory(),
-            'proof_image' => 'withdrawals/proof-' . $this->faker->uuid() . '.jpg',
+            'proof_image' => 'withdrawals/proof-'.$this->faker->uuid().'.jpg',
         ]);
     }
 

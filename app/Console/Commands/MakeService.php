@@ -27,17 +27,20 @@ class MakeService extends Command
     public function handle()
     {
         $name = $this->argument('name');
-        
+
         $directory = app_path('Services');
         $path = "{$directory}/{$name}.php";
 
-        if (! File::exists($directory)) File::makeDirectory($directory, 0755, true);
+        if (! File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
 
         if (File::exists($path)) {
             $this->error('Service already exists!');
+
             return;
         }
-        
+
         $stub = <<<PHP
 <?php
 

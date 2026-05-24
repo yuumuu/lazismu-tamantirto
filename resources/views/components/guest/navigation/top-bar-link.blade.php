@@ -1,11 +1,12 @@
-@props(['route'])
+@props(['route', 'parameters' => []])
 
 @php
-    $isActive = request()->routeIs($route.'*');
+    $finalRoute = guest_route($route, $parameters);
+    $isActive = request()->fullUrlIs($finalRoute) || request()->routeIs($route.'*') || (str_contains($finalRoute, request()->route('masjid_slug')) && request()->routeIs('guest.tenant.'.str_replace('guest.', '', $route).'*'));
     $activeStyle = 'border-radius: 14px 6px 14px 6px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), inset 0 1px 0 0 rgb(255 255 255 / 0.1);';
 @endphp
 
-<a href="{{ Route::has($route) ? route($route) : '#' }}"
+<a href="{{ $finalRoute }}"
     @class([
         'relative z-10 px-5 py-2.5 text-sm font-bold transition-all duration-300 whitespace-nowrap cursor-pointer',
         'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-lg' => $isActive,

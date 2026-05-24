@@ -3,7 +3,7 @@
         <div class="relative flex h-20 items-center justify-between">
             <div class="flex flex-1 items-center justify-start sm:items-stretch sm:justify-between">
                 <div class="flex shrink-0 items-center">
-                    <a href="{{ route('guest.home') }}" class="flex items-center gap-3 group">
+                    <a href="{{ guest_route('guest.home') }}" class="flex items-center gap-3 group">
                         <div class="flex aspect-square size-10 items-center justify-center rounded-xl bg-transparent text-white shadow-none group-hover:scale-105 transition-transform">
                             <x-app-logo-icon class="size-8 fill-current" />
                         </div>

@@ -38,11 +38,16 @@ new class extends Component {
 
         Setting::clearCache();
         $this->loadSettings();
-        $this->dispatch('notify', message: 'Pengaturan berhasil diperbarui.', type: 'success');
+        \Flux::toast('Pengaturan berhasil diperbarui.', variant: 'success');
     }
 
     public function getBankAccounts(): array
     {
+        if (isset($this->settings['bank_accounts']) && is_string($this->settings['bank_accounts'])) {
+            $accounts = json_decode($this->settings['bank_accounts'], true);
+            return is_array($accounts) ? $accounts : [];
+        }
+
         // Use setting helper which handles json decoding automatically
         $accounts = setting('bank_accounts', []);
         return is_array($accounts) ? $accounts : [];
@@ -167,7 +172,7 @@ new class extends Component {
                                         @endif
                                     </div>
                                     <div class="space-y-4 flex-1">
-                                        <flux:input type="file" wire:model="qris_image_upload" label="Upload QRIS Baru" />
+                                        <flux:input type="file" accept="image/png,image/jpeg" wire:model="qris_image_upload" label="Upload QRIS Baru" />
                                         <p class="text-xs text-zinc-500">Gunakan gambar QRIS standar (JPG/PNG, Max 2MB). Gambar ini akan muncul di halaman instruksi pembayaran.</p>
                                     </div>
                                 </div>

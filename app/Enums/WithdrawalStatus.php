@@ -20,10 +20,10 @@ enum WithdrawalStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Draft     => 'Draft',
-            self::Verified  => 'Terverifikasi',
-            self::Sent       => 'Tersalurkan',
-            self::Cancelled  => 'Dibatalkan',
+            self::Draft => 'Draft',
+            self::Verified => 'Terverifikasi',
+            self::Sent => 'Tersalurkan',
+            self::Cancelled => 'Dibatalkan',
         };
     }
 
@@ -33,10 +33,10 @@ enum WithdrawalStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::Draft     => 'zinc',
-            self::Verified  => 'blue',
-            self::Sent       => 'green',
-            self::Cancelled  => 'red',
+            self::Draft => 'zinc',
+            self::Verified => 'blue',
+            self::Sent => 'green',
+            self::Cancelled => 'red',
         };
     }
 

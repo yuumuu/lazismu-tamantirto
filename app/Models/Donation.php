@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\CampaignType;
 use App\Enums\DonationStatus;
 use App\Enums\PaymentMethod;
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 
 class Donation extends Model
 {
-    use HasFactory;
+    use BelongsToMasjid, HasFactory;
 
     protected $fillable = [
         'campaign_id',

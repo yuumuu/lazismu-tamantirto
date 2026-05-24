@@ -24,14 +24,14 @@ enum AsnafType: string
     public function label(): string
     {
         return match ($this) {
-            self::Fakir        => 'Fakir',
-            self::Miskin       => 'Miskin',
-            self::Amil         => 'Amil',
-            self::Mualaf       => 'Mualaf',
-            self::Riqab        => 'Riqab',
-            self::Gharim       => 'Gharim',
+            self::Fakir => 'Fakir',
+            self::Miskin => 'Miskin',
+            self::Amil => 'Amil',
+            self::Mualaf => 'Mualaf',
+            self::Riqab => 'Riqab',
+            self::Gharim => 'Gharim',
             self::Fisabilillah => 'Fisabilillah',
-            self::IbnuSabil    => 'Ibnu Sabil',
+            self::IbnuSabil => 'Ibnu Sabil',
         };
     }
 
@@ -41,14 +41,14 @@ enum AsnafType: string
     public function description(): string
     {
         return match ($this) {
-            self::Fakir        => 'Orang yang tidak memiliki harta dan pekerjaan.',
-            self::Miskin       => 'Orang yang memiliki pekerjaan tapi tidak cukup untuk memenuhi kebutuhan.',
-            self::Amil         => 'Panitia/petugas pengelola zakat.',
-            self::Mualaf       => 'Orang yang baru masuk Islam.',
-            self::Riqab        => 'Hamba sahaya atau budak.',
-            self::Gharim       => 'Orang yang berhutang untuk kebutuhan pokok.',
+            self::Fakir => 'Orang yang tidak memiliki harta dan pekerjaan.',
+            self::Miskin => 'Orang yang memiliki pekerjaan tapi tidak cukup untuk memenuhi kebutuhan.',
+            self::Amil => 'Panitia/petugas pengelola zakat.',
+            self::Mualaf => 'Orang yang baru masuk Islam.',
+            self::Riqab => 'Hamba sahaya atau budak.',
+            self::Gharim => 'Orang yang berhutang untuk kebutuhan pokok.',
             self::Fisabilillah => 'Orang yang berjihad di jalan Allah.',
-            self::IbnuSabil    => 'Orang yang sedang dalam perjalanan (musafir) dan kehabisan biaya.',
+            self::IbnuSabil => 'Orang yang sedang dalam perjalanan (musafir) dan kehabisan biaya.',
         };
     }
 

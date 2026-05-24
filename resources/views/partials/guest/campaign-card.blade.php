@@ -30,7 +30,7 @@
     <div class="p-8 md:p-10 flex-1 flex flex-col justify-between space-y-6">
         <div class="space-y-4">
             <h4 class="text-2xl font-black text-zinc-900 dark:text-white leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                <a href="{{ route('guest.campaigns.show', $campaign->slug) }}">{{ $campaign->title }}</a>
+                <a href="{{ guest_route('guest.campaigns.show', ['slug' => $campaign->slug]) }}">{{ $campaign->title }}</a>
             </h4>
             <p class="text-sm text-zinc-500 line-clamp-2 leading-relaxed font-medium">
                 {{ $campaign->short_description }}
@@ -62,10 +62,10 @@
             </div>
 
             <div class="flex items-center gap-4 pt-2">
-                <flux:button href="{{ route('guest.donate.form', $campaign->slug) }}" variant="primary"  class="flex-1 font-black uppercase tracking-wider rounded-2xl h-14 shadow-lg shadow-primary/20 !text-white hover:!bg-primary/90">
+                <flux:button href="{{ guest_route('guest.donate.form', ['campaign_slug' => $campaign->slug]) }}" variant="primary"  class="flex-1 font-black uppercase tracking-wider rounded-2xl h-14 shadow-lg shadow-primary/20 !text-white hover:!bg-primary/90">
                     Donasi Sekarang
                 </flux:button>
-                <flux:button href="{{ route('guest.campaigns.show', $campaign->slug) }}" variant="ghost"  class="size-14 rounded-2xl border border-zinc-200 dark:border-white/10 flex items-center justify-center p-0">
+                <flux:button href="{{ guest_route('guest.campaigns.show', ['slug' => $campaign->slug]) }}" variant="ghost"  class="size-14 rounded-2xl border border-zinc-200 dark:border-white/10 flex items-center justify-center p-0">
                     <flux:icon.share class="size-6 text-zinc-500" />
                 </flux:button>
             </div>

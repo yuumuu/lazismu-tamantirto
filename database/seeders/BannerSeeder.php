@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Banner;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Route;
 
 class BannerSeeder extends Seeder
 {

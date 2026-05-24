@@ -84,10 +84,9 @@ if (! function_exists('format_rupiah')) {
             $formatted = (string) $amount;
         }
 
-        return $withPrefix ? 'Rp ' . $formatted : $formatted;
+        return $withPrefix ? 'Rp '.$formatted : $formatted;
     }
 }
-
 
 if (! function_exists('format_rupiah_short')) {
 
@@ -96,21 +95,30 @@ if (! function_exists('format_rupiah_short')) {
      */
     function format_rupiah_short(int|float $amount, $prefix = true): string
     {
-        $format = fn ($v) =>
-            rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+        $format = fn ($v) => rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
 
         if ($amount >= 1_000_000_000) {
-            return format_rupiah($format($amount / 1_000_000_000) . 'B', $prefix);
+            return format_rupiah($format($amount / 1_000_000_000).'B', $prefix);
         }
 
         if ($amount >= 1_000_000) {
-            return format_rupiah($format($amount / 1_000_000) . 'M', $prefix);
+            return format_rupiah($format($amount / 1_000_000).'M', $prefix);
         }
 
         if ($amount >= 1_000) {
-            return format_rupiah($format($amount / 1_000) . 'K', $prefix);
+            return format_rupiah($format($amount / 1_000).'K', $prefix);
         }
 
         return format_rupiah($amount);
+    }
+}
+
+if (! function_exists('guest_route')) {
+    /**
+     * Helper for guest routes.
+     */
+    function guest_route(string $name, array $parameters = [], bool $absolute = true): string
+    {
+        return route($name, $parameters, $absolute);
     }
 }

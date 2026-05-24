@@ -13,7 +13,7 @@ class PermissionTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            ->setThAttributes(fn(Column $column) => ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'])
+            ->setThAttributes(fn (Column $column) => ['class' => 'font-mono text-[10px] uppercase tracking-widest text-zinc-400'])
             ->setTableAttributes(['class' => 'min-w-full divide-y divide-zinc-100 dark:divide-zinc-800'])
             ->setSearchBlur();
     }
@@ -21,22 +21,22 @@ class PermissionTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Nama Izin", "name")
+            Column::make('Nama Izin', 'name')
                 ->sortable()
                 ->searchable()
-                ->format(fn($value) => '<span class="text-xs font-mono font-bold text-zinc-700 bg-zinc-100 px-2 py-1 rounded">' . $value . '</span>')
+                ->format(fn ($value) => '<span class="text-xs font-mono font-bold text-zinc-700 bg-zinc-100 px-2 py-1 rounded">'.$value.'</span>')
                 ->html(),
 
-            Column::make("Guard", "guard_name")
+            Column::make('Guard', 'guard_name')
                 ->sortable()
-                ->format(fn($value) => '<span class="text-[10px] uppercase text-zinc-400 font-mono">' . $value . '</span>')
+                ->format(fn ($value) => '<span class="text-[10px] uppercase text-zinc-400 font-mono">'.$value.'</span>')
                 ->html(),
 
-            Column::make("Aksi", "id")
-                ->format(fn($value, $row) => view('components.admin.table.actions-cell', [
+            Column::make('Aksi', 'id')
+                ->format(fn ($value, $row) => view('components.admin.table.actions-cell', [
                     'edit' => route('admin.permissions.edit', $row),
                     'delete' => $value,
-                    'confirm' => 'Hapus izin ini?'
+                    'confirm' => 'Hapus izin ini?',
                 ])),
         ];
     }

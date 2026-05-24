@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\CampaignStatus;
 use App\Enums\CampaignType;
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Campaign extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use BelongsToMasjid, HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
+        'masjid_id',
         'category_id',
         'created_by',
         'type',

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Donation;
 
 use App\Enums\WithdrawalStatus;
-use App\Models\Withdrawal;
 use App\Models\User;
+use App\Models\Withdrawal;
 use App\Services\Media\MediaService;
 use App\Services\ServiceResult;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class WithdrawalVerificationService
 {
@@ -37,7 +37,7 @@ class WithdrawalVerificationService
 
             return ServiceResult::success('Penarikan dana telah diverifikasi.');
         } catch (Exception $e) {
-            return ServiceResult::error('Gagal memverifikasi penarikan: ' . $e->getMessage());
+            return ServiceResult::error('Gagal memverifikasi penarikan: '.$e->getMessage());
         }
     }
 
@@ -58,7 +58,7 @@ class WithdrawalVerificationService
 
             return ServiceResult::success('Dana telah berhasil tersalurkan.');
         } catch (Exception $e) {
-            return ServiceResult::error('Gagal memperbarui status penyaluran: ' . $e->getMessage());
+            return ServiceResult::error('Gagal memperbarui status penyaluran: '.$e->getMessage());
         }
     }
 }

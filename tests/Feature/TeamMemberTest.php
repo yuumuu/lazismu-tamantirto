@@ -12,7 +12,7 @@ it('can calculate years of service', function () {
     Carbon::setTestNow('2026-01-01');
 
     expect($member->years_of_service)->toBe(6);
-    
+
     Carbon::setTestNow(); // Reset
 });
 

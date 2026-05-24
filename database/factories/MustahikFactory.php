@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Mustahik;
 use App\Enums\AsnafType;
+use App\Models\Mustahik;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

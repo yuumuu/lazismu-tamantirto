@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Campaign;
-use App\Models\Donation;
-use App\Models\User;
 use App\Enums\CampaignType;
 use App\Enums\DonationStatus;
 use App\Enums\PaymentMethod;
+use App\Models\Campaign;
+use App\Models\Donation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DonationFactory extends Factory

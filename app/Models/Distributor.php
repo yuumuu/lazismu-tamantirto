@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BelongsToMasjid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Distributor extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use BelongsToMasjid, HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -33,7 +34,7 @@ class Distributor extends Model
     {
         return $this->hasMany(Withdrawal::class);
     }
-    
+
     // ==================== SCOPES ====================
 
     public function scopeActive($query)

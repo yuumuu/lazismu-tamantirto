@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="space-y-4">
-                            <flux:button href="{{ route('guest.donate.form', $campaign->slug) }}" variant="primary"  class="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/30">
+                            <flux:button href="{{ guest_route('guest.donate.form', $campaign->slug) }}" variant="primary"  class="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/30">
                                 Donasi Sekarang
                             </flux:button>
 
