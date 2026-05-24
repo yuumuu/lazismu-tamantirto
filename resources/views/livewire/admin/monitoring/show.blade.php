@@ -1,28 +1,28 @@
 <?php
 
-use App\Models\Masjid;
+use App\Models\Branch;
 use App\Models\Donation;
 use App\Models\Campaign;
 use function Livewire\Volt\{state, computed, layout, mount};
 
 layout('components.layouts.app');
 
-state(['masjid_id' => null]);
+state(['branch_id' => null]);
 
-mount(function ($masjid) {
-    if (auth()->user()->masjid_id !== 1) {
+mount(function ($branch) {
+    if (auth()->user()->branch_id !== 1) {
         abort(403, 'Akses Ditolak: Hanya admin pusat yang dapat mengakses fitur ini.');
     }
     
-    $this->masjid_id = $masjid;
+    $this->branch_id = $branch;
 });
 
-$masjidData = computed(function () {
-    return Masjid::findOrFail($this->masjid_id);
+$branchData = computed(function () {
+    return Branch::findOrFail($this->branch_id);
 });
 
 $recentDonations = computed(function () {
-    return Donation::where('masjid_id', $this->masjid_id)
+    return Donation::where('branch_id', $this->branch_id)
         ->with('campaign')
         ->latest()
         ->take(10)
@@ -30,7 +30,7 @@ $recentDonations = computed(function () {
 });
 
 $activeCampaigns = computed(function () {
-    return Campaign::where('masjid_id', $this->masjid_id)
+    return Campaign::where('branch_id', $this->branch_id)
         ->active()
         ->withCount('verifiedDonations')
         ->withSum('verifiedDonations', 'amount')
@@ -46,7 +46,7 @@ $activeCampaigns = computed(function () {
         <div class="flex items-center gap-4">
             <flux:button variant="ghost" icon="arrow-left" href="{{ route('admin.monitoring.index') }}" wire:navigate />
             <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
-                Detail Monitoring: {{ $this->masjidData->name }}
+                Detail Monitoring: {{ $this->branchData->name }}
             </h1>
         </div>
     </div>

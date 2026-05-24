@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToMasjid;
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Muzakki extends Model
 {
-    use BelongsToMasjid, HasFactory, HasUuids, SoftDeletes;
+    use BelongsToBranch, HasFactory, HasUuids, SoftDeletes;
 
     protected $keyType = 'string';
 

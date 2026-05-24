@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToMasjid;
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
-    use BelongsToMasjid, HasFactory;
+    use BelongsToBranch, HasFactory;
 
     protected $fillable = [
-        'masjid_id',
+        'branch_id',
         'key',
         'value',
         'type',
@@ -60,9 +60,9 @@ class Setting extends Model
 
     protected static function getCacheKey(string $key): string
     {
-        $masjidId = session('active_masjid_id', 1);
+        $branchId = session('active_branch_id', 1);
 
-        return "masjid_{$masjidId}_setting_{$key}";
+        return "branch_{$branchId}_setting_{$key}";
     }
 
     /**
@@ -70,23 +70,23 @@ class Setting extends Model
      */
     public static function getValue(string $key, mixed $default = null): mixed
     {
-        $masjidId = session('active_masjid_id', 1);
-        $cacheKey = "masjid_{$masjidId}_setting_{$key}";
+        $branchId = session('active_branch_id', 1);
+        $cacheKey = "branch_{$branchId}_setting_{$key}";
 
         $setting = Cache::remember(
             $cacheKey,
             now()->addHours(24),
-            function () use ($key, $masjidId) {
-                // Try current masjid first
-                $found = static::withoutGlobalScope('masjid')
-                    ->where('masjid_id', $masjidId)
+            function () use ($key, $branchId) {
+                // Try current branch first
+                $found = static::withoutGlobalScope('branch')
+                    ->where('branch_id', $branchId)
                     ->where('key', $key)
                     ->first();
 
                 // Fallback to Pusat (ID 1) if not found and current is not Pusat
-                if (! $found && $masjidId !== 1) {
-                    $found = static::withoutGlobalScope('masjid')
-                        ->where('masjid_id', 1)
+                if (! $found && $branchId !== 1) {
+                    $found = static::withoutGlobalScope('branch')
+                        ->where('branch_id', 1)
                         ->where('key', $key)
                         ->first();
                 }
@@ -103,18 +103,18 @@ class Setting extends Model
      */
     public static function setValue(string $key, mixed $value): void
     {
-        $masjidId = session('active_masjid_id', 1);
+        $branchId = session('active_branch_id', 1);
 
-        // Look up existing setting for this masjid, or fallback to Pusat for metadata
-        $existing = static::withoutGlobalScope('masjid')
+        // Look up existing setting for this branch, or fallback to Pusat for metadata
+        $existing = static::withoutGlobalScope('branch')
             ->where('key', $key)
-            ->where('masjid_id', $masjidId)
+            ->where('branch_id', $branchId)
             ->first();
 
-        if (! $existing && $masjidId !== 1) {
-            $existing = static::withoutGlobalScope('masjid')
+        if (! $existing && $branchId !== 1) {
+            $existing = static::withoutGlobalScope('branch')
                 ->where('key', $key)
-                ->where('masjid_id', 1)
+                ->where('branch_id', 1)
                 ->first();
         }
 
@@ -137,12 +137,12 @@ class Setting extends Model
             $attributes['is_public'] = true;
         }
 
-        static::withoutGlobalScope('masjid')->updateOrCreate(
-            ['masjid_id' => $masjidId, 'key' => $key],
+        static::withoutGlobalScope('branch')->updateOrCreate(
+            ['branch_id' => $branchId, 'key' => $key],
             $attributes
         );
 
-        Cache::forget("masjid_{$masjidId}_setting_{$key}");
+        Cache::forget("branch_{$branchId}_setting_{$key}");
         Cache::flush();
     }
 
@@ -151,24 +151,24 @@ class Setting extends Model
      */
     public static function getGroup(string $group): array
     {
-        $masjidId = session('active_masjid_id', 1);
+        $branchId = session('active_branch_id', 1);
 
         return Cache::remember(
-            "masjid_{$masjidId}_settings_group_{$group}",
+            "branch_{$branchId}_settings_group_{$group}",
             now()->addHours(24),
-            function () use ($group, $masjidId) {
+            function () use ($group, $branchId) {
                 // Get Pusat defaults
-                $pusatSettings = static::withoutGlobalScope('masjid')
-                    ->where('masjid_id', 1)
+                $pusatSettings = static::withoutGlobalScope('branch')
+                    ->where('branch_id', 1)
                     ->byGroup($group)
                     ->get()
                     ->mapWithKeys(fn ($setting) => [$setting->key => $setting->typed_value])
                     ->toArray();
 
                 // If tenant is not Pusat, get and merge tenant overrides
-                if ($masjidId !== 1) {
-                    $tenantSettings = static::withoutGlobalScope('masjid')
-                        ->where('masjid_id', $masjidId)
+                if ($branchId !== 1) {
+                    $tenantSettings = static::withoutGlobalScope('branch')
+                        ->where('branch_id', $branchId)
                         ->byGroup($group)
                         ->get()
                         ->mapWithKeys(fn ($setting) => [$setting->key => $setting->typed_value])
@@ -187,10 +187,10 @@ class Setting extends Model
      */
     public static function getPublic(): array
     {
-        $masjidId = session('active_masjid_id', 1);
+        $branchId = session('active_branch_id', 1);
 
         return Cache::remember(
-            "masjid_{$masjidId}_settings_public",
+            "branch_{$branchId}_settings_public",
             now()->addHours(24),
             fn () => static::public()
                 ->get()
@@ -204,19 +204,19 @@ class Setting extends Model
      */
     public static function clearCache(): void
     {
-        $masjidId = session('active_masjid_id', 1);
+        $branchId = session('active_branch_id', 1);
         $keys = static::query()->pluck('key');
 
         foreach ($keys as $key) {
-            Cache::forget("masjid_{$masjidId}_setting_{$key}");
+            Cache::forget("branch_{$branchId}_setting_{$key}");
         }
 
         $groups = static::distinct()->pluck('group_name');
 
         foreach ($groups as $group) {
-            Cache::forget("masjid_{$masjidId}_settings_group_{$group}");
+            Cache::forget("branch_{$branchId}_settings_group_{$group}");
         }
 
-        Cache::forget("masjid_{$masjidId}_settings_public");
+        Cache::forget("branch_{$branchId}_settings_public");
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Masjid;
+use App\Models\Branch;
 use App\Models\Donation;
 use App\Models\Campaign;
 use App\Models\Withdrawal;
@@ -9,13 +9,13 @@ use function Livewire\Volt\{state, computed, layout, mount};
 layout('components.layouts.app');
 
 mount(function () {
-    if (auth()->user()->masjid_id !== 1) {
+    if (auth()->user()->branch_id !== 1) {
         abort(403, 'Akses Ditolak: Hanya admin pusat yang dapat mengakses fitur ini.');
     }
 });
 
-$masjids = computed(function () {
-    return Masjid::withCount(['campaigns' => fn($q) => $q->active()])
+$branches = computed(function () {
+    return Branch::withCount(['campaigns' => fn($q) => $q->active()])
         ->withSum(['donations' => fn($q) => $q->verified()], 'amount')
         ->withSum(['withdrawals' => fn($q) => $q->where('status', 'approved')], 'amount')
         ->orderBy('id')
@@ -85,26 +85,26 @@ $totalCampaigns = computed(fn () => Campaign::active()->count());
                     <flux:table.column>Aksi</flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
-                    @foreach($this->masjids as $masjid)
+                    @foreach($this->branches as $branch)
                         <flux:table.row>
                             <flux:table.cell class="font-medium text-zinc-900 dark:text-white">
-                                {{ $masjid->name }}
-                                @if($masjid->id === 1)
+                                {{ $branch->name }}
+                                @if($branch->id === 1)
                                     <flux:badge size="sm" color="primary" class="ml-2">Pusat</flux:badge>
                                 @endif
                             </flux:table.cell>
                             <flux:table.cell>
-                                @if($masjid->is_active)
+                                @if($branch->is_active)
                                     <flux:badge size="sm" color="success">Aktif</flux:badge>
                                 @else
                                     <flux:badge size="sm" color="danger">Nonaktif</flux:badge>
                                 @endif
                             </flux:table.cell>
-                            <flux:table.cell>{{ number_format($masjid->campaigns_count) }}</flux:table.cell>
-                            <flux:table.cell>Rp {{ number_format($masjid->donations_sum_amount ?? 0, 0, ',', '.') }}</flux:table.cell>
-                            <flux:table.cell>Rp {{ number_format($masjid->withdrawals_sum_amount ?? 0, 0, ',', '.') }}</flux:table.cell>
+                            <flux:table.cell>{{ number_format($branch->campaigns_count) }}</flux:table.cell>
+                            <flux:table.cell>Rp {{ number_format($branch->donations_sum_amount ?? 0, 0, ',', '.') }}</flux:table.cell>
+                            <flux:table.cell>Rp {{ number_format($branch->withdrawals_sum_amount ?? 0, 0, ',', '.') }}</flux:table.cell>
                             <flux:table.cell>
-                                <flux:button size="sm" variant="subtle" href="{{ route('admin.monitoring.show', $masjid->id) }}" wire:navigate>
+                                <flux:button size="sm" variant="subtle" href="{{ route('admin.monitoring.show', $branch->id) }}" wire:navigate>
                                     View
                                 </flux:button>
                             </flux:table.cell>

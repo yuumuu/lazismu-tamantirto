@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PostStatus;
-use App\Traits\BelongsToMasjid;
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BlogPost extends Model
 {
-    use BelongsToMasjid, HasFactory;
+    use BelongsToBranch, HasFactory;
 
     protected $fillable = [
-        'masjid_id',
+        'branch_id',
         'category_id',
+        'campaign_id',
         'title',
         'slug',
         'content',
@@ -46,6 +47,11 @@ class BlogPost extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(BlogCategory::class, 'category_id');
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 
     public function author(): BelongsTo

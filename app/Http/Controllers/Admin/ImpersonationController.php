@@ -16,7 +16,7 @@ class ImpersonationController extends Controller
      */
     public function impersonate(int $id): RedirectResponse
     {
-        $user = User::withoutGlobalScope('masjid')->findOrFail($id);
+        $user = User::withoutGlobalScope('branch')->findOrFail($id);
 
         // Only SuperAdmin can impersonate
         if (! Auth::user()->isSuperAdmin()) {
@@ -48,11 +48,11 @@ class ImpersonationController extends Controller
         }
 
         $originalUserId = session()->pull('impersonated_by');
-        $originalUser = User::withoutGlobalScope('masjid')->findOrFail($originalUserId);
+        $originalUser = User::withoutGlobalScope('branch')->findOrFail($originalUserId);
 
         Auth::login($originalUser);
 
-        return redirect()->route('admin.masjids.index')
+        return redirect()->route('admin.branchs.index')
             ->with('notify', ['message' => 'Kembali ke akun Super Admin', 'type' => 'success']);
     }
 }

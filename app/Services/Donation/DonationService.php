@@ -183,7 +183,7 @@ class DonationService
     {
         $phone = $donation->donor_phone;
 
-        return ! preg_match(`/^(\+62|62|0)[0-9]{9,12}$/`, $phone);
+        return ! preg_match('/^(\+62|62|0)[0-9]{9,12}$/', $phone);
     }
 
     /**

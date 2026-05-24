@@ -8,22 +8,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Campaign;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class GuestController extends Controller
 {
     /**
      * Display the home page with optimized queries.
      */
-    public function home(Request $request): View
+    public function home(Request $request): Response
     {
         // Optimized query: 5-7 queries total instead of 15-20
         // 1. Featured campaigns with relationships (show all branches)
-        $featuredCampaigns = Campaign::withoutGlobalScope('masjid')
+        $featuredCampaigns = Campaign::withoutGlobalScope('branch')
             ->active()
             ->featured()
-            ->with(['category', 'creator', 'masjid'])
+            ->with(['category', 'creator', 'branch'])
             ->withCount('verifiedDonations')
             ->withSum('verifiedDonations', 'amount')
             ->latest()
@@ -31,7 +32,7 @@ class GuestController extends Controller
             ->get();
 
         // 2. Latest blog posts with category (show all branches)
-        $latestPosts = BlogPost::withoutGlobalScope('masjid')
+        $latestPosts = BlogPost::withoutGlobalScope('branch')
             ->published()
             ->with('category')
             ->latest()
@@ -40,29 +41,34 @@ class GuestController extends Controller
 
         // 3. Banners for hero section
         $banners = Banner::where('is_active', true)
-            ->orderBy('order')
+            ->orderBy('order', 'DESC')
             ->get();
 
         // 4. Stats for counter (cached for 5 minutes using helper)
         $stats = cached_guest_stats();
 
-        return view('guest.home', compact('featuredCampaigns', 'latestPosts', 'banners', 'stats'));
+        return Inertia::render('Welcome', [
+            'featuredCampaigns' => $featuredCampaigns,
+            'latestPosts' => $latestPosts,
+            'banners' => $banners,
+            'stats' => $stats,
+        ]);
     }
 
     /**
      * Display campaigns index with optimized queries.
      */
-    public function campaignsIndex(Request $request): View
+    public function campaignsIndex(Request $request)
     {
         // Get filter parameters
         $categoryId = $request->input('category');
         $type = $request->input('type');
         $search = $request->input('search');
 
-        $campaigns = Campaign::withoutGlobalScope('masjid')
+        $campaigns = Campaign::withoutGlobalScope('branch')
             ->active()
             ->published()
-            ->with(['category', 'masjid'])
+            ->with(['category', 'branch'])
             ->withCount('verifiedDonations')
             ->withSum('verifiedDonations', 'amount')
             ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
@@ -75,19 +81,23 @@ class GuestController extends Controller
         // Use cached categories helper
         $categories = cached_campaign_categories();
 
-        return view('guest.campaigns.index', compact('campaigns', 'categories'));
+        return Inertia::render('Campaigns/Index', [
+            'campaigns' => $campaigns,
+            'categories' => $categories,
+            'filters' => request()->only(['category', 'type', 'search'])
+        ]);
     }
 
     /**
      * Display single campaign with optimized queries.
      */
-    public function campaignShow(Request $request, string $slug): View
+    public function campaignShow(Request $request, string $slug)
     {
         // Optimized query: 4-6 queries total instead of 8-12
-        $campaign = Campaign::withoutGlobalScope('masjid')
+        $campaign = Campaign::withoutGlobalScope('branch')
             ->active()
             ->where('slug', $slug)
-            ->with(['category', 'creator', 'masjid'])
+            ->with(['category', 'creator', 'branch'])
             ->withCount('verifiedDonations')
             ->withSum('verifiedDonations', 'amount')
             ->firstOrFail();
@@ -101,64 +111,66 @@ class GuestController extends Controller
         // Use eager loaded count instead of separate query
         $donorsCount = $campaign->verified_donations_count;
 
-        return view('guest.campaigns.show', compact('campaign', 'donors', 'donorsCount'));
+        // Fetch related blog posts (berita penyaluran donasi)
+        $relatedPosts = \App\Models\BlogPost::withoutGlobalScope('branch')
+            ->published()
+            ->where('campaign_id', $campaign->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return Inertia::render('Campaigns/Show', [
+            'campaign' => $campaign,
+            'donors' => $donors,
+            'donorsCount' => $donorsCount,
+            'relatedPosts' => $relatedPosts,
+        ]);
     }
 
     /**
      * Display blog posts index.
      */
-    public function postsIndex(Request $request): View
+    public function postsIndex(Request $request)
     {
-        $posts = BlogPost::withoutGlobalScope('masjid')
+        $posts = BlogPost::withoutGlobalScope('branch')
             ->published()
             ->with('category')
             ->latest()
             ->paginate(9)
-            ->map(function ($post) {
-                return [
-                    'id' => $post->id,
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'excerpt' => $post->excerpt,
-                    'featured_image' => $post->featured_image,
-                    'published_at' => $post->published_at,
-                    'reading_time' => $post->reading_time,
-                    'category_id' => $post->category_id, // Changed from blog_category_id
-                    'category' => $post->category ? [
-                        'id' => $post->category->id,
-                        'name' => $post->category->name,
-                    ] : null,
-                ];
-            });
+            ->withQueryString();
 
-        $categories = \App\Models\BlogCategory::all()->map(function ($cat) {
-            return [
-                'id' => $cat->id,
-                'name' => $cat->name,
-            ];
-        });
+        $categories = \App\Models\BlogCategory::all()->map(fn ($cat) => [
+            'id' => $cat->id,
+            'name' => $cat->name,
+        ]);
 
-        return view('guest.posts.index', compact('posts', 'categories'));
+        return Inertia::render('Posts/Index', [
+            'posts' => $posts,
+            'categories' => $categories,
+            'filters' => request()->only(['category', 'search']),
+        ]);
     }
 
     /**
      * Display single blog post.
      */
-    public function postShow(Request $request, string $slug): View
+    public function postShow(Request $request, string $slug)
     {
-        $post = BlogPost::withoutGlobalScope('masjid')
+        $post = BlogPost::withoutGlobalScope('branch')
             ->published()
             ->where('slug', $slug)
             ->with(['category', 'author'])
             ->firstOrFail();
 
-        return view('guest.posts.show', compact('post'));
+        return Inertia::render('Posts/Show', [
+            'post' => $post,
+        ]);
     }
 
     /**
      * Display about page.
      */
-    public function about(?string $masjid_slug = null): View
+    public function about(?string $branch_slug = null)
     {
         return view('guest.about');
     }
@@ -166,7 +178,7 @@ class GuestController extends Controller
     /**
      * Display organization structure page.
      */
-    public function structure(?string $masjid_slug = null): View
+    public function structure(?string $branch_slug = null)
     {
         return view('guest.structure');
     }
@@ -174,7 +186,7 @@ class GuestController extends Controller
     /**
      * Display contact page.
      */
-    public function contact(?string $masjid_slug = null): View
+    public function contact(?string $branch_slug = null)
     {
         return view('guest.contact');
     }
@@ -182,7 +194,7 @@ class GuestController extends Controller
     /**
      * Display reports page.
      */
-    public function reports(?string $masjid_slug = null): View
+    public function reports(?string $branch_slug = null)
     {
         return view('guest.reports');
     }
@@ -190,7 +202,7 @@ class GuestController extends Controller
     /**
      * Display zakat calculator page.
      */
-    public function calculator(?string $masjid_slug = null): View
+    public function calculator(?string $branch_slug = null)
     {
         return view('guest.calculator');
     }

@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Enums\CampaignStatus;
 use App\Enums\CampaignType;
-use App\Traits\BelongsToMasjid;
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,10 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Campaign extends Model
 {
-    use BelongsToMasjid, HasFactory, HasUuids, SoftDeletes;
+    use BelongsToBranch, HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
-        'masjid_id',
+        'branch_id',
         'category_id',
         'created_by',
         'type',
@@ -153,7 +153,7 @@ class Campaign extends Model
     public function canReceiveDonations(): bool
     {
         return $this->status->canReceiveDonations()
-            && $this->end_date->isFuture();
+            && ($this->end_date === null || $this->end_date->isFuture());
     }
 
     public function publish(): void

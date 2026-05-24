@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToMasjid;
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FinancialReport extends Model
 {
-    use BelongsToMasjid, HasFactory;
+    use BelongsToBranch, HasFactory;
 
     protected $fillable = [
         'title',

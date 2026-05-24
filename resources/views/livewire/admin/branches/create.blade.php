@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Masjid;
+use App\Models\Branch;
 use App\Models\Setting;
 use Livewire\Volt\Component;
 use Illuminate\Support\Str;
@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 new class extends Component {
     public string $name = '';
     public string $slug = '';
+    public string $type = 'masjid';
     public string $address = '';
     public string $phone = '';
     public string $email = '';
@@ -24,32 +25,33 @@ new class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:masjids,slug'],
+            'slug' => ['required', 'string', 'max:255', 'unique:branches,slug'],
+            'type' => ['required', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
             'is_active' => ['boolean'],
         ]);
 
-        $masjid = Masjid::create($validated);
+        $branch = Branch::create($validated);
 
-        // Seed default settings for the new masjid
-        $this->seedMasjidSettings($masjid->id);
+        // Seed default settings for the new branch
+        $this->seedBranchSettings($branch->id);
 
-        $this->dispatch('notify', message: 'Cabang/Masjid baru berhasil ditambahkan.', type: 'success');
-        $this->redirect(route('admin.masjids.index'), navigate: true);
+        $this->dispatch('notify', message: 'Cabang baru berhasil ditambahkan.', type: 'success');
+        $this->redirect(route('admin.branches.index'), navigate: true);
     }
 
-    protected function seedMasjidSettings(int $masjidId): void
+    protected function seedBranchSettings(int $branchId): void
     {
-        // Copy basic settings from Pusat (id 1) to the new masjid
-        $defaultSettings = Setting::withoutGlobalScope(\App\Traits\BelongsToMasjid::class)
-            ->where('masjid_id', 1)
+        // Copy basic settings from Pusat (id 1) to the new branch
+        $defaultSettings = Setting::withoutGlobalScope('branch')
+            ->where('branch_id', 1)
             ->get();
 
         foreach ($defaultSettings as $setting) {
-            Setting::create([
-                'masjid_id' => $masjidId,
+            Setting::withoutGlobalScope('branch')->create([
+                'branch_id' => $branchId,
                 'key' => $setting->key,
                 'value' => $setting->value,
                 'type' => $setting->type,
@@ -65,8 +67,8 @@ new class extends Component {
 <div>
     <x-admin.page-header 
         title="Tambah Cabang Baru" 
-        description="Daftarkan unit masjid atau cabang baru ke dalam jaringan Lazismu."
-        backRoute="admin.masjids.index"
+        description="Daftarkan unit masjid, cabang Muhammadiyah, atau lembaga baru ke dalam jaringan Lazismu."
+        backRoute="admin.branches.index"
     />
 
     <div class="p-3 md:p-6 lg:p-10 max-w-4xl mx-auto space-y-8">
@@ -74,12 +76,21 @@ new class extends Component {
             <div class="premium-card p-8 space-y-8">
                 <!-- Basic Info -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <flux:input wire:model.live="name" label="Nama Cabang/Masjid" placeholder="Contoh: Lazismu Masjid Nurul Huda" required />
-                    <flux:input wire:model="slug" label="Slug URL" placeholder="masjid-nurul-huda" required />
+                    <flux:input wire:model.live="name" label="Nama Cabang" placeholder="Contoh: Lazismu Ranting Tamantirto" required />
+                    <flux:input wire:model="slug" label="Slug URL" placeholder="ranting-tamantirto" required />
                 </div>
 
+                <!-- Type -->
+                <flux:select wire:model="type" label="Tipe Cabang" required>
+                    <flux:select.option value="masjid">Masjid</flux:select.option>
+                    <flux:select.option value="cabang_muhammadiyah">Cabang Muhammadiyah</flux:select.option>
+                    <flux:select.option value="ranting_muhammadiyah">Ranting Muhammadiyah</flux:select.option>
+                    <flux:select.option value="lembaga">Lembaga</flux:select.option>
+                    <flux:select.option value="mitra">Mitra</flux:select.option>
+                </flux:select>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <flux:input wire:model="email" type="email" label="Email Cabang" placeholder="kontak@masjid.com" />
+                    <flux:input wire:model="email" type="email" label="Email Cabang" placeholder="kontak@cabang.com" />
                     <flux:input wire:model="phone" label="Nomor Telepon" placeholder="08123456789" />
                 </div>
 
@@ -98,7 +109,7 @@ new class extends Component {
             </div>
 
             <div class="flex justify-end gap-3">
-                <flux:button :href="route('admin.masjids.index')" variant="ghost" wire:navigate>Batal</flux:button>
+                <flux:button :href="route('admin.branches.index')" variant="ghost" wire:navigate>Batal</flux:button>
                 <flux:button type="submit" variant="primary" class="px-8 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
                     Simpan Cabang
                 </flux:button>

@@ -67,6 +67,7 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
             // Master Data & Content
             Route::prefix('manage')->name('admin.')->group(function () {
                 Volt::route('/muzakkis', 'admin.muzakkis.index')->name('muzakkis.index');
+                Volt::route('/muzakkis/import', 'admin.muzakkis.import')->name('muzakkis.import');
                 Volt::route('/muzakkis/create', 'admin.muzakkis.create')->name('muzakkis.create');
                 Volt::route('/muzakkis/{muzakki}/edit', 'admin.muzakkis.edit')->name('muzakkis.edit');
 
@@ -90,7 +91,7 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                 Volt::route('/media', 'admin.media.index')->name('media.index');
                 Volt::route('/settings', 'admin.settings.index')->name('settings.index');
 
-                // User Management (accessible by tenant admins, scoped by masjid_id)
+                // User Management (accessible by tenant admins, scoped by branch_id)
                 Route::prefix('users')->name('users.')->group(function () {
                     Volt::route('/', 'admin.users.index')->name('index');
                     Volt::route('/create', 'admin.users.create')->name('create');
@@ -121,9 +122,9 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                     Volt::route('/permissions/create', 'admin.permissions.create')->name('permissions.create');
                     Volt::route('/permissions/{permission}/edit', 'admin.permissions.edit')->name('permissions.edit');
 
-                    Volt::route('/masjids', 'admin.masjids.index')->name('masjids.index');
-                    Volt::route('/masjids/create', 'admin.masjids.create')->name('masjids.create');
-                    Volt::route('/masjids/{masjid}/edit', 'admin.masjids.edit')->name('masjids.edit');
+                    Volt::route('/branches', 'admin.branches.index')->name('branches.index');
+                    Volt::route('/branches/create', 'admin.branches.create')->name('branches.create');
+                    Volt::route('/branches/{branch}/edit', 'admin.branches.edit')->name('branches.edit');
 
                     // Impersonation Start
                     Route::get('/impersonate/{user}', [App\Http\Controllers\Admin\ImpersonationController::class, 'impersonate'])->name('impersonate');
@@ -132,7 +133,7 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
 
             // Monitoring & Logs
             Volt::route('/monitoring', 'admin.monitoring.index')->name('admin.monitoring.index');
-            Volt::route('/monitoring/{masjid}', 'admin.monitoring.show')->name('admin.monitoring.show');
+            Volt::route('/monitoring/{branch}', 'admin.monitoring.show')->name('admin.monitoring.show');
             Volt::route('/activities', 'admin.activities.index')->name('admin.activities.index');
 
             // Reporting
@@ -166,21 +167,15 @@ Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function
 
     // Donation Flow
     Route::prefix('donasi')->name('donate.')->group(function () {
-        Route::get('/{campaign_slug?}', function () {
-            return view('guest.donate.form');
-        })->name('form');
-        Route::get('/pembayaran', function () {
-            return view('guest.donate.payment');
-        })->name('payment');
-        Route::get('/konfirmasi', function () {
-            return view('guest.donate.confirm');
-        })->name('confirm');
-        Route::get('/berhasil/{donation}', function (\App\Models\Donation $donation) {
-            return view('guest.donate.success', compact('donation'));
-        })->name('success');
-        Route::get('/status/{id}', function () {
-            return view('guest.donate.status');
-        })->name('status');
+        Route::post('/submit', [\App\Http\Controllers\Guest\DonateController::class, 'submit'])->name('submit');
+        Route::post('/pilih-pembayaran/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'selectPayment'])->name('selectPayment');
+        
+        Route::get('/pembayaran/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'payment'])->name('payment');
+        Route::get('/konfirmasi/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'confirm'])->name('confirm');
+        Route::get('/berhasil/{donation}', [\App\Http\Controllers\Guest\DonateController::class, 'success'])->name('success');
+        
+        // Put this last to avoid catching other routes
+        Route::get('/{campaign_slug?}', [\App\Http\Controllers\Guest\DonateController::class, 'form'])->name('form');
     });
 
     // Handle Fortify default redirect

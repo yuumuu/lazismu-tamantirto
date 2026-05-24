@@ -7,6 +7,8 @@
         "dev": "vite"
     },
     "dependencies": {
+        "@inertiajs/svelte": "^3.2.0",
+        "@sveltejs/vite-plugin-svelte": "^7.1.2",
         "@tailwindcss/vite": "^4.1.11",
         "alpinejs": "^3.15.3",
         "autoprefixer": "^10.4.20",
@@ -15,6 +17,7 @@
         "driver.js": "^1.4.0",
         "laravel-vite-plugin": "^2.0",
         "lucide": "^0.562.0",
+        "svelte": "^5.55.9",
         "tailwindcss": "^4.0.7",
         "vite": "^7.0.4"
     },
