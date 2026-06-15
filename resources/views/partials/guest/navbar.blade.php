@@ -1,20 +1,25 @@
-<nav class="sticky top-0 left-0 w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md z-[99] border-b border-zinc-200 dark:border-white/10">
+<nav
+    class="sticky top-0 left-0 w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md z-[99] border-b border-zinc-200 dark:border-white/10">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="relative flex h-20 items-center justify-between">
             <div class="flex flex-1 items-center justify-start sm:items-stretch sm:justify-between">
                 <div class="flex shrink-0 items-center">
                     <a href="{{ guest_route('guest.home') }}" class="flex items-center gap-3 group">
-                        <div class="flex aspect-square size-10 items-center justify-center rounded-xl bg-transparent text-white shadow-none group-hover:scale-105 transition-transform">
+                        <div
+                            class="flex aspect-square size-10 items-center justify-center rounded-xl bg-transparent text-white shadow-none group-hover:scale-105 transition-transform">
                             <x-app-logo-icon class="size-8 fill-current" />
                         </div>
                         <div class="flex flex-col leading-tight">
-                            <span class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">{{ setting('site_name', 'Lazismu') }}</span>
-                            <span class="text-primary font-bold text-[10px] tracking-[0.2em] uppercase">{{ setting('site_tagline', 'Tamantirto') }}</span>
+                            <span
+                                class="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase">{{ setting('site_name', 'Lazismu') }}</span>
+                            <span
+                                class="text-primary font-bold text-[10px] uppercase">{{ setting('site_tagline', 'Tamantirto') }}</span>
                         </div>
                     </a>
                 </div>
                 <div class="hidden sm:ml-6 sm:block">
-                    <div class="flex space-x-1.5 items-center bg-zinc-100/80 dark:bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-inner">
+                    <div
+                        class="flex space-x-1.5 items-center bg-zinc-100/80 dark:bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-inner">
                         <x-guest.navigation.top-bar-link route="guest.home">
                             Beranda
                         </x-guest.navigation.top-bar-link>

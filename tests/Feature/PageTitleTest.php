@@ -167,6 +167,16 @@ test('guest pages have correct titles', function () {
     $response->assertStatus(200);
     $response->assertSee('<title>Kalkulator Zakat</title>', false);
 
+    // Test structure page
+    $response = $this->get(route('guest.structure'));
+    $response->assertStatus(200);
+    $response->assertSee('<title>Struktur Organisasi</title>', false);
+
+    // Test reports page
+    $response = $this->get(route('guest.reports'));
+    $response->assertStatus(200);
+    $response->assertSee('<title>Laporan Keuangan</title>', false);
+
     // Test campaigns index page
     $response = $this->get(route('guest.campaigns.index'));
     $response->assertStatus(200);

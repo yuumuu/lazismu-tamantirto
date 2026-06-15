@@ -32,7 +32,7 @@
         <!-- Text Content -->
         <div class="space-y-6">
             <h1 class="text-4xl md:text-6xl font-extrabold text-zinc-900 tracking-tight">Sedang<br><span class="text-primary italic">Ditingkatkan.</span></h1>
-            <p class="text-lg md:text-xl text-zinc-500 font-medium leading-relaxed max-w-lg mx-auto">
+            <p class="text-lg md:text-xl text-zinc-500 font-medium max-w-lg mx-auto">
                 Mohon maaf atas ketidaknyamanannya. Kami sedang melakukan pemeliharaan infrastruktur untuk memberikan layanan terbaik bagi donatur LAZISMU.
             </p>
         </div>

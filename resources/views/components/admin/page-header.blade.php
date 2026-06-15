@@ -26,7 +26,7 @@
         @endif
         
         @if($description)
-            <p class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-lg leading-relaxed {{ $backHref ? 'pl-8 md:pl-12' : 'border-l pl-3 md:pl-4 border-zinc-200 dark:border-zinc-800' }}">
+            <p class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-lg {{ $backHref ? 'pl-8 md:pl-12' : 'border-l pl-3 md:pl-4 border-zinc-200 dark:border-zinc-800' }}">
                 {{ $description }}
             </p>
         @endif

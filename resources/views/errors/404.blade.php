@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Ups! Halaman Terputus</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Halaman yang Anda cari tidak dapat kami temukan. Mungkin telah dipindahkan atau tautan sudah kedaluwarsa. Mari kembali menebar kebaikan!
             </p>
         </div>

@@ -45,7 +45,7 @@ new class extends Component {
                     {{ __('Memberi Makna pada Rupiah.') }}
                 </h1>
             </div>
-            <p class="text-zinc-500 text-lg font-medium leading-relaxed pl-4 border-l border-zinc-200 dark:border-zinc-800">
+            <p class="text-zinc-500 text-lg font-medium pl-4 border-l border-zinc-200 dark:border-zinc-800">
                 {{ __('Selamat datang, :name. Pantau amanah donatur hari ini.', ['name' => auth()->user()->name]) }}
             </p>
         </div>

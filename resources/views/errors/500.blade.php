@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Terjadi Gangguan Teknis</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Mohon maaf, server kami sedang mengalami gangguan. Tim teknis kami sedang berupaya memperbaikinya secepat mungkin. Silakan coba kembali beberapa saat lagi.
             </p>
         </div>

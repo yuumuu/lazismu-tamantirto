@@ -27,7 +27,7 @@
 
                 <div class="relative z-20 mt-auto">
                     <blockquote class="space-y-4 max-w-lg">
-                        <p class="text-xl font-medium leading-relaxed">
+                        <p class="text-xl font-medium">
                             &ldquo;{{ trim($message) }}&rdquo;
                         </p>
                         <footer class="text-sm font-bold opacity-80">&mdash; {{ trim($author) }}</footer>

@@ -27,7 +27,7 @@
 
                 <!-- Hadist Quote -->
                 <div class="p-6 rounded-[32px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 max-w-2xl mx-auto">
-                    <p class="text-sm text-zinc-600 dark:text-zinc-400 italic leading-relaxed">
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400 italic">
                         "Barangsiapa yang memberikan kemudahan kepada orang yang sedang kesulitan, maka Allah akan memberikan kemudahan kepadanya di dunia dan akhirat."
                     </p>
                     <p class="text-xs text-zinc-400 font-bold mt-2">— HR. Muslim</p>
@@ -88,7 +88,7 @@
                     @if($donation->donor_message)
                     <div class="pt-6 border-t border-zinc-100 dark:border-white/5">
                         <span class="text-xs text-zinc-400 font-black uppercase tracking-widest">Pesan & Doa</span>
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 italic leading-relaxed">{{ $donation->donor_message }}</p>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 italic">{{ $donation->donor_message }}</p>
                     </div>
                     @endif
                 </div>

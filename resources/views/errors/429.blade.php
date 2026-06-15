@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Terlalu Banyak Permintaan</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Wah, sepertinya Anda sedang terburu-buru! Sistem kami mendeteksi terlalu banyak permintaan dari perangkat Anda. Silakan istirahat sejenak dan coba lagi dalam satu menit.
             </p>
         </div>

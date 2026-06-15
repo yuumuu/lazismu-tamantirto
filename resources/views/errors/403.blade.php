@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Akses Terbatas</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Maaf, Anda tidak memiliki izin untuk mengakses halaman ini. Pastikan Anda telah login dengan akun yang sesuai atau hubungi administrator jika ini adalah kesalahan.
             </p>
         </div>

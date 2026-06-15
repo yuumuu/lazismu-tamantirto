@@ -16,7 +16,7 @@
         <div class="premium-card p-10">
             <div class="space-y-1 mb-8">
                  <h3 class="text-xl font-black tracking-tight text-zinc-900 dark:text-white">{{ $heading ?? '' }}</h3>
-                 <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed border-l pl-4 border-zinc-100 dark:border-zinc-800">{{ $subheading ?? '' }}</p>
+                 <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 border-l pl-4 border-zinc-100 dark:border-zinc-800">{{ $subheading ?? '' }}</p>
             </div>
 
             <div class="w-full">

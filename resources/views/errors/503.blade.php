@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Pemeliharaan Sistem</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Kami sedang melakukan pemeliharaan rutin untuk meningkatkan layanan LAZISMU. Kami akan segera kembali dalam waktu singkat. Terima kasih atas kesabaran Anda.
             </p>
         </div>

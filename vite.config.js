@@ -18,7 +18,7 @@ export default defineConfig({
         svelte(),
     ],
     optimizeDeps: {
-        exclude: ["@inertiajs/svelte"],
+        exclude: ["@inertiajs/svelte", "lucide-svelte"],
     },
     server: {
         cors: true,

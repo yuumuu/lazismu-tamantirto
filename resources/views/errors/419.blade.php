@@ -11,7 +11,7 @@
         
         <div class="max-w-xl space-y-6">
             <h2 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">Sesi Kedaluwarsa</h2>
-            <p class="text-lg text-zinc-500 font-medium leading-relaxed">
+            <p class="text-lg text-zinc-500 font-medium">
                 Halaman ini telah terbuka terlalu lama sehingga sesi keamanan Anda berakhir. Jangan khawatir, silakan muat ulang halaman untuk melanjutkan aktivitas Anda.
             </p>
         </div>
