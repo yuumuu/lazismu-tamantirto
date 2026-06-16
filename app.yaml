@@ -1,7 +1,7 @@
 kind: wasmer.io/App.v0
 name: lazismu-pcm-kasihan
 owner: yuumuu
-package: .
+package: "."
 
 debug: false
 
@@ -9,17 +9,17 @@ redirect:
   force_https: true
 
 env:
-  APP_ENV: production
-  APP_DEBUG: false
+  APP_ENV: "production"
+  APP_DEBUG: "false"
   APP_KEY: "base64:HWN7k/1ZHqFFY1KPiTzMlovydt+Nil71I8nzsLiHx+w="
   APP_URL: "https://lazismu-pcm-kasihan.wasmer.app"
-  APP_MAINTENANCE_DRIVER: file
-  SESSION_DRIVER: database
-  QUEUE_CONNECTION: sync
-  CACHE_STORE: database
-  FILESYSTEM_DISK: local
-  LOG_CHANNEL: stderr
-  LOG_LEVEL: error
+  APP_MAINTENANCE_DRIVER: "file"
+  SESSION_DRIVER: "database"
+  QUEUE_CONNECTION: "sync"
+  CACHE_STORE: "database"
+  FILESYSTEM_DISK: "local"
+  LOG_CHANNEL: "stderr"
+  LOG_LEVEL: "error"
 
 capabilities:
   database:
