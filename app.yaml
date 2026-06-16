@@ -1,7 +1,7 @@
 kind: wasmer.io/App.v0
 name: lazismu-pcm-kasihan
 owner: yuumuu
-package: "."
+package: .
 
 debug: false
 
@@ -25,11 +25,5 @@ capabilities:
   database:
     engine: mysql
 
-locality:
-  regions:
-    - us-socal1
-
 scaling:
   mode: single_concurrency
-
-
