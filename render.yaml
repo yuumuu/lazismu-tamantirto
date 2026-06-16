@@ -1,0 +1,62 @@
+databases:
+  - name: lazismu-db
+    plan: free
+    region: singapore
+
+services:
+  - type: web
+    name: lazismu
+    runtime: php
+    plan: free
+    region: singapore
+    buildCommand: |
+      npm ci &&
+      npm run build &&
+      php artisan storage:link
+    preDeployCommand: php artisan migrate --force
+    healthCheckPath: /up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: base64:HWN7k/1ZHqFFY1KPiTzMlovydt+Nil71I8nzsLiHx+w=
+      - key: APP_URL
+        value: https://lazismu.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_DATABASE
+        fromDatabase:
+          name: lazismu-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: lazismu-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: lazismu-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: lazismu-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: lazismu-db
+          property: port
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: CACHE_STORE
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: APP_MAINTENANCE_DRIVER
+        value: file
+      - key: LOG_LEVEL
+        value: error

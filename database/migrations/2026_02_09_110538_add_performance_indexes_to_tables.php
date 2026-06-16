@@ -172,9 +172,22 @@ return new class extends Migration
     {
         $connection = Schema::getConnection();
 
+        /** @var \Illuminate\Database\MySqlConnection|\Illuminate\Database\PostgresConnection|\Illuminate\Database\SQLiteConnection $connection */
+        $driver = $connection->getDriverName();
+
         // Skip index check for SQLite (used in tests)
-        if ($connection->getDriverName() === 'sqlite') {
+        if ($driver === 'sqlite') {
             return false; // Always try to create indexes in SQLite
+        }
+
+        if ($driver === 'pgsql') {
+            $result = DB::select(
+                'SELECT count(*) as count FROM pg_indexes
+                 WHERE schemaname = \'public\' AND tablename = ? AND indexname = ?',
+                [$table, $indexName]
+            );
+
+            return $result[0]->count > 0;
         }
 
         $database = $connection->getDatabaseName();
