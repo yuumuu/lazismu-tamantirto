@@ -1,0 +1,1 @@
+import{q as i,u as a,E as r}from"./app-DiKXTGaE.js";import{o as s,i as t}from"./legacy-DzSjubXY.js";/* empty css            */function u(n,o){a(o,!1),s(()=>{r.visit("/donasi")}),t(),i()}export{u as default};
