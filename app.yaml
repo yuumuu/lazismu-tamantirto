@@ -32,15 +32,4 @@ locality:
 scaling:
   mode: single_concurrency
 
-health_checks:
-  - http:
-      method: get
-      path: /
-      interval: 30s
-      timeout: 10s
-      unhealthy_threshold: 3
-      healthy_threshold: 1
-      expected_status_codes:
-        - 200
-        - 302
-        - 301
+
