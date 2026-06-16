@@ -39,8 +39,8 @@ class CampaignSeeder extends Seeder
                 'is_urgent' => false,
             ],
             [
-                'title' => 'Pembangunan Sumur Wakaf Masjid Al-Ikhlas',
-                'description' => 'Penyediaan sumber air bersih melalui pembangunan sumur bor untuk jamaah dan warga sekitar masjid.',
+                'title' => 'Pembangunan Sumur Wakaf branch Al-Ikhlas',
+                'description' => 'Penyediaan sumber air bersih melalui pembangunan sumur bor untuk jamaah dan warga sekitar branch.',
                 'target_amount' => 25000000,
                 'is_featured' => false,
                 'is_urgent' => false,

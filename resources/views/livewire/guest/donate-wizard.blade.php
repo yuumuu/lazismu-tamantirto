@@ -62,9 +62,9 @@
                         <label class="text-sm font-black text-zinc-400 uppercase tracking-widest">Pilih Cabang
                             Penyalur</label>
                     </div>
-                    <flux:select wire:model.live="masjid_id" class="h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50">
-                        @foreach (\App\Models\Masjid::where('is_active', true)->get() as $masjid)
-                            <option value="{{ $masjid->id }}">{{ $masjid->name }}</option>
+                    <flux:select wire:model.live="branch_id" class="h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50">
+                        @foreach (\App\Models\branch::where('is_active', true)->get() as $branch)
+                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                         @endforeach
                     </flux:select>
                 </div>

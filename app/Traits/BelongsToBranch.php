@@ -20,10 +20,14 @@ trait BelongsToBranch
 
         static::addGlobalScope('branch', function (Builder $builder) {
             $activeId = session('active_branch_id');
+
             if (! $activeId && auth()->hasUser()) {
                 $activeId = auth()->user()->branch_id;
             }
-            $activeId = $activeId ?? 1;
+
+            if (! $activeId) {
+                return;
+            }
 
             if (request()->is('admin*') || request()->is('manage*') || auth()->hasUser()) {
                 $builder->where($builder->getQuery()->from.'.branch_id', $activeId);

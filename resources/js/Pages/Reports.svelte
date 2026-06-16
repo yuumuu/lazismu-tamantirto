@@ -1,14 +1,13 @@
 <script>
     import Layout from "../Layouts/GuestLayout.svelte";
     import { Link } from "@inertiajs/svelte";
-    import {
-        Download,
-        ArrowUpRight,
-        Upload,
-        FileText,
-        Search,
-        ShieldCheck,
-    } from "lucide-svelte";
+    import ArrowUpFromLine from "lucide-svelte/icons/arrow-up-from-line";
+    import ArrowDownToLine from "lucide-svelte/icons/arrow-down-to-line";
+    import ArrowRight from "lucide-svelte/icons/arrow-right";
+    import FileText from "lucide-svelte/icons/file-text";
+    import ShieldCheck from "lucide-svelte/icons/shield-check";
+    import Search from "lucide-svelte/icons/search";
+    import ArrowUpRight from "lucide-svelte/icons/arrow-up-right";
 
     let {
         totalIncome = 0,
@@ -72,55 +71,55 @@
     <section class="py-24 bg-white dark:bg-zinc-950">
         <div class="mx-auto max-w-7xl px-6 lg:px-8 space-y-20">
             <div class="grid gap-8 md:grid-cols-3">
-                <div
-                    class="rounded-[48px] border border-zinc-100 bg-zinc-50 p-10 dark:border-white/5 dark:bg-white/5"
-                >
-                    <span class="text-[10px] uppercase text-zinc-400"
-                        >Total Donasi Terkumpul</span
+                    <div
+                        class="rounded-[40px] border border-zinc-100 bg-zinc-50 p-10 dark:border-white/5 dark:bg-white/5 space-y-4"
                     >
-                    <h2
-                        class="mt-4 text-4xl font-black text-zinc-900 dark:text-white"
+                        <span class="text-[10px] uppercase text-zinc-400 font-black"
+                            >Total Donasi Terkumpul</span
+                        >
+                        <h2
+                            class="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter"
+                        >
+                            {formatCurrency(totalIncome)}
+                        </h2>
+                        <p
+                            class="text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
+                        >
+                            Akumulasi seluruh dana donasi
+                        </p>
+                    </div>
+                    <div
+                        class="rounded-[40px] border border-primary/10 bg-primary/5 p-10 shadow-xl shadow-primary/5 dark:border-primary/20 dark:bg-primary/10 space-y-4"
                     >
-                        {formatCurrency(totalIncome)}
-                    </h2>
-                    <p
-                        class="mt-2 text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
+                        <span class="text-[10px] uppercase text-zinc-400 font-black"
+                            >Total Telah Disalurkan</span
+                        >
+                        <h2 class="text-4xl font-black text-primary tracking-tighter">
+                            {formatCurrency(totalOutcome)}
+                        </h2>
+                        <p
+                            class="text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
+                        >
+                            Melalui {withdrawalCount} program bantuan
+                        </p>
+                    </div>
+                    <div
+                        class="rounded-[40px] border border-zinc-100 bg-zinc-50 p-10 dark:border-white/5 dark:bg-white/5 space-y-4"
                     >
-                        Akumulasi seluruh dana donasi
-                    </p>
-                </div>
-                <div
-                    class="rounded-[48px] border border-primary/10 bg-primary/5 p-10 shadow-xl shadow-primary/5 dark:border-primary/20 dark:bg-primary/10"
-                >
-                    <span class="text-[10px] uppercase text-zinc-400"
-                        >Total Telah Disalurkan</span
-                    >
-                    <h2 class="mt-4 text-4xl font-black text-primary">
-                        {formatCurrency(totalOutcome)}
-                    </h2>
-                    <p
-                        class="mt-2 text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
-                    >
-                        Melalui {withdrawalCount} program bantuan
-                    </p>
-                </div>
-                <div
-                    class="rounded-[48px] border border-zinc-100 bg-zinc-50 p-10 dark:border-white/5 dark:bg-white/5"
-                >
-                    <span class="text-[10px] uppercase text-zinc-400"
-                        >Saldo Aktif Saat Ini</span
-                    >
-                    <h2
-                        class="mt-4 text-4xl font-black text-zinc-900 dark:text-white"
-                    >
-                        {formatCurrency(balance)}
-                    </h2>
-                    <p
-                        class="mt-2 text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
-                    >
-                        Sisa dana siap disalurkan
-                    </p>
-                </div>
+                        <span class="text-[10px] uppercase text-zinc-400 font-black"
+                            >Saldo Aktif Saat Ini</span
+                        >
+                        <h2
+                            class="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter"
+                        >
+                            {formatCurrency(balance)}
+                        </h2>
+                        <p
+                            class="text-xs text-zinc-500 dark:text-zinc-400 font-bold italic"
+                        >
+                            Sisa dana siap disalurkan
+                        </p>
+                    </div>
             </div>
 
             <div class="grid gap-16 lg:grid-cols-3">
@@ -137,15 +136,15 @@
                             >
                                 <div class="flex items-center gap-6">
                                     <div
-                                        class="flex h-14 w-14 items-center justify-center rounded-3xl {act.type ===
+                                        class="flex size-14 items-center justify-center rounded-xl {act.type ===
                                         'income'
                                             ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20'
                                             : 'bg-primary/10 text-primary'}"
                                     >
                                         {#if act.type === "income"}
-                                            <Download class="h-6 w-6" />
+                                            <ArrowDownToLine class="h-6 w-6" />
                                         {:else}
-                                            <Upload class="h-6 w-6" />
+                                            <ArrowUpFromLine class="h-6 w-6" />
                                         {/if}
                                     </div>
                                     <div>
@@ -179,7 +178,7 @@
 
                 <aside class="space-y-12">
                     <div
-                        class="rounded-[48px] bg-zinc-900 p-8 text-white shadow-2xl"
+                        class="rounded-[40px] bg-zinc-900 p-8 text-white shadow-2xl"
                     >
                         <h4
                             class="text-xl font-black tracking-tight border-b border-white/10 pb-4"
@@ -213,7 +212,7 @@
                         </div>
                         <Link
                             href="/donasi?type=zakat"
-                            class="mt-8 inline-flex h-16 w-full items-center justify-center rounded-2xl bg-primary text-sm font-black uppercase text-white shadow-xl shadow-primary/30 transition hover:bg-primary/90"
+                            class="mt-8 inline-flex h-16 w-full items-center justify-center rounded-xl bg-primary text-sm font-black uppercase text-white shadow-xl shadow-primary/30 transition hover:bg-primary/90"
                             >Ikut Berkontribusi</Link
                         >
                     </div>
@@ -283,7 +282,7 @@
                         </p>
                         <Link
                             href="/kontak"
-                            class="mt-6 inline-flex h-14 w-full items-center justify-center rounded-2xl border border-zinc-200 bg-transparent text-sm font-bold uppercase text-zinc-900 transition hover:border-primary hover:text-primary dark:border-white/10 dark:text-white"
+                            class="mt-6 inline-flex h-14 w-full items-center justify-center rounded-xl border border-zinc-200 bg-transparent text-sm font-bold uppercase text-zinc-900 transition hover:border-primary hover:text-primary dark:border-white/10 dark:text-white"
                             >Hubungi Kami</Link
                         >
                     </div>

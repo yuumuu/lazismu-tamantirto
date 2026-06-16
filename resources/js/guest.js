@@ -1,5 +1,3 @@
-import { createIcons, icons } from "lucide";
-
 document.addEventListener("alpine:init", () => {
     Alpine.store("ui", {
         // STATE
@@ -31,10 +29,3 @@ document.addEventListener("alpine:init", () => {
         },
     });
 });
-
-// Re-initialize icons after Livewire navigation
-document.addEventListener("livewire:navigated", () => {
-    createIcons({ icons });
-});
-
-createIcons({ icons });

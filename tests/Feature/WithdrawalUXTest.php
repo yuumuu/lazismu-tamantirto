@@ -3,14 +3,13 @@
 declare(strict_types=1);
 
 use App\Enums\WithdrawalStatus;
+use App\Models\Donation;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-    $this->admin = User::factory()->create();
-    $this->admin->assignRole('admin');
+    $this->admin = User::factory()->create(['role' => 'admin']);
     $this->actingAs($this->admin);
 });
 
@@ -80,9 +79,9 @@ test('mobile layout shows action buttons at top', function () {
 
 test('withdrawal create shows available funds information', function () {
     // Create some donations and withdrawals to test fund calculation
-    \App\Models\Donation::factory()->create(['amount' => 1000000, 'status' => 'verified']);
-    \App\Models\Donation::factory()->create(['amount' => 500000, 'status' => 'verified']);
-    \App\Models\Withdrawal::factory()->create(['amount' => 200000, 'status' => 'sent']);
+    Donation::factory()->create(['amount' => 1000000, 'status' => 'verified']);
+    Donation::factory()->create(['amount' => 500000, 'status' => 'verified']);
+    Withdrawal::factory()->create(['amount' => 200000, 'status' => 'sent']);
 
     Volt::test('admin.withdrawals.create')
         ->assertSee('Dana Tersedia')
@@ -96,8 +95,8 @@ test('withdrawal create shows available funds information', function () {
 
 test('withdrawal create disables submit when insufficient funds', function () {
     // Create scenario where withdrawals exceed donations
-    \App\Models\Donation::factory()->create(['amount' => 100000, 'status' => 'verified']);
-    \App\Models\Withdrawal::factory()->create(['amount' => 200000, 'status' => 'sent']);
+    Donation::factory()->create(['amount' => 100000, 'status' => 'verified']);
+    Withdrawal::factory()->create(['amount' => 200000, 'status' => 'sent']);
 
     Volt::test('admin.withdrawals.create')
         ->assertSee('Dana tidak mencukupi untuk penyaluran baru')

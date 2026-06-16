@@ -6,12 +6,10 @@ namespace Database\Seeders;
 
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class SettingSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $settings = [
@@ -24,15 +22,17 @@ class SettingSeeder extends Seeder
                 'label' => 'Nama Situs',
                 'description' => 'Nama website yang ditampilkan di header dan title.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'site_tagline',
-                'value' => 'Tamantirto',
+                'value' => 'PCM Kasihan',
                 'type' => 'text',
                 'group_name' => 'general',
                 'label' => 'Tagline',
                 'description' => 'Tagline atau slogan website.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'site_description',
@@ -42,6 +42,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Deskripsi Situs',
                 'description' => 'Deskripsi singkat website untuk SEO.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'site_logo',
@@ -51,6 +52,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Logo',
                 'description' => 'Logo utama website.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'site_favicon',
@@ -60,6 +62,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Favicon',
                 'description' => 'Ikon kecil yang muncul di tab browser.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
 
             // Contact Settings
@@ -71,6 +74,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Alamat',
                 'description' => 'Alamat lengkap kantor.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'contact_phone',
@@ -80,6 +84,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Telepon',
                 'description' => 'Nomor telepon kantor.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'contact_email',
@@ -89,6 +94,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Email',
                 'description' => 'Email utama untuk kontak.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'contact_whatsapp',
@@ -98,6 +104,7 @@ class SettingSeeder extends Seeder
                 'label' => 'WhatsApp',
                 'description' => 'Nomor WhatsApp untuk komunikasi.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'contact_maps_url',
@@ -107,6 +114,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Google Maps URL',
                 'description' => 'Link ke lokasi di Google Maps.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
 
             // Social Media Settings
@@ -118,6 +126,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Facebook',
                 'description' => 'URL halaman Facebook.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'social_instagram',
@@ -127,6 +136,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Instagram',
                 'description' => 'URL profil Instagram.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'social_youtube',
@@ -136,6 +146,7 @@ class SettingSeeder extends Seeder
                 'label' => 'YouTube',
                 'description' => 'URL channel YouTube.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'social_twitter',
@@ -145,6 +156,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Twitter/X',
                 'description' => 'URL profil Twitter/X.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
 
             // Donation Settings
@@ -167,6 +179,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Rekening Bank',
                 'description' => 'Daftar rekening bank untuk transfer donasi.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'site_qris',
@@ -176,6 +189,7 @@ class SettingSeeder extends Seeder
                 'label' => 'QRIS Image',
                 'description' => 'Gambar QRIS untuk pembayaran.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'zakat_gold_nisab',
@@ -185,6 +199,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Nisab Emas (Gram)',
                 'description' => 'Standar nisab emas untuk kalkulator zakat.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'zakat_gold_price',
@@ -194,6 +209,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Harga Emas Saat Ini',
                 'description' => 'Harga emas per gram untuk perhitungan zakat.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'zakat_silver_nisab',
@@ -203,6 +219,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Nisab Perak (Gram)',
                 'description' => 'Standar nisab perak untuk kalkulator zakat.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'min_donation',
@@ -212,6 +229,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Donasi Minimum',
                 'description' => 'Jumlah minimum donasi dalam Rupiah.',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'auto_verify_threshold',
@@ -221,6 +239,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Batas Auto Verifikasi',
                 'description' => 'Donasi di atas jumlah ini memerlukan verifikasi manual.',
                 'is_public' => false,
+                'branch_id' => 1,
             ],
 
             // Appearance Settings
@@ -232,6 +251,7 @@ class SettingSeeder extends Seeder
                 'label' => 'Warna Utama',
                 'description' => 'Warna utama website (hex code).',
                 'is_public' => true,
+                'branch_id' => 1,
             ],
             [
                 'key' => 'footer_text',
@@ -241,12 +261,57 @@ class SettingSeeder extends Seeder
                 'label' => 'Teks Footer',
                 'description' => 'Teks copyright di bagian footer.',
                 'is_public' => true,
+                'branch_id' => 1,
+            ],
+
+            // Security Settings
+            [
+                'key' => 'developer_pin',
+                'value' => Hash::make('LazismuDev2026@Haidar'),
+                'type' => 'text',
+                'group_name' => 'security',
+                'label' => 'Developer PIN',
+                'description' => 'PIN untuk mengakses pengaturan sensitif. Default: LazismuDev2026@Haidar. Hubungi developer untuk perubahan.',
+                'is_public' => false,
+                'branch_id' => 1,
+            ],
+            [
+                'key' => 'developer_contact',
+                'value' => 'Haidar Yahya Mudhofar',
+                'type' => 'text',
+                'group_name' => 'security',
+                'label' => 'Kontak Developer',
+                'description' => 'Informasi kontak pengembang sistem.',
+                'is_public' => false,
+                'branch_id' => 1,
+            ],
+
+            // Integration Settings
+            [
+                'key' => 'fonnte_api_key',
+                'value' => '',
+                'type' => 'text',
+                'group_name' => 'integration',
+                'label' => 'Fonnte API Key',
+                'description' => 'API Key dari Fonnte untuk notifikasi WhatsApp.',
+                'is_public' => false,
+                'branch_id' => 1,
+            ],
+            [
+                'key' => 'fonnte_phone',
+                'value' => '',
+                'type' => 'text',
+                'group_name' => 'integration',
+                'label' => 'Nomor Pengirim Fonnte',
+                'description' => 'Nomor WhatsApp terdaftar di Fonnte.',
+                'is_public' => false,
+                'branch_id' => 1,
             ],
         ];
 
         foreach ($settings as $setting) {
             Setting::firstOrCreate(
-                ['key' => $setting['key']],
+                ['key' => $setting['key'], 'branch_id' => $setting['branch_id']],
                 $setting
             );
         }

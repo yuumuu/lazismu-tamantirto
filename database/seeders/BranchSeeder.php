@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Masjid;
+use App\Models\Branch;
 use Illuminate\Database\Seeder;
 
-class MasjidSeeder extends Seeder
+class BranchSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,8 +15,8 @@ class MasjidSeeder extends Seeder
     public function run(): void
     {
         // Pusat (ID 1) - LAZISMU Tamantirto
-        // Sebagai pengelola utama yang bisa mengakses data masjid lain
-        Masjid::create([
+        // Sebagai pengelola utama yang bisa mengakses data branch lain
+        Branch::create([
             'name' => 'LAZISMU Tamantirto',
             'slug' => 'pusat',
             'address' => 'Tamantirto, Kasihan, Bantul, DIY',
@@ -25,10 +25,10 @@ class MasjidSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Beberapa contoh masjid cabang/mitra
-        $masjids = [
+        // Beberapa contoh branch cabang/mitra
+        $branches = [
             [
-                'name' => 'Masjid Al-Falah',
+                'name' => 'branch Al-Falah',
                 'slug' => 'al-falah',
                 'address' => 'Jl. Garuda No. 1, Tamantirto',
                 'phone' => '081111111111',
@@ -36,7 +36,7 @@ class MasjidSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'Masjid At-Taqwa',
+                'name' => 'branch At-Taqwa',
                 'slug' => 'at-taqwa',
                 'address' => 'Jl. Merpati No. 2, Tamantirto',
                 'phone' => '082222222222',
@@ -45,8 +45,8 @@ class MasjidSeeder extends Seeder
             ],
         ];
 
-        foreach ($masjids as $masjidData) {
-            Masjid::create($masjidData);
+        foreach ($branches as $branchData) {
+            Branch::create($branchData);
         }
     }
 }

@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CheckRole
+{
+    public function handle(Request $request, Closure $next, string ...$roles): Response
+    {
+        if (! $request->user()) {
+            abort(403, 'Unauthenticated.');
+        }
+
+        $allowedRoles = collect($roles)
+            ->flatMap(fn (string $role) => explode('|', $role))
+            ->unique()
+            ->values()
+            ->all();
+
+        $userRole = $request->user()->role?->value;
+
+        if (! $userRole || ! in_array($userRole, $allowedRoles, true)) {
+            abort(403, 'Unauthorized. Required role: '.implode('|', $allowedRoles));
+        }
+
+        return $next($request);
+    }
+}

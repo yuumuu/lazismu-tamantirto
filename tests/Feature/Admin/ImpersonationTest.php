@@ -7,16 +7,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-
     $this->centralMasjid = Masjid::factory()->create(['id' => 1, 'name' => 'Lazismu Pusat']);
 
-    $this->superAdmin = User::factory()->create(['masjid_id' => 1]);
-    $this->superAdmin->assignRole('super_admin');
+    $this->superAdmin = User::factory()->create(['masjid_id' => 1, 'role' => 'super_admin']);
 
     $this->masjid = Masjid::factory()->create(['name' => 'Masjid Cabang']);
-    $this->tenantAdmin = User::factory()->create(['masjid_id' => $this->masjid->id]);
-    $this->tenantAdmin->assignRole('admin');
+    $this->tenantAdmin = User::factory()->create(['masjid_id' => $this->masjid->id, 'role' => 'admin']);
 });
 
 test('super admin can impersonate tenant admin', function () {

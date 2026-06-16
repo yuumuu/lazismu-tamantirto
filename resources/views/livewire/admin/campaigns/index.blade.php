@@ -1,17 +1,26 @@
 <?php
 
+use App\Enums\CampaignStatus;
+use App\Imports\CampaignImport;
 use App\Models\Campaign;
 use App\Models\CampaignCategory;
-use App\Enums\CampaignStatus;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 new class extends Component {
-    use WithPagination;
+    use WithFileUploads, WithPagination;
 
     public $search = '';
     public $status = '';
     public $category = '';
+
+    public $importFile;
+    public int $importCount = 0;
+    public int $importErrorCount = 0;
+    public array $importErrors = [];
+    public bool $importing = false;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -35,7 +44,7 @@ new class extends Component {
         return [
             'campaigns' => Campaign::query()
                 ->with(['category', 'creator'])
-                ->withSum('verifiedDonations', 'amount')  // Eager load sum to prevent N+1
+                ->withSum('verifiedDonations', 'amount')
                 ->when($this->search, fn($q) => $q->where('title', 'like', '%' . $this->search . '%'))
                 ->when($this->status, fn($q) => $q->where('status', $this->status))
                 ->when($this->category, fn($q) => $q->where('category_id', $this->category))
@@ -44,6 +53,42 @@ new class extends Component {
             'categories' => CampaignCategory::ordered()->get(),
             'statuses' => CampaignStatus::cases(),
         ];
+    }
+
+    public function openImportModal(): void
+    {
+        $this->reset(['importFile', 'importCount', 'importErrorCount', 'importErrors', 'importing']);
+        $this->js('$flux.modal("import-campaign-modal").show()');
+    }
+
+    public function import(): void
+    {
+        $this->validate([
+            'importFile' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
+        ]);
+
+        $this->importing = true;
+        $this->importCount = 0;
+        $this->importErrorCount = 0;
+        $this->importErrors = [];
+
+        try {
+            $import = new CampaignImport;
+            Excel::import($import, $this->importFile->getRealPath());
+
+            $this->importCount = $import->getProcessedRows();
+            $failures = $import->failures();
+            $this->importErrorCount = count($failures);
+            $this->importErrors = collect($failures)->map(fn($f) => 'Baris ' . $f->row() . ': ' . implode(', ', $f->errors()))->toArray();
+
+            \Flux::toast('Import selesai! ' . $this->importCount . ' data berhasil diimpor.', variant: 'success');
+        } catch (\Exception $e) {
+            $this->importErrors[] = 'Kesalahan: ' . $e->getMessage();
+            $this->importErrorCount++;
+            \Flux::toast('Gagal mengimpor file.', variant: 'danger');
+        }
+
+        $this->importing = false;
     }
 } ?>
 
@@ -54,9 +99,14 @@ new class extends Component {
         description="Manajemen penggalangan dana terpadu untuk penyaluran zakat, infaq, dan sedekah."
     >
         <x-slot:action>
-            <flux:button variant="primary" icon="plus" :href="route('admin.campaigns.create')" wire:navigate data-tour="campaign-create">
-                {{ __('Buat Campaign') }}
-            </flux:button>
+            <div class="flex items-center gap-2">
+                <flux:button icon="document-arrow-up" variant="subtle" wire:click="openImportModal">
+                    {{ __('Import CSV') }}
+                </flux:button>
+                <flux:button variant="primary" icon="plus" :href="route('admin.campaigns.create')" wire:navigate data-tour="campaign-create">
+                    {{ __('Buat Campaign') }}
+                </flux:button>
+            </div>
         </x-slot:action>
     </x-admin.page-header>
 
@@ -153,4 +203,53 @@ new class extends Component {
             {{ $campaigns->links() }}
         </div>
     </div>
+
+    <!-- Import Modal -->
+    <flux:modal name="import-campaign-modal" class="max-w-lg">
+        <form wire:submit="import" class="space-y-6">
+            <div>
+                <flux:heading>Import Campaign (CSV/Excel)</flux:heading>
+                <flux:subheading>
+                    Upload file CSV atau Excel dengan kolom: <strong>judul</strong>/<strong>title</strong>, <strong>deskripsi</strong>, <strong>target</strong>, <strong>tipe</strong>, <strong>status</strong>, <strong>unggulan</strong>, <strong>prioritas</strong>, <strong>tanggal_mulai</strong>, <strong>tanggal_selesai</strong>.
+                </flux:subheading>
+            </div>
+
+            <flux:field>
+                <flux:label>Pilih File</flux:label>
+                <flux:input type="file" wire:model="importFile" accept=".csv,.xlsx,.xls" />
+                <flux:error name="importFile" />
+                <p class="text-xs text-zinc-400 mt-1">Maksimal 5MB. Format CSV, XLSX, atau XLS.</p>
+            </flux:field>
+
+            @if($importErrors)
+                <div class="space-y-2">
+                    @if($importCount > 0)
+                        <div class="p-3 bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 rounded-lg text-sm font-medium">
+                            {{ $importCount }} data berhasil diimpor.
+                        </div>
+                    @endif
+                    @if($importErrorCount > 0)
+                        <div class="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">
+                            <p class="font-medium mb-1">{{ $importErrorCount }} kesalahan:</p>
+                            <ul class="list-disc pl-4 space-y-0.5">
+                                @foreach($importErrors as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Tutup</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="primary" :disabled="$importing">
+                    <span wire:loading.remove wire:target="import">Import Data</span>
+                    <span wire:loading wire:target="import">Mengimpor...</span>
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
 </div>

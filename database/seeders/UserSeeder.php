@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -12,24 +13,17 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua masjid
-        $masjids = \App\Models\Masjid::all();
+        $branches = Branch::all();
 
-        foreach ($masjids as $masjid) {
-            // Admin default untuk setiap masjid sudah otomatis dibuat oleh event 'created' pada model Masjid.
-            // Di sini kita hanya perlu memproses tambahan khusus untuk Pusat (ID 1).
-
-            // Jika ini pusat, kita tambahkan super admin dan beberapa user tambahan
-            if ($masjid->id === 1) {
-                // Update the auto-generated admin@lazismu.org to be super_admin
+        foreach ($branches as $branch) {
+            if ($branch->id === 1) {
                 $superAdmin = User::where('email', 'admin@lazismu.org')->first();
                 if ($superAdmin) {
                     $superAdmin->update([
                         'name' => 'Super Administrator',
                         'password' => Hash::make('SuperAdmin123!'),
+                        'role' => 'super_admin',
                     ]);
-                    $superAdmin->removeRole('admin');
-                    $superAdmin->assignRole('super_admin');
                 }
 
                 $pusatUsers = [
@@ -39,15 +33,15 @@ class UserSeeder extends Seeder
                 ];
 
                 foreach ($pusatUsers as $userData) {
-                    $u = User::create([
+                    User::create([
                         'name' => $userData['name'],
                         'email' => $userData['email'],
                         'password' => Hash::make('password'),
                         'email_verified_at' => now(),
                         'is_active' => true,
-                        'masjid_id' => 1,
+                        'branch_id' => 1,
+                        'role' => $userData['role'],
                     ]);
-                    $u->assignRole($userData['role']);
                 }
             }
         }

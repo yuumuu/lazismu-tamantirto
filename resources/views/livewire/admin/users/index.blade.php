@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
@@ -14,11 +13,10 @@ new class extends Component {
     {
         return [
             'users' => User::query()
-                ->with('roles')
                 ->where('id', '!=', auth()->id())
-                ->when($this->search, function($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%');
+                ->when($this->search, function ($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                      ->orWhere('email', 'like', '%'.$this->search.'%');
                 })
                 ->latest()
                 ->paginate(10),
@@ -28,29 +26,30 @@ new class extends Component {
 
     public function toggleStatus(int $userId): void
     {
-        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+        $user = User::withoutGlobalScope('branch')->findOrFail($userId);
 
-        if (! auth()->user()->isSuperAdmin() && $user->masjid_id !== auth()->user()->masjid_id) {
+        if (! auth()->user()->isSuperAdmin() && $user->branch_id !== auth()->user()->branch_id) {
             abort(403);
         }
 
-        $user->update(['is_active' => !$user->is_active]);
+        $user->update(['is_active' => ! $user->is_active]);
         $this->dispatch('notify', message: 'Status pengguna berhasil diperbarui.', type: 'success');
     }
 
     public function delete(int $userId): void
     {
-        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+        $user = User::withoutGlobalScope('branch')->findOrFail($userId);
 
-        if (! auth()->user()->isSuperAdmin() && $user->masjid_id !== auth()->user()->masjid_id) {
+        if (! auth()->user()->isSuperAdmin() && $user->branch_id !== auth()->user()->branch_id) {
             abort(403);
         }
 
-        if ($user->hasRole('super_admin')) {
+        if ($user->isSuperAdmin()) {
             $this->dispatch('notify', message: 'Tidak dapat menghapus Super Admin.', type: 'error');
+
             return;
         }
-        
+
         $user->delete();
         $this->dispatch('notify', message: 'Pengguna berhasil dihapus.', type: 'success');
     }
@@ -61,7 +60,7 @@ new class extends Component {
             abort(403, 'Hanya Super Admin yang dapat melakukan impersonasi.');
         }
 
-        $user = \App\Models\User::withoutGlobalScope('masjid')->findOrFail($userId);
+        $user = User::withoutGlobalScope('branch')->findOrFail($userId);
 
         $this->redirect(route('admin.impersonate', $user->id), navigate: false);
     }
@@ -113,13 +112,9 @@ new class extends Component {
                                 </div>
                             </td>
                             <td class="px-6 py-5">
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($user->roles as $role)
-                                        <span class="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-tighter">
-                                            {{ str_replace('_', ' ', $role->name) }}
-                                        </span>
-                                    @endforeach
-                                </div>
+                                <span class="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-[10px] font-black uppercase tracking-tighter">
+                                    {{ $user->role?->label() ?? 'N/A' }}
+                                </span>
                             </td>
                             <td class="px-6 py-5">
                                 <flux:switch wire:click="toggleStatus('{{ $user->id }}')" :checked="$user->is_active" />
@@ -129,7 +124,7 @@ new class extends Component {
                             </td>
                             <td class="px-6 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    @if($isSuperAdmin && !$user->hasRole('super_admin'))
+                                    @if($isSuperAdmin && !$user->isSuperAdmin())
                                         <flux:button icon="user-circle" size="xs" variant="ghost" 
                                             wire:click="impersonate('{{ $user->id }}')" 
                                             onclick="if(!confirm('Masuk sebagai pengguna ini?')) { event.stopImmediatePropagation(); return false; }" 

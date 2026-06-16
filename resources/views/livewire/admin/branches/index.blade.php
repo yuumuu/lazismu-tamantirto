@@ -56,11 +56,12 @@ new class extends Component {
     {
         $admin = \App\Models\User::withoutGlobalScope('branch')
             ->where('branch_id', $branch->id)
-            ->role('admin')
+            ->where('role', 'admin')
             ->first();
 
         if (! $admin) {
             $this->dispatch('notify', message: 'Tidak ada admin ditemukan untuk cabang ini.', type: 'error');
+
             return;
         }
 

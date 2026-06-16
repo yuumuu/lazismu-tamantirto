@@ -1,5 +1,5 @@
 <script>
-    import { ArrowRight } from "lucide-svelte";
+    import ArrowRight from "lucide-svelte/icons/arrow-right";
     import { Link } from "@inertiajs/svelte";
     export let campaign = {};
 
@@ -62,7 +62,7 @@
         </div>
         {#if campaign.daysRemaining > 0}
             <div
-                class="absolute bottom-4 left-4 rounded-3xl bg-zinc-950/80 px-4 py-2 text-xs font-bold uppercase text-white"
+                class="absolute bottom-4 left-4 rounded-xl bg-zinc-950/80 px-4 py-2 text-xs font-bold uppercase text-white"
             >
                 {campaign.daysRemaining} Hari Lagi
             </div>
@@ -138,7 +138,7 @@
                 </Link>
                 <Link
                     href={`/program/${campaign.slug}`}
-                    class="flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-200 text-zinc-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:text-zinc-300 dark:hover:text-primary"
+                    class="flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 text-zinc-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:text-zinc-300 dark:hover:text-primary"
                 >
                     <ArrowRight class="h-5 w-5" />
                 </Link>

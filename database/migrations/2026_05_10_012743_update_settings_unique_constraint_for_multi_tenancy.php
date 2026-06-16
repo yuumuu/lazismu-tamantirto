@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('settings', function (Blueprint $table) {
             $table->dropUnique(['key']);
-            $table->unique(['masjid_id', 'key']);
+            $table->unique(['branch_id', 'key']);
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropUnique(['masjid_id', 'key']);
+            $table->dropUnique(['branch_id', 'key']);
             $table->unique('key');
         });
     }

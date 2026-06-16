@@ -1,6 +1,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="user-role" content="{{ auth()->check() ? (auth()->user()->roles->first()?->name ?? 'viewer') : 'guest' }}" />
+<meta name="user-role" content="{{ auth()->check() ? (auth()->user()->role?->value ?? 'viewer') : 'guest' }}" />
 
 <title>{{ $title ?? 'Dashboard' }} - {{ ucwords(config('app.name')) }}</title>
 @stack('head')

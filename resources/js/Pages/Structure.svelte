@@ -38,31 +38,34 @@
 
     <section class="py-24 bg-white dark:bg-zinc-950">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-12 lg:grid-cols-4">
                 {#each members as member}
                     <div
-                        class="group flex flex-col items-center text-center overflow-hidden rounded-[48px] border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-2 hover:shadow-xl dark:border-white/5 dark:bg-zinc-950"
+                        class="group flex flex-col items-center text-center space-y-6"
                     >
                         <div
-                            class="relative w-full overflow-hidden rounded-[32px] bg-zinc-100 dark:bg-zinc-900 aspect-[4/5]"
+                            class="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl border-4 border-zinc-50 dark:border-zinc-900 group-hover:border-primary/20 transition-all"
                         >
                             <img
                                 src={member.photo_url ||
                                     "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=900&auto=format&fit=crop"}
                                 alt={member.name}
-                                class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                class="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
                             />
+                            <div
+                                class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-zinc-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                            ></div>
                         </div>
-                        <div class="space-y-2 p-6">
+                        <div class="space-y-1">
                             <h2
-                                class="text-xl font-black text-zinc-900 dark:text-white"
+                                class="text-xl font-black text-zinc-900 dark:text-white group-hover:text-primary transition-colors"
                             >
                                 {member.name}
                             </h2>
                             <p
                                 class="text-xs font-black uppercase text-zinc-400"
                             >
-                                {member.position}
+                                {member.position_name || member.position}
                             </p>
                         </div>
                     </div>

@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Database\Seeders\RolePermissionSeeder;
 
 test('admin pages have correct titles', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('super_admin'); // Changed from 'admin' to 'super_admin'
+    $user = User::factory()->create(['role' => 'super_admin']);
     $this->actingAs($user);
 
     // Test posts index page
@@ -28,9 +25,7 @@ test('admin pages have correct titles', function () {
 });
 
 test('dashboard has correct title', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
     $this->actingAs($user);
 
     $response = $this->get(route('dashboard'));
@@ -39,9 +34,7 @@ test('dashboard has correct title', function () {
 });
 
 test('additional admin pages have correct titles', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
     $this->actingAs($user);
 
     // Test reports page
@@ -66,9 +59,7 @@ test('additional admin pages have correct titles', function () {
 });
 
 test('management pages have correct titles', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
     $this->actingAs($user);
 
     // Test media page
@@ -108,26 +99,17 @@ test('management pages have correct titles', function () {
 });
 
 test('super admin pages have correct titles', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('super_admin');
+    $user = User::factory()->create(['role' => 'super_admin']);
     $this->actingAs($user);
 
     // Test settings page
     $response = $this->get(route('admin.settings.index'));
     $response->assertStatus(200);
     $response->assertSee('<title>Pengaturan Sistem - Lazismu</title>', false);
-
-    // Test roles page
-    $response = $this->get(route('admin.roles.index'));
-    $response->assertStatus(200);
-    $response->assertSee('<title>Manajemen Akses - Lazismu</title>', false);
 });
 
 test('create and edit pages have correct titles', function () {
-    $this->seed(RolePermissionSeeder::class);
-    $user = User::factory()->create();
-    $user->assignRole('super_admin');
+    $user = User::factory()->create(['role' => 'super_admin']);
     $this->actingAs($user);
 
     // Test campaign create page

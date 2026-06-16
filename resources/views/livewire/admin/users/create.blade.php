@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Enums\UserRole;
 use App\Models\User;
-use App\Models\Masjid;
-use Spatie\Permission\Models\Role;
+use App\Models\Branch;
 use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -14,13 +14,13 @@ new class extends Component {
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
-    public array $roles = [];
+    public string $role = '';
     public bool $is_active = true;
-    public ?int $masjid_id = null;
+    public ?int $branch_id = null;
 
-    public function mount()
+    public function mount(): void
     {
-        $this->masjid_id = session('active_masjid_id');
+        $this->branch_id = session('active_branch_id');
     }
 
     public function with(): array
@@ -28,8 +28,10 @@ new class extends Component {
         $isSuperAdmin = auth()->user()->isSuperAdmin();
 
         return [
-            'availableRoles' => Role::when(! $isSuperAdmin, fn ($q) => $q->where('name', '!=', 'super_admin'))->get(),
-            'masjids' => $isSuperAdmin ? Masjid::all() : [],
+            'availableRoles' => $isSuperAdmin
+                ? UserRole::options()
+                : collect(UserRole::options())->except('super_admin')->toArray(),
+            'branches' => $isSuperAdmin ? Branch::all() : [],
             'isSuperAdmin' => $isSuperAdmin,
         ];
     }
@@ -37,33 +39,31 @@ new class extends Component {
     public function save(): void
     {
         if (! auth()->user()->isSuperAdmin()) {
-            $this->masjid_id = auth()->user()->masjid_id;
+            $this->branch_id = auth()->user()->branch_id;
         }
 
-        $validated = $this->validate([
+        $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
-            'roles' => ['required', 'array', 'min:1'],
+            'role' => ['required', 'string', 'in:'.implode(',', UserRole::values())],
             'is_active' => ['boolean'],
-            'masjid_id' => ['required', 'exists:masjids,id'],
+            'branch_id' => ['required', 'exists:branches,id'],
         ]);
 
-        // Security check: ensure non-super-admin can't assign super_admin role
-        if (! auth()->user()->isSuperAdmin() && in_array('super_admin', $this->roles)) {
+        if (! auth()->user()->isSuperAdmin() && $this->role === 'super_admin') {
             abort(403, 'Anda tidak diizinkan membuat Super Admin.');
         }
 
-        $user = User::create([
+        User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
+            'role' => $this->role,
             'is_active' => $this->is_active,
-            'masjid_id' => $this->masjid_id,
-            'email_verified_at' => now(), // Auto-verify for admin-created users
+            'branch_id' => $this->branch_id,
+            'email_verified_at' => now(),
         ]);
-
-        $user->syncRoles($this->roles);
 
         $this->dispatch('notify', message: 'Pengguna baru berhasil ditambahkan.', type: 'success');
         $this->redirect(route('admin.users.index'), navigate: true);
@@ -93,32 +93,24 @@ new class extends Component {
                 <flux:input wire:model="password_confirmation" type="password" label="Konfirmasi Kata Sandi" placeholder="••••••••" required />
             </div>
 
-            <!-- Roles & Status -->
+            <!-- Role & Status -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
                 <div class="space-y-4">
-                    <flux:label>Hak Akses (Roles)</flux:label>
-                    <div class="grid grid-cols-1 gap-2">
-                        @foreach($availableRoles as $role)
-                            <label class="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer group">
-                                <flux:checkbox wire:model="roles" value="{{ $role->name }}" />
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-tight group-hover:text-primary transition-colors">{{ str_replace('_', ' ', $role->name) }}</span>
-                                    <span class="text-[10px] text-zinc-500">Akses level: {{ $role->guard_name }}</span>
-                                </div>
-                            </label>
+                    <flux:select wire:model="role" label="Hak Akses (Role)" placeholder="Pilih role...">
+                        @foreach($availableRoles as $value => $label)
+                            <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
                         @endforeach
-                    </div>
-                    @error('roles') <p class="text-xs text-red-500 font-bold mt-1">{{ $message }}</p> @enderror
+                    </flux:select>
+                    @error('role') <p class="text-xs text-red-500 font-bold mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-4">
                     <flux:label>Pengaturan Akun</flux:label>
                     <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 space-y-6">
                         @if($isSuperAdmin)
-                            <!-- Masjid Selection -->
-                            <flux:select wire:model="masjid_id" label="Cabang / Masjid" placeholder="Pilih Cabang...">
-                                @foreach($masjids as $masjid)
-                                    <flux:select.option value="{{ $masjid->id }}">{{ $masjid->name }}</flux:select.option>
+                            <flux:select wire:model="branch_id" label="Cabang / Branch" placeholder="Pilih Cabang...">
+                                @foreach($branches as $branch)
+                                    <flux:select.option value="{{ $branch->id }}">{{ $branch->name }}</flux:select.option>
                                 @endforeach
                             </flux:select>
                         @endif

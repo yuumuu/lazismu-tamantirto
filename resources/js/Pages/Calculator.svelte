@@ -1,7 +1,8 @@
 <script>
     import Layout from "../Layouts/GuestLayout.svelte";
     import { Link } from "@inertiajs/svelte";
-    import { ArrowRight, Calculator as CalculatorIcon } from "lucide-svelte";
+    import ArrowRight from "lucide-svelte/icons/arrow-right";
+    import CalculatorIcon from "lucide-svelte/icons/calculator";
 
     let {
         goldPrice = 1200000,
@@ -87,7 +88,7 @@
             </div>
 
             <div
-                class="overflow-hidden rounded-[48px] border border-zinc-200 bg-white shadow-2xl dark:border-white/5 dark:bg-zinc-900"
+                class="overflow-hidden rounded-[40px] border border-zinc-200 bg-white shadow-2xl dark:border-white/5 dark:bg-zinc-900"
             >
                 <div
                     class="flex flex-col border-b border-zinc-100 dark:border-white/5 md:flex-row"
@@ -95,19 +96,19 @@
                     <button
                         type="button"
                         onclick={() => (tab = "profesi")}
-                        class={`flex-1 border-b-4 px-6 py-6 text-sm font-black uppercase transition hover:text-primary ${tab === "profesi" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
+                        class={`flex-1 border-b-4 px-6 py-6 text-[10px] md:text-xs font-black uppercase tracking-widest transition hover:text-primary ${tab === "profesi" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
                         >Zakat Profesi</button
                     >
                     <button
                         type="button"
                         onclick={() => (tab = "maal")}
-                        class={`flex-1 border-b-4 px-6 py-6 text-sm font-black uppercase transition hover:text-primary ${tab === "maal" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
+                        class={`flex-1 border-b-4 px-6 py-6 text-[10px] md:text-xs font-black uppercase tracking-widest transition hover:text-primary ${tab === "maal" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
                         >Zakat Maal</button
                     >
                     <button
                         type="button"
                         onclick={() => (tab = "fitrah")}
-                        class={`flex-1 border-b-4 px-6 py-6 text-sm font-black uppercase transition hover:text-primary ${tab === "fitrah" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
+                        class={`flex-1 border-b-4 px-6 py-6 text-[10px] md:text-xs font-black uppercase tracking-widest transition hover:text-primary ${tab === "fitrah" ? "border-primary text-primary" : "border-transparent text-zinc-400 dark:text-zinc-500"}`}
                         >Zakat Fitrah</button
                     >
                 </div>
@@ -142,7 +143,7 @@
                                     />
 
                                     <p
-                                        class="text-sm italic text-zinc-500 dark:text-zinc-400"
+                                        class="text-[10px] italic text-zinc-500 dark:text-zinc-400 font-bold"
                                     >
                                         *Nisab Zakat Profesi setara {goldNisab}gr
                                         emas per tahun ({formatCurrency(
@@ -165,9 +166,9 @@
                                     />
 
                                     <p
-                                        class="text-sm italic text-zinc-500 dark:text-zinc-400"
+                                        class="text-[10px] italic text-zinc-500 dark:text-zinc-400 font-bold"
                                     >
-                                        *Harta yang telah mencapai haul dan
+                                        *Harta yang telah mencapai haul (1 tahun) dan
                                         nisab (setara {goldNisab}gr emas ≈ {formatCurrency(
                                             nisabMaal(),
                                         )}).
@@ -200,10 +201,10 @@
                                     />
 
                                     <p
-                                        class="text-sm italic text-zinc-500 dark:text-zinc-400"
+                                        class="text-[10px] italic text-zinc-500 dark:text-zinc-400 font-bold"
                                     >
                                         *Zakat Fitrah adalah 2.5kg beras per
-                                        jiwa atau setara nilai uang.
+                                        jiwa (atau setara nilai uang).
                                     </p>
                                 </div>
                             {/if}
@@ -214,7 +215,7 @@
                         >
                             <div class="flex items-center gap-4">
                                 <div
-                                    class="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary text-white shadow-lg"
+                                    class="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-white shadow-lg"
                                 >
                                     <CalculatorIcon class="h-6 w-6" />
                                 </div>
@@ -236,12 +237,12 @@
                                 {#if currentZakat() > 0}
                                     <Link
                                         href={donationUrl()}
-                                        class="inline-flex h-16 w-full items-center justify-center rounded-2xl bg-white text-sm font-black uppercase text-primary shadow-xl shadow-primary/20 transition hover:bg-zinc-100"
+                                        class="inline-flex h-16 w-full items-center justify-center rounded-xl bg-white text-sm font-black uppercase text-primary shadow-xl shadow-primary/20 transition hover:bg-zinc-100"
                                         >Tunaikan Sekarang</Link
                                     >
                                 {:else}
                                     <div
-                                        class="rounded-3xl bg-white/10 p-6 text-center text-sm font-black uppercase text-white/80"
+                                        class="rounded-xl bg-white/10 p-6 text-center text-sm font-black uppercase text-white/80"
                                     >
                                         Harta Anda belum mencapai nisab wajib
                                         zakat.

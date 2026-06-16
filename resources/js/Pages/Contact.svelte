@@ -1,16 +1,14 @@
 <script>
     import Layout from "../Layouts/GuestLayout.svelte";
     import { Link } from "@inertiajs/svelte";
-    import {
-        ArrowUpRight,
-        Facebook,
-        Instagram,
-        Mail,
-        MapPin,
-        Phone,
-        Twitter,
-        Youtube,
-    } from "lucide-svelte";
+    import ArrowUpRight from "lucide-svelte/icons/arrow-up-right";
+    import Facebook from "lucide-svelte/icons/facebook";
+    import Instagram from "lucide-svelte/icons/instagram";
+    import Mail from "lucide-svelte/icons/mail";
+    import MapPin from "lucide-svelte/icons/map-pin";
+    import Phone from "lucide-svelte/icons/phone";
+    import Twitter from "lucide-svelte/icons/twitter";
+    import Youtube from "lucide-svelte/icons/youtube";
 
     let {
         address = "",
@@ -21,7 +19,7 @@
         social = {},
     } = $props();
 
-    const contactItems = [
+    const contactItems = $derived([
         {
             icon: MapPin,
             label: "Alamat Kantor",
@@ -37,9 +35,9 @@
             label: "Email Resmi",
             value: email,
         },
-    ];
+    ]);
 
-    const socials = [
+    const socials = $derived([
         {
             provider: "facebook",
             label: "Facebook",
@@ -64,11 +62,12 @@
             icon: Youtube,
             url: social.youtube,
         },
-    ];
+    ]);
 
-    const mapSrc =
+    const mapSrc = $derived(
         mapsUrl ||
-        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15810.835497232338!2d110.32049685!3d-7.82062535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7af80302b11545%3A0xe549646b142921fd!2zTFFSVlVRIChMYXppc01VKSBUYW1hbnRpcnRv!5e0!3m2!1sid!2sid!4v1711234567890";
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15810.835497232338!2d110.32049685!3d-7.82062535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7af80302b11545%3A0xe549646b142921fd!2zTFFSVlVRIChMYXppc01VKSBUYW1hbnRpcnRv!5e0!3m2!1sid!2sid!4v1711234567890"
+    );
 </script>
 
 <svelte:head>
@@ -104,12 +103,9 @@
                                 class="flex items-center gap-6 rounded-[32px] border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-primary/20 dark:border-white/5 dark:bg-zinc-900"
                             >
                                 <div
-                                    class="flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary"
+                                    class="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary"
                                 >
-                                    <svelte:component
-                                        this={item.icon}
-                                        class="h-7 w-7"
-                                    />
+                                    <item.icon class="h-7 w-7" />
                                 </div>
                                 <div>
                                     <p
@@ -142,10 +138,7 @@
                                         rel="noreferrer"
                                         class="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition hover:border-primary hover:text-primary dark:border-white/5 dark:bg-zinc-900 dark:text-zinc-300"
                                     >
-                                        <svelte:component
-                                            this={socialItem.icon}
-                                            class="h-5 w-5"
-                                        />
+                                        <socialItem.icon class="h-5 w-5" />
                                     </a>
                                 {/if}
                             {/each}
@@ -155,7 +148,7 @@
 
                 <div class="space-y-8 lg:sticky lg:top-24">
                     <div
-                        class="overflow-hidden rounded-[48px] border border-zinc-200 bg-white shadow-2xl dark:border-white/5 dark:bg-zinc-900"
+                        class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-white/5 dark:bg-zinc-900"
                     >
                         <iframe
                             title=""
@@ -173,7 +166,7 @@
                         href={mapsUrl || "https://www.google.com/maps"}
                         target="_blank"
                         rel="noreferrer"
-                        class="inline-flex h-16 w-full items-center justify-center rounded-2xl border border-zinc-200 bg-white text-sm font-black uppercase text-zinc-900 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-zinc-950 dark:text-white"
+                        class="inline-flex h-16 w-full items-center justify-center rounded-xl border border-zinc-200 bg-white text-sm font-black uppercase text-zinc-900 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-zinc-950 dark:text-white"
                     >
                         Buka di Google Maps
                         <ArrowUpRight class="ml-3 h-4 w-4" />

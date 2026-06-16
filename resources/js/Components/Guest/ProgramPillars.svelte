@@ -1,18 +1,12 @@
 <script>
-    import {
-        BookOpen,
-        Briefcase,
-        Globe2,
-        Handshake,
-        Heart,
-    } from "lucide-svelte";
+    import Heart from "lucide-svelte/icons/heart";
+    import Briefcase from "lucide-svelte/icons/briefcase";
+    import Handshake from "lucide-svelte/icons/handshake";
+    import Globe2 from "lucide-svelte/icons/globe-2";
+    import GraduationCap from "lucide-svelte/icons/graduation-cap";
 
     const pillars = [
-        {
-            label: "Pendidikan",
-            description: "Beasiswa & Sarana",
-            icon: BookOpen,
-        },
+        { label: "Pendidikan", description: "Beasiswa & Sarana", icon: GraduationCap },
         { label: "Kesehatan", description: "Bantuan Medis", icon: Heart },
         { label: "Ekonomi", description: "Pemberdayaan", icon: Briefcase },
         { label: "Sosial", description: "Dakwah & Relawan", icon: Handshake },
@@ -40,16 +34,17 @@
 
         <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
             {#each pillars as pillar}
+                {@const Icon = pillar.icon}
                 <div
-                    class="group rounded-[48px_0_48px_0] border border-zinc-200 bg-white p-8 text-center shadow-sm transition hover:-translate-y-2 hover:shadow-2xl dark:border-white/5 dark:bg-zinc-950"
+                    class="group rounded-[48px_0_48px_0] border border-zinc-200 bg-white p-8 text-center shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-white/5 dark:bg-zinc-950"
                 >
                     <div
-                        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-white"
+                        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner transition group-hover:bg-primary group-hover:text-white"
                     >
-                        <svelte:component this={pillar.icon} class="h-7 w-7" />
+                        <Icon class="size-8" />
                     </div>
                     <h3
-                        class="text-sm font-black uppercaseem] text-zinc-900 dark:text-white"
+                        class="text-sm font-black text-zinc-900 dark:text-white"
                     >
                         {pillar.label}
                     </h3>

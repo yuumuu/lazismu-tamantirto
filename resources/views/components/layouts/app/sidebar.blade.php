@@ -13,9 +13,9 @@
             <div class="flex items-center gap-3">
                 <flux:icon name="exclamation-triangle" class="size-5" />
                 <span class="text-sm font-bold">
-                    {{ __('Anda sedang masuk sebagai :name (:masjid)', [
+                    {{ __('Anda sedang masuk sebagai :name (:cabang)', [
                         'name' => auth()->user()->name,
-                        'masjid' => auth()->user()->masjid->name ?? 'Cabang',
+                        'cabang' => auth()->user()->branch?->name ?? 'Cabang',
                     ]) }}
                 </span>
             </div>
@@ -36,7 +36,7 @@
         <!-- Brand Identity: Minimalist -->
         <div class="px-6 py-4">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group" wire:navigate>
-                @if (auth()->user()->masjid_id === 1)
+                @if (auth()->user()->branch_id === 1)
                     <img src="/favicon.png" class="size-8 rounded-lg group-hover:scale-105 transition-transform" />
                 @else
                     <div
@@ -48,7 +48,7 @@
                     <span
                         class="text-lg font-bold text-zinc-900 dark:text-white leading-none tracking-tight">{{ auth()->user()->masjid->name ?? 'LAZISMU' }}</span>
                     <span
-                        class="text-[10px] font-medium text-zinc-500 leading-none mt-1">{{ auth()->user()->masjid_id === 1 ? 'Tamantirto' : 'Panel Admin' }}</span>
+                        class="text-[10px] font-medium text-zinc-500 leading-none mt-1">{{ auth()->user()->branch_id === 1 ? 'Tamantirto' : 'Panel Admin' }}</span>
                 </div>
             </a>
         </div>
@@ -132,9 +132,9 @@
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Akses Sistem')" expandable class="mt-4">
-                @if (auth()->user()->hasRole('super_admin'))
-                    <flux:navlist.item icon="building-office-2" :href="route('admin.masjids.index')"
-                        :current="request()->routeIs('admin.masjids.*')" wire:navigate>
+                @if (auth()->user()->isSuperAdmin())
+                    <flux:navlist.item icon="building-office-2" :href="route('admin.branches.index')"
+                        :current="request()->routeIs('admin.branches.*')" wire:navigate>
                         {{ __('Kelola Cabang') }}
                     </flux:navlist.item>
                 @endif
@@ -142,12 +142,6 @@
                     :current="request()->routeIs('admin.users.*')" wire:navigate>
                     {{ __('Manajemen Pengguna') }}
                 </flux:navlist.item>
-                @if (auth()->user()->masjid_id === 1)
-                    <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')"
-                        :current="request()->routeIs('admin.roles.*')" wire:navigate>
-                        {{ __('Manajemen Akses') }}
-                    </flux:navlist.item>
-                @endif
                 <flux:navlist.item icon="clock" :href="route('admin.activities.index')"
                     :current="request()->routeIs('admin.activities.*')" wire:navigate>
                     {{ __('Aktivitas Terbaru') }}
@@ -158,7 +152,7 @@
                 </flux:navlist.item>
             </flux:navlist.group>
 
-            @if (auth()->user()->hasRole('super_admin'))
+            @if (auth()->user()->isSuperAdmin())
                 <flux:navlist.group :heading="__('Monitoring')" expandable class="mt-4">
                     <flux:navlist.item icon="chart-bar-square" :href="route('admin.monitoring.index')"
                         :current="request()->routeIs('admin.monitoring.*')" wire:navigate>

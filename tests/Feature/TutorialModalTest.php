@@ -9,10 +9,7 @@ use Livewire\Volt\Volt;
 uses(RefreshDatabase::class);
 
 test('tutorial modal can be opened and closed', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
 
     $this->actingAs($user);
 
@@ -25,10 +22,7 @@ test('tutorial modal can be opened and closed', function () {
 });
 
 test('tutorial modal shows available tutorials for user role', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
 
     $this->actingAs($user);
 
@@ -47,10 +41,7 @@ test('tutorial modal shows available tutorials for user role', function () {
 });
 
 test('super admin has access to all tutorials', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('super_admin');
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $this->actingAs($user);
 
@@ -67,10 +58,7 @@ test('super admin has access to all tutorials', function () {
 });
 
 test('viewer has limited tutorial access', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('viewer');
+    $user = User::factory()->create(['role' => 'viewer']);
 
     $this->actingAs($user);
 

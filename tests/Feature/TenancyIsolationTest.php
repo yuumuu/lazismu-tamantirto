@@ -8,20 +8,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-
     $this->centralMasjid = Masjid::factory()->create(['id' => 1, 'name' => 'Lazismu Pusat']);
 
-    $this->superAdmin = User::factory()->create(['masjid_id' => 1]);
-    $this->superAdmin->assignRole('super_admin');
+    $this->superAdmin = User::factory()->create(['masjid_id' => 1, 'role' => 'super_admin']);
 
     $this->tenantMasjid = Masjid::factory()->create(['name' => 'Masjid Cabang A']);
-    $this->tenantAdmin = User::factory()->create(['masjid_id' => $this->tenantMasjid->id]);
-    $this->tenantAdmin->assignRole('admin');
+    $this->tenantAdmin = User::factory()->create(['masjid_id' => $this->tenantMasjid->id, 'role' => 'admin']);
 
     $this->otherMasjid = Masjid::factory()->create(['name' => 'Masjid Cabang B']);
-    $this->otherAdmin = User::factory()->create(['masjid_id' => $this->otherMasjid->id]);
-    $this->otherAdmin->assignRole('admin');
+    $this->otherAdmin = User::factory()->create(['masjid_id' => $this->otherMasjid->id, 'role' => 'admin']);
 });
 
 // ==================== SIDEBAR MENU ISOLATION ====================
@@ -66,8 +61,7 @@ test('tenant admin can access user management', function () {
 });
 
 test('tenant admin cannot impersonate users', function () {
-    $tenantUser = User::factory()->create(['masjid_id' => $this->tenantMasjid->id]);
-    $tenantUser->assignRole('editor');
+    $tenantUser = User::factory()->create(['masjid_id' => $this->tenantMasjid->id, 'role' => 'editor']);
 
     $this->actingAs($this->tenantAdmin)
         ->withSession(['active_masjid_id' => $this->tenantMasjid->id])
@@ -77,10 +71,10 @@ test('tenant admin cannot impersonate users', function () {
 
 // ==================== RBAC ROUTE PROTECTION ====================
 
-test('tenant admin cannot access roles management', function () {
+test('tenant admin cannot access branches management', function () {
     $this->actingAs($this->tenantAdmin)
         ->withSession(['active_masjid_id' => $this->tenantMasjid->id])
-        ->get(route('admin.roles.index'))
+        ->get(route('admin.branches.index'))
         ->assertForbidden();
 });
 

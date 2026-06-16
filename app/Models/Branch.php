@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Hash;
 
 class Branch extends Model
 {
@@ -26,16 +27,15 @@ class Branch extends Model
     protected static function booted(): void
     {
         static::created(function (Branch $branch) {
-            $user = User::create([
+            User::create([
                 'name' => 'Admin '.$branch->name,
                 'email' => 'admin@'.($branch->slug === 'pusat' ? 'lazismu.org' : $branch->slug.'.org'),
-                'password' => \Illuminate\Support\Facades\Hash::make('Lazismu123!'),
+                'password' => Hash::make('Lazismu123!'),
                 'email_verified_at' => now(),
                 'is_active' => true,
                 'branch_id' => $branch->id,
+                'role' => 'admin',
             ]);
-
-            $user->assignRole('admin');
         });
     }
 

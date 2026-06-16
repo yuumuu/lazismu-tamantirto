@@ -7,9 +7,7 @@ use App\Models\User;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-    $this->admin = User::factory()->create();
-    $this->admin->assignRole('admin');
+    $this->admin = User::factory()->create(['role' => 'admin']);
     $this->actingAs($this->admin);
 });
 

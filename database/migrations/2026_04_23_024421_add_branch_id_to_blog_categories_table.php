@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blog_categories', function (Blueprint $table) {
-            $table->foreignId('masjid_id')
+            $table->foreignId('branch_id')
                 ->nullable()
                 ->after('id')
                 ->index()
-                ->constrained('masjids')
+                ->constrained('branches')
                 ->onDelete('cascade');
         });
     }
@@ -27,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('blog_categories', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('masjid_id');
+            $table->dropConstrainedForeignId('branch_id');
         });
     }
 };

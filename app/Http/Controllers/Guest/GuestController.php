@@ -7,13 +7,16 @@ namespace App\Http\Controllers\Guest;
 use App\Enums\WithdrawalStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\Branch;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\FinancialReport;
 use App\Models\TeamMember;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -52,11 +55,17 @@ class GuestController extends Controller
         // 4. Stats for counter (cached for 5 minutes using helper)
         $stats = cached_guest_stats();
 
+        // 5. Active branches for branch listing
+        $activeBranches = Branch::withoutGlobalScope('branch')
+            ->active()
+            ->get(['id', 'name', 'slug', 'type', 'logo', 'address']);
+
         return Inertia::render('Welcome', [
             'featuredCampaigns' => $featuredCampaigns,
             'latestPosts' => $latestPosts,
             'banners' => $banners,
             'stats' => $stats,
+            'activeBranches' => $activeBranches,
         ]);
     }
 
@@ -65,12 +74,12 @@ class GuestController extends Controller
      */
     public function campaignsIndex(Request $request)
     {
-        // Get filter parameters
         $categoryId = $request->input('category');
         $type = $request->input('type');
         $search = $request->input('search');
+        $sort = $request->input('sort', 'latest');
 
-        $campaigns = Campaign::withoutGlobalScope('branch')
+        $query = Campaign::withoutGlobalScope('branch')
             ->active()
             ->published()
             ->with(['category', 'branch'])
@@ -78,18 +87,30 @@ class GuestController extends Controller
             ->withSum('verifiedDonations', 'amount')
             ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
             ->when($type, fn ($q) => $q->where('type', $type))
-            ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
-            ->latest()
-            ->paginate(12)
-            ->withQueryString();
+            ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"));
 
-        // Use cached categories helper
+        $query = match ($sort) {
+            'urgent' => $query->where('is_urgent', true)->latest(),
+            'target' => $query->orderByDesc('target_amount'),
+            default => $query->latest(),
+        };
+
+        $campaigns = $query->paginate(12)->withQueryString();
+
+        $campaigns->getCollection()->transform(function ($campaign) {
+            $campaign->featured_image_url = $campaign->featured_image
+                ? asset('storage/'.$campaign->featured_image)
+                : null;
+
+            return $campaign;
+        });
+
         $categories = cached_campaign_categories();
 
         return Inertia::render('Campaigns/Index', [
             'campaigns' => $campaigns,
             'categories' => $categories,
-            'filters' => request()->only(['category', 'type', 'search'])
+            'filters' => request()->only(['category', 'type', 'search', 'sort']),
         ]);
     }
 
@@ -98,7 +119,6 @@ class GuestController extends Controller
      */
     public function campaignShow(Request $request, string $slug)
     {
-        // Optimized query: 4-6 queries total instead of 8-12
         $campaign = Campaign::withoutGlobalScope('branch')
             ->active()
             ->where('slug', $slug)
@@ -107,28 +127,30 @@ class GuestController extends Controller
             ->withSum('verifiedDonations', 'amount')
             ->firstOrFail();
 
-        // Get latest donors with single query
         $donors = $campaign->verifiedDonations()
             ->latest()
             ->take(10)
             ->get();
 
-        // Use eager loaded count instead of separate query
         $donorsCount = $campaign->verified_donations_count;
 
-        // Fetch related blog posts (berita penyaluran donasi)
-        $relatedPosts = \App\Models\BlogPost::withoutGlobalScope('branch')
+        $relatedPosts = BlogPost::withoutGlobalScope('branch')
             ->published()
             ->where('campaign_id', $campaign->id)
             ->latest()
             ->take(5)
             ->get();
 
+        $campaign->featured_image_url = $campaign->featured_image
+            ? asset('storage/'.$campaign->featured_image)
+            : null;
+
         return Inertia::render('Campaigns/Show', [
             'campaign' => $campaign,
             'donors' => $donors,
             'donorsCount' => $donorsCount,
             'relatedPosts' => $relatedPosts,
+            'whatsapp' => setting('contact_whatsapp', '08123456789'),
         ]);
     }
 
@@ -144,7 +166,15 @@ class GuestController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        $categories = \App\Models\BlogCategory::all()->map(fn ($cat) => [
+        $posts->getCollection()->transform(function ($post) {
+            $post->featured_image_url = $post->featured_image
+                ? asset('storage/'.$post->featured_image)
+                : null;
+
+            return $post;
+        });
+
+        $categories = cached_blog_categories()->map(fn ($cat) => [
             'id' => $cat->id,
             'name' => $cat->name,
         ]);
@@ -167,8 +197,115 @@ class GuestController extends Controller
             ->with(['category', 'author'])
             ->firstOrFail();
 
+        $post->incrementViewCount();
+
+        $relatedPosts = BlogPost::withoutGlobalScope('branch')
+            ->published()
+            ->where('id', '!=', $post->id)
+            ->where('category_id', $post->category_id)
+            ->with('category')
+            ->take(2)
+            ->get()
+            ->map(fn ($related) => [
+                'id' => $related->id,
+                'title' => $related->title,
+                'slug' => $related->slug,
+                'featured_image_url' => $related->featured_image
+                    ? asset('storage/'.$related->featured_image)
+                    : null,
+                'category' => $related->category ? ['name' => $related->category->name] : null,
+            ]);
+
+        $categories = BlogCategory::withCount('posts')
+            ->take(5)
+            ->get()
+            ->map(fn ($cat) => [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'posts_count' => $cat->posts_count,
+            ]);
+
+        $post->featured_image_url = $post->featured_image
+            ? asset('storage/'.$post->featured_image)
+            : null;
+
         return Inertia::render('Posts/Show', [
             'post' => $post,
+            'relatedPosts' => $relatedPosts,
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Display branch-specific landing page.
+     */
+    public function branchShow(string $branch_slug): Response
+    {
+        $branch = Branch::where('slug', $branch_slug)->active()->firstOrFail();
+
+        $campaigns = Campaign::active()
+            ->with(['category', 'branch'])
+            ->withCount('verifiedDonations')
+            ->withSum('verifiedDonations', 'amount')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $posts = BlogPost::published()
+            ->with('category')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $stats = [
+            'totalCampaigns' => Campaign::active()->count(),
+            'totalDonations' => Donation::verified()->count(),
+            'donationAmount' => Donation::verified()->sum('amount'),
+            'beneficiaries' => Withdrawal::where('status', WithdrawalStatus::Sent)->count(),
+        ];
+
+        return Inertia::render('Branch/Show', [
+            'branch' => [
+                'id' => $branch->id,
+                'name' => $branch->name,
+                'slug' => $branch->slug,
+                'logo_url' => $branch->logo ? asset('storage/'.$branch->logo) : null,
+                'address' => $branch->address,
+                'phone' => $branch->phone,
+                'email' => $branch->email,
+                'type' => $branch->type,
+            ],
+            'campaigns' => $campaigns,
+            'posts' => $posts,
+            'stats' => $stats,
+            'contact' => [
+                'address' => setting('contact_address', $branch->address ?? ''),
+                'phone' => setting('contact_phone', $branch->phone ?? ''),
+                'email' => setting('contact_email', $branch->email ?? ''),
+            ],
+        ]);
+    }
+
+    /**
+     * Display branch-specific campaign listings.
+     */
+    public function branchCampaigns(string $branch_slug): Response
+    {
+        $branch = Branch::where('slug', $branch_slug)->active()->firstOrFail();
+
+        $campaigns = Campaign::active()
+            ->with(['category', 'branch'])
+            ->withCount('verifiedDonations')
+            ->withSum('verifiedDonations', 'amount')
+            ->latest()
+            ->paginate(12);
+
+        return Inertia::render('Branch/Campaigns', [
+            'branch' => [
+                'name' => $branch->name,
+                'slug' => $branch->slug,
+            ],
+            'campaigns' => $campaigns,
         ]);
     }
 
@@ -180,6 +317,7 @@ class GuestController extends Controller
         $previewMembers = TeamMember::withoutGlobalScope('branch')
             ->active()
             ->ordered()
+            ->with('structure')
             ->take(4)
             ->get()
             ->map(fn (TeamMember $member) => [
@@ -244,62 +382,61 @@ class GuestController extends Controller
         $startDate = now()->startOfMonth();
         $endDate = now()->endOfMonth();
 
-        $totalIncome = Donation::withoutGlobalScope('branch')
-            ->verified()
-            ->sum('amount');
+        $cacheKey = 'guest_reports_'.md5($startDate->toDateString().$endDate->toDateString());
 
-        $withdrawalsQuery = Withdrawal::withoutGlobalScope('branch')
-            ->where('status', WithdrawalStatus::Sent);
+        $data = Cache::remember($cacheKey, 300, function () use ($startDate, $endDate) {
+            $totalIncome = Donation::withoutGlobalScope('branch')
+                ->verified()
+                ->sum('amount');
 
-        $totalOutcome = $withdrawalsQuery->sum('amount');
-        $withdrawalCount = $withdrawalsQuery->count();
-        $balance = $totalIncome - $totalOutcome;
+            $withdrawalsQuery = Withdrawal::withoutGlobalScope('branch')
+                ->where('status', WithdrawalStatus::Sent);
 
-        $donations = Donation::withoutGlobalScope('branch')
-            ->verified()
-            ->whereBetween('verified_at', [$startDate, $endDate])
-            ->get();
+            $totalOutcome = $withdrawalsQuery->sum('amount');
+            $withdrawalCount = $withdrawalsQuery->count();
+            $balance = $totalIncome - $totalOutcome;
 
-        $withdrawals = Withdrawal::withoutGlobalScope('branch')
-            ->with('mustahik')
-            ->where('status', WithdrawalStatus::Sent)
-            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
-            ->get();
+            $donations = Donation::withoutGlobalScope('branch')
+                ->verified()
+                ->whereBetween('verified_at', [$startDate, $endDate])
+                ->get();
 
-        $recentActivity = $donations
-            ->map(fn ($donation) => [
-                'type' => 'income',
-                'label' => $donation->is_anonymous ? 'Donasi: Hamba Allah' : 'Donasi: ' . $donation->donor_name,
-                'amount' => $donation->amount,
-                'date' => $donation->verified_at,
-            ])
-            ->concat($withdrawals->map(fn ($withdrawal) => [
-                'type' => 'outcome',
-                'label' => 'Penyaluran: ' . ($withdrawal->mustahik?->name ?? 'Program Kemanusiaan'),
-                'amount' => $withdrawal->amount,
-                'date' => $withdrawal->date,
-            ]))
-            ->sortByDesc('date')
-            ->values()
-            ->all();
+            $withdrawals = Withdrawal::withoutGlobalScope('branch')
+                ->with('mustahik')
+                ->where('status', WithdrawalStatus::Sent)
+                ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->get();
 
-        $publicReports = FinancialReport::where('is_published', true)
-            ->latest()
-            ->get()
-            ->map(fn ($report) => [
-                'title' => $report->title,
-                'year' => $report->year,
-                'file_url' => $report->file_url,
-            ]);
+            $recentActivity = $donations
+                ->map(fn ($donation) => [
+                    'type' => 'income',
+                    'label' => $donation->is_anonymous ? 'Donasi: Hamba Allah' : 'Donasi: '.$donation->donor_name,
+                    'amount' => $donation->amount,
+                    'date' => $donation->verified_at,
+                ])
+                ->concat($withdrawals->map(fn ($withdrawal) => [
+                    'type' => 'outcome',
+                    'label' => 'Penyaluran: '.($withdrawal->mustahik?->name ?? 'Program Kemanusiaan'),
+                    'amount' => $withdrawal->amount,
+                    'date' => $withdrawal->date,
+                ]))
+                ->sortByDesc('date')
+                ->values()
+                ->all();
 
-        return Inertia::render('Reports', [
-            'totalIncome' => $totalIncome,
-            'totalOutcome' => $totalOutcome,
-            'withdrawalCount' => $withdrawalCount,
-            'balance' => $balance,
-            'recentActivity' => $recentActivity,
-            'publicReports' => $publicReports,
-        ]);
+            $publicReports = FinancialReport::where('is_published', true)
+                ->latest()
+                ->get()
+                ->map(fn ($report) => [
+                    'title' => $report->title,
+                    'year' => $report->year,
+                    'file_url' => $report->file_url,
+                ]);
+
+            return compact('totalIncome', 'totalOutcome', 'withdrawalCount', 'balance', 'recentActivity', 'publicReports');
+        });
+
+        return Inertia::render('Reports', $data);
     }
 
     /**

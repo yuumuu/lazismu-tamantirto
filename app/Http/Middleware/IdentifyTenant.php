@@ -16,7 +16,7 @@ class IdentifyTenant
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -48,7 +48,7 @@ class IdentifyTenant
         session(['active_branch_id' => $activeBranchId]);
 
         // 4. Security: Cross-tenant access protection
-        if (Auth::check() && ! Auth::user()->isSuperAdmin()) {
+        if (Auth::check() && ! Auth::user()->isSuperAdmin() && Auth::user()->branch_id !== null) {
             if ((int) $activeBranchId !== (int) Auth::user()->branch_id) {
                 // If trying to access admin area of another branch, block it.
                 if ($request->is('admin*') || $request->is('manage*')) {

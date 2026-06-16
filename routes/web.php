@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ImpersonationController;
+use App\Http\Controllers\Guest\DonateController;
+use App\Http\Controllers\Guest\GuestController;
+use App\Http\Controllers\Guest\NeedController;
+use App\Models\Page;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
 
 // Impersonation Leave (Global to avoid domain/prefix issues)
-Route::post('/admin/impersonate/leave', [App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])->name('admin.impersonate.leave');
+Route::post('/admin/impersonate/leave', [ImpersonationController::class, 'leave'])->name('admin.impersonate.leave');
 
 // Favicon route with proper cache headers
 Route::get('/favicon.{ext}', function ($ext) {
@@ -67,7 +72,6 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
             // Master Data & Content
             Route::prefix('manage')->name('admin.')->group(function () {
                 Volt::route('/muzakkis', 'admin.muzakkis.index')->name('muzakkis.index');
-                Volt::route('/muzakkis/import', 'admin.muzakkis.import')->name('muzakkis.import');
                 Volt::route('/muzakkis/create', 'admin.muzakkis.create')->name('muzakkis.create');
                 Volt::route('/muzakkis/{muzakki}/edit', 'admin.muzakkis.edit')->name('muzakkis.edit');
 
@@ -91,6 +95,10 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                 Volt::route('/media', 'admin.media.index')->name('media.index');
                 Volt::route('/settings', 'admin.settings.index')->name('settings.index');
 
+                Route::prefix('needs')->name('needs.')->group(function () {
+                    Volt::route('/', 'admin.needs.index')->name('index');
+                });
+
                 // User Management (accessible by tenant admins, scoped by branch_id)
                 Route::prefix('users')->name('users.')->group(function () {
                     Volt::route('/', 'admin.users.index')->name('index');
@@ -112,22 +120,14 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
                     Volt::route('/{banner}/edit', 'admin.banners.edit')->name('edit');
                 });
 
-                // RBAC Management
+                // Super Admin Management
                 Route::middleware('role:super_admin')->group(function () {
-                    Volt::route('/roles', 'admin.roles.index')->name('roles.index');
-                    Volt::route('/roles/create', 'admin.roles.create')->name('roles.create');
-                    Volt::route('/roles/{role}/edit', 'admin.roles.edit')->name('roles.edit');
-
-                    Volt::route('/permissions', 'admin.permissions.index')->name('permissions.index');
-                    Volt::route('/permissions/create', 'admin.permissions.create')->name('permissions.create');
-                    Volt::route('/permissions/{permission}/edit', 'admin.permissions.edit')->name('permissions.edit');
-
                     Volt::route('/branches', 'admin.branches.index')->name('branches.index');
                     Volt::route('/branches/create', 'admin.branches.create')->name('branches.create');
                     Volt::route('/branches/{branch}/edit', 'admin.branches.edit')->name('branches.edit');
 
                     // Impersonation Start
-                    Route::get('/impersonate/{user}', [App\Http\Controllers\Admin\ImpersonationController::class, 'impersonate'])->name('impersonate');
+                    Route::get('/impersonate/{user}', [ImpersonationController::class, 'impersonate'])->name('impersonate');
                 });
             });
 
@@ -143,23 +143,33 @@ Route::domain($adminDomain)->group(function () use ($sameDomain) {
 
 // Guest / Public Routes
 Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'home'])->name('home');
+    Route::get('/', [GuestController::class, 'home'])->name('home');
 
     Route::prefix('program')->name('campaigns.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'campaignsIndex'])->name('index');
-        Route::get('/{slug}', [App\Http\Controllers\Guest\GuestController::class, 'campaignShow'])->name('show');
+        Route::get('/', [GuestController::class, 'campaignsIndex'])->name('index');
+        Route::get('/{slug}', [GuestController::class, 'campaignShow'])->name('show');
     });
 
     Route::prefix('berita')->name('posts.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Guest\GuestController::class, 'postsIndex'])->name('index');
-        Route::get('/{slug}', [App\Http\Controllers\Guest\GuestController::class, 'postShow'])->name('show');
+        Route::get('/', [GuestController::class, 'postsIndex'])->name('index');
+        Route::get('/{slug}', [GuestController::class, 'postShow'])->name('show');
     });
 
-    Route::get('/tentang', [App\Http\Controllers\Guest\GuestController::class, 'about'])->name('about');
-    Route::get('/struktur', [App\Http\Controllers\Guest\GuestController::class, 'structure'])->name('structure');
-    Route::get('/kontak', [App\Http\Controllers\Guest\GuestController::class, 'contact'])->name('contact');
-    Route::get('/laporan', [App\Http\Controllers\Guest\GuestController::class, 'reports'])->name('reports');
-    Route::get('/zakat-kalkulator', [App\Http\Controllers\Guest\GuestController::class, 'calculator'])->name('calculator');
+    Route::get('/tentang', [GuestController::class, 'about'])->name('about');
+    Route::get('/struktur', [GuestController::class, 'structure'])->name('structure');
+    Route::get('/kontak', [GuestController::class, 'contact'])->name('contact');
+    Route::get('/laporan', [GuestController::class, 'reports'])->name('reports');
+    Route::get('/zakat-kalkulator', [GuestController::class, 'calculator'])->name('calculator');
+
+    Route::prefix('cabang/{branch_slug}')->name('branches.')->group(function () {
+        Route::get('/', [GuestController::class, 'branchShow'])->name('show');
+        Route::get('/program', [GuestController::class, 'branchCampaigns'])->name('campaigns');
+    });
+
+    Route::get('/pengajuan', [NeedController::class, 'create'])->name('needs.create');
+    Route::post('/pengajuan', [NeedController::class, 'store'])->name('needs.store');
+    Route::get('/cek-status', [NeedController::class, 'checkStatusForm'])->name('needs.status');
+    Route::post('/cek-status', [NeedController::class, 'checkStatus'])->name('needs.status.check');
 
     Route::get('/halaman/{slug}', function () {
         return view('guest.pages.show');
@@ -167,15 +177,18 @@ Route::domain(env('APP_DOMAIN', 'lazismu.test'))->name('guest.')->group(function
 
     // Donation Flow
     Route::prefix('donasi')->name('donate.')->group(function () {
-        Route::post('/submit', [\App\Http\Controllers\Guest\DonateController::class, 'submit'])->name('submit');
-        Route::post('/pilih-pembayaran/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'selectPayment'])->name('selectPayment');
-        
-        Route::get('/pembayaran/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'payment'])->name('payment');
-        Route::get('/konfirmasi/{donation_id}', [\App\Http\Controllers\Guest\DonateController::class, 'confirm'])->name('confirm');
-        Route::get('/berhasil/{donation}', [\App\Http\Controllers\Guest\DonateController::class, 'success'])->name('success');
-        
+        Route::post('/submit', [DonateController::class, 'submit'])->name('submit');
+        Route::post('/pilih-pembayaran/{donation_id}', [DonateController::class, 'selectPayment'])->name('selectPayment');
+
+        Route::get('/pembayaran/{donation_id}', [DonateController::class, 'payment'])->name('payment');
+        Route::get('/konfirmasi/{donation_id}', [DonateController::class, 'confirm'])->name('confirm');
+        Route::get('/status/{donation_id}', [DonateController::class, 'status'])->name('status');
+        Route::post('/upload-proof/{donation_id}', [DonateController::class, 'uploadProof'])->name('uploadProof');
+
+        Route::get('/berhasil/{donation}', [DonateController::class, 'success'])->name('success');
+
         // Put this last to avoid catching other routes
-        Route::get('/{campaign_slug?}', [\App\Http\Controllers\Guest\DonateController::class, 'form'])->name('form');
+        Route::get('/{campaign_slug?}', [DonateController::class, 'form'])->name('form');
     });
 
     // Handle Fortify default redirect
@@ -205,7 +218,7 @@ Route::middleware(['auth'])->group(function () {
 
 // 3. Fallback Page Routes (Must be at the very bottom)
 Route::get('/{slug}', function (string $slug) {
-    $page = App\Models\Page::where('slug', '=', $slug, true)->firstOrFail();
+    $page = Page::where('slug', '=', $slug, true)->firstOrFail();
 
     return view('guest.pages.show', compact('page'));
 })->name('guest.page');

@@ -37,11 +37,11 @@ return new class extends Migration
 
         foreach ($tables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
-                $table->foreignId('masjid_id')
+                $table->foreignId('branch_id')
                     ->nullable()
                     ->after('id')
                     ->index()
-                    ->constrained('masjids')
+                    ->constrained('branches')
                     ->onDelete('cascade');
             });
         }
@@ -78,7 +78,7 @@ return new class extends Migration
 
         foreach ($tables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
-                $table->dropConstrainedForeignId('masjid_id');
+                $table->dropConstrainedForeignId('branch_id');
             });
         }
     }

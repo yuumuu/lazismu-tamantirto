@@ -7,12 +7,9 @@ use App\Models\AuditLog;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\User;
-use Database\Seeders\RolePermissionSeeder;
 
 beforeEach(function () {
-    $this->seed(RolePermissionSeeder::class);
-    $this->user = User::factory()->create();
-    $this->user->assignRole('admin');
+    $this->user = User::factory()->create(['role' => 'admin']);
     $this->campaign = Campaign::factory()->create();
 });
 

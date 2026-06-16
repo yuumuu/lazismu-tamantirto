@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('masjids', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('type', 50)->default('masjid');
             $table->string('logo')->nullable();
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('masjids');
+        Schema::dropIfExists('branches');
     }
 };

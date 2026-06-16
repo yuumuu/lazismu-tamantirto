@@ -6,13 +6,10 @@ use App\Enums\DonationStatus;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\User;
-use Database\Seeders\RolePermissionSeeder;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
-    $this->seed(RolePermissionSeeder::class);
-    $this->user = User::factory()->create();
-    $this->user->assignRole('admin'); // Assign admin role for testing
+    $this->user = User::factory()->create(['role' => 'admin']);
     $this->campaign = Campaign::factory()->create();
 });
 

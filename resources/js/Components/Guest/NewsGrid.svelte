@@ -1,5 +1,5 @@
 <script>
-    import { ArrowRight } from "lucide-svelte";
+    import ArrowRight from "lucide-svelte/icons/arrow-right";
     import { Link } from "@inertiajs/svelte";
     export let posts = [];
 

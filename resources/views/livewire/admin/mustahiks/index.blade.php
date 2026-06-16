@@ -1,15 +1,24 @@
 <?php
 
+use App\Imports\MustahikImport;
 use App\Models\Mustahik;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 new class extends Component {
-    use WithPagination;
+    use WithFileUploads, WithPagination;
 
     public string $search = '';
     public string $sortField = 'created_at';
     public string $sortDirection = 'desc';
+
+    public $importFile;
+    public int $importCount = 0;
+    public int $importErrorCount = 0;
+    public array $importErrors = [];
+    public bool $importing = false;
 
     public function with(): array
     {
@@ -44,6 +53,42 @@ new class extends Component {
         $mustahik->update(['is_active' => !$mustahik->is_active]);
         $this->dispatch('notify', message: 'Status Mustahik diperbarui.', type: 'success');
     }
+
+    public function openImportModal(): void
+    {
+        $this->reset(['importFile', 'importCount', 'importErrorCount', 'importErrors', 'importing']);
+        $this->js('$flux.modal("import-mustahik-modal").show()');
+    }
+
+    public function import(): void
+    {
+        $this->validate([
+            'importFile' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
+        ]);
+
+        $this->importing = true;
+        $this->importCount = 0;
+        $this->importErrorCount = 0;
+        $this->importErrors = [];
+
+        try {
+            $import = new MustahikImport;
+            Excel::import($import, $this->importFile->getRealPath());
+
+            $this->importCount = $import->getProcessedRows();
+            $failures = $import->failures();
+            $this->importErrorCount = count($failures);
+            $this->importErrors = collect($failures)->map(fn($f) => 'Baris ' . $f->row() . ': ' . implode(', ', $f->errors()))->toArray();
+
+            \Flux::toast('Import selesai! ' . $this->importCount . ' data berhasil diimpor.', variant: 'success');
+        } catch (\Exception $e) {
+            $this->importErrors[] = 'Kesalahan: ' . $e->getMessage();
+            $this->importErrorCount++;
+            \Flux::toast('Gagal mengimpor file.', variant: 'danger');
+        }
+
+        $this->importing = false;
+    }
 }; ?>
 
 @push('head')
@@ -62,9 +107,14 @@ new class extends Component {
                 {{ __('Database penerima manfaat terklasifikasi berdasarkan asnaf.') }}
             </p>
         </div>
-        <flux:button variant="primary" icon="plus" :href="route('admin.mustahiks.create')" wire:navigate>
-            {{ __('Tambah Mustahik') }}
-        </flux:button>
+        <div class="flex items-center gap-2">
+            <flux:button icon="document-arrow-up" variant="subtle" wire:click="openImportModal">
+                {{ __('Import CSV') }}
+            </flux:button>
+            <flux:button variant="primary" icon="plus" :href="route('admin.mustahiks.create')" wire:navigate>
+                {{ __('Tambah Mustahik') }}
+            </flux:button>
+        </div>
     </div>
 
     <!-- Toolbar -->
@@ -146,6 +196,55 @@ new class extends Component {
             {{ $mustahiks->links() }}
         </div>
     </div>
+
+    <!-- Import Modal -->
+    <flux:modal name="import-mustahik-modal" class="max-w-lg">
+        <form wire:submit="import" class="space-y-6">
+            <div>
+                <flux:heading>Import Mustahik (CSV/Excel)</flux:heading>
+                <flux:subheading>
+                    Upload file CSV atau Excel dengan kolom: <strong>nama</strong>, <strong>alamat</strong>, <strong>telepon</strong>/<strong>phone</strong>, <strong>asnaf</strong>, <strong>nik</strong>, <strong>no_kk</strong>, <strong>pekerjaan</strong>, <strong>penghasilan</strong>, <strong>domisili</strong>, <strong>catatan</strong>.
+                </flux:subheading>
+            </div>
+
+            <flux:field>
+                <flux:label>Pilih File</flux:label>
+                <flux:input type="file" wire:model="importFile" accept=".csv,.xlsx,.xls" />
+                <flux:error name="importFile" />
+                <p class="text-xs text-zinc-400 mt-1">Maksimal 5MB. Format CSV, XLSX, atau XLS.</p>
+            </flux:field>
+
+            @if($importErrors)
+                <div class="space-y-2">
+                    @if($importCount > 0)
+                        <div class="p-3 bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 rounded-lg text-sm font-medium">
+                            {{ $importCount }} data berhasil diimpor.
+                        </div>
+                    @endif
+                    @if($importErrorCount > 0)
+                        <div class="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">
+                            <p class="font-medium mb-1">{{ $importErrorCount }} kesalahan:</p>
+                            <ul class="list-disc pl-4 space-y-0.5">
+                                @foreach($importErrors as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Tutup</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="primary" :disabled="$importing">
+                    <span wire:loading.remove wire:target="import">Import Data</span>
+                    <span wire:loading wire:target="import">Mengimpor...</span>
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
 </div>
 
 

@@ -8,10 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('tutorial system shows navigation step when on wrong page', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
 
     // Test from dashboard page - should work directly
     $response = $this->actingAs($user)->get('/admin/dashboard');
@@ -25,17 +22,14 @@ test('tutorial system shows navigation step when on wrong page', function () {
 
 test('tutorial pages are correctly mapped', function () {
     // Test that all tutorial pages exist and are accessible
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('super_admin');
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $tutorialPages = [
         'dashboard-overview' => '/admin/dashboard',
         'campaign-management' => '/admin/campaigns',
         'donation-verification' => '/admin/donations',
         'user-management' => '/admin/manage/users',
-        'role-permission' => '/admin/manage/roles',
+        'role-permission' => '/admin/manage/branches',
         'reports-overview' => '/admin/reports',
     ];
 
@@ -46,28 +40,21 @@ test('tutorial pages are correctly mapped', function () {
 });
 
 test('settings tutorial page is accessible', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::factory()->create(['role' => 'admin']);
 
     $response = $this->actingAs($user)->get('/settings/profile');
     $response->assertSuccessful();
 });
 
 test('tutorial navigation respects user roles', function () {
-    $this->seed();
-
     // Test viewer role - should only access dashboard
-    $viewer = User::factory()->create();
-    $viewer->assignRole('viewer');
+    $viewer = User::factory()->create(['role' => 'viewer']);
 
     $response = $this->actingAs($viewer)->get('/admin/dashboard');
     $response->assertSuccessful();
 
     // Test admin role - should access most pages
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin = User::factory()->create(['role' => 'admin']);
 
     $adminPages = [
         '/admin/dashboard',
@@ -83,8 +70,7 @@ test('tutorial navigation respects user roles', function () {
     }
 
     // Test super admin - should access all pages
-    $superAdmin = User::factory()->create();
-    $superAdmin->assignRole('super_admin');
+    $superAdmin = User::factory()->create(['role' => 'super_admin']);
 
     $superAdminPages = [
         '/admin/dashboard',

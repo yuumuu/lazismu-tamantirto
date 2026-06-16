@@ -20,7 +20,7 @@
 <section class="py-24 bg-white dark:bg-zinc-950">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div
-            class="relative overflow-hidden rounded-[48px] border border-primary/10 bg-primary/5 p-8 md:p-16 shadow-xl dark:border-primary/20 dark:bg-primary/10"
+            class="relative overflow-hidden rounded-xl border border-primary/10 bg-primary/5 p-8 md:p-16 shadow-xl dark:border-primary/20 dark:bg-primary/10"
         >
             <div
                 class="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl"

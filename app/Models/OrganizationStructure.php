@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class OrganizationStructure extends Model
 {
@@ -140,7 +141,7 @@ class OrganizationStructure extends Model
     /**
      * Get all descendants (children, grandchildren, etc.)
      */
-    public function descendants(): \Illuminate\Support\Collection
+    public function descendants(): Collection
     {
         $descendants = collect();
 

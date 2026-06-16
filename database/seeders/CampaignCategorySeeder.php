@@ -29,10 +29,10 @@ class CampaignCategorySeeder extends Seeder
                 'description' => 'Bantuan kesehatan dan pengobatan untuk masyarakat yang membutuhkan.',
             ],
             [
-                'name' => 'Masjid',
+                'name' => 'branch',
                 'icon' => 'building-2',
                 'color' => '#22c55e',
-                'description' => 'Pembangunan dan renovasi masjid serta sarana ibadah.',
+                'description' => 'Pembangunan dan renovasi branch serta sarana ibadah.',
             ],
             [
                 'name' => 'Bencana',

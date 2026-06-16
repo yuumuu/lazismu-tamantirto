@@ -1,5 +1,5 @@
 <script>
-    import { Calculator } from "lucide-svelte";
+    import Calculator from "lucide-svelte/icons/calculator";
     import { Link } from "@inertiajs/svelte";
 </script>
 
@@ -8,13 +8,13 @@
 >
     <div class="mx-auto max-w-7xl">
         <div
-            class="relative overflow-hidden rounded-[48px] border border-white/10 bg-zinc-900 p-8 shadow-2xl transition hover:border-primary/20 dark:border-white/10 dark:bg-zinc-950 md:p-16"
+            class="group relative overflow-hidden rounded-[40px] border border-white/10 bg-zinc-900 p-8 shadow-2xl transition hover:border-primary/20 dark:border-white/10 dark:bg-zinc-950 md:p-16"
         >
             <div
-                class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+                class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl transition-colors duration-700 group-hover:bg-primary/30"
             ></div>
             <div
-                class="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
+                class="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl transition-colors duration-700 group-hover:bg-primary/30"
             ></div>
             <div class="relative grid gap-12 lg:grid-cols-2 lg:items-center">
                 <div class="space-y-6">
@@ -53,7 +53,7 @@
                         class="flex items-center gap-4 border-b border-white/10 pb-6"
                     >
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary text-white shadow-lg"
+                            class="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-white shadow-lg"
                         >
                             <Calculator class="h-7 w-7" />
                         </div>
@@ -64,7 +64,7 @@
                             <p
                                 class="text-base font-black uppercase text-white"
                             >
-                                Sesuai Syariat BAZNAS
+                                Sesuai Syariat & Standar BAZNAS
                             </p>
                         </div>
                     </div>

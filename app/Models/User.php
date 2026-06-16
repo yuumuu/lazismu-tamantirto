@@ -9,15 +9,15 @@ use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use BelongsToBranch, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
+    use BelongsToBranch, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'branch_id',
@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'photo',
+        'role',
         'last_login_at',
         'last_login_ip',
         'is_active',
@@ -44,6 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'last_login_at' => 'datetime',
             'is_active' => 'boolean',
+            'role' => UserRole::class,
         ];
     }
 
@@ -112,56 +114,51 @@ class User extends Authenticatable
             return $this->photo_url;
         }
 
-        // Generate Gravatar URL
         $hash = md5(strtolower(trim($this->email)));
 
         return "https://www.gravatar.com/avatar/{$hash}?d=mp&s=200";
     }
 
-    // ==================== RBAC HELPER METHODS ====================
+    // ==================== ROLE HELPER METHODS ====================
 
     public function isSuperAdmin(): bool
     {
-        return $this->hasRole(UserRole::SuperAdmin->value);
+        return $this->role === UserRole::SuperAdmin;
     }
 
     public function isAdmin(): bool
     {
-        return $this->hasRole(UserRole::Admin->value);
+        return $this->role === UserRole::Admin;
     }
 
     public function isEditor(): bool
     {
-        return $this->hasRole(UserRole::Editor->value);
+        return $this->role === UserRole::Editor;
     }
 
     public function isViewer(): bool
     {
-        return $this->hasRole(UserRole::Viewer->value);
+        return $this->role === UserRole::Viewer;
     }
 
     public function canVerifyDonation(): bool
     {
-        return $this->hasPermissionTo('donation.verify');
+        return in_array($this->role, [UserRole::SuperAdmin, UserRole::Admin], true);
     }
 
     public function canPublishContent(): bool
     {
-        return $this->hasAnyPermission([
-            'campaign.publish',
-            'blog.publish',
-            'page.publish',
-        ]);
+        return in_array($this->role, [UserRole::SuperAdmin, UserRole::Admin, UserRole::Editor], true);
     }
 
     public function canManageUsers(): bool
     {
-        return $this->hasPermissionTo('system.manage_users');
+        return in_array($this->role, [UserRole::SuperAdmin, UserRole::Admin], true);
     }
 
     public function canManageSettings(): bool
     {
-        return $this->hasPermissionTo('system.manage_settings');
+        return in_array($this->role, [UserRole::SuperAdmin, UserRole::Admin], true);
     }
 
     // ==================== PUBLIC METHODS ====================
@@ -174,7 +171,7 @@ class User extends Authenticatable
         ]);
     }
 
-    public function muzakki(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function muzakki(): HasOne
     {
         return $this->hasOne(Muzakki::class);
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Models\Setting;
 use Livewire\Volt\Component;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,15 +15,41 @@ new class extends Component {
     public array $settings = [];
     public $qris_image_upload;
     public $tab = 'general';
+    public $pin = '';
+    public $pinVerified = false;
+    public $pinError = '';
+    public $showApiKey = false;
 
     public function mount(): void
     {
         $this->loadSettings();
+
+        // Load existing developer_pin from settings if set (to check if PIN exists)
     }
 
     public function loadSettings(): void
     {
-        $this->settings = Setting::all()->pluck('value', 'key')->toArray();
+        $branchId = session('active_branch_id', 1);
+
+        // Get Pusat defaults first
+        $pusat = Setting::withoutGlobalScope('branch')
+            ->where('branch_id', 1)
+            ->get()
+            ->pluck('value', 'key')
+            ->toArray();
+
+        // Get tenant overrides (if not Pusat)
+        if ($branchId !== 1) {
+            $tenant = Setting::withoutGlobalScope('branch')
+                ->where('branch_id', $branchId)
+                ->get()
+                ->pluck('value', 'key')
+                ->toArray();
+
+            $this->settings = array_merge($pusat, $tenant);
+        } else {
+            $this->settings = $pusat;
+        }
     }
 
     public function save(): void
@@ -73,6 +101,40 @@ new class extends Component {
         $accounts[$index][$field] = $value;
         $this->settings['bank_accounts'] = json_encode($accounts);
     }
+
+    public function verifyPin(): void
+    {
+        $storedPin = Setting::withoutGlobalScope('branch')
+            ->where('key', 'developer_pin')
+            ->value('value');
+
+        if ($storedPin && Hash::check($this->pin, $storedPin)) {
+            $this->pinVerified = true;
+            $this->pinError = '';
+            $this->pin = '';
+            return;
+        }
+
+        // If no PIN is set yet, use the default
+        if (!$storedPin && $this->pin === 'LazismuDev2026@Haidar') {
+            // Hash and save the default PIN
+            Setting::setValue('developer_pin', Hash::make($this->pin));
+            Setting::clearCache();
+            $this->pinVerified = true;
+            $this->pinError = '';
+            $this->pin = '';
+            return;
+        }
+
+        $this->pinError = 'PIN yang Anda masukkan salah.';
+    }
+
+    public function lockPin(): void
+    {
+        $this->pinVerified = false;
+        $this->pin = '';
+        $this->showApiKey = false;
+    }
 }; ?>
 
 @push('head')
@@ -107,6 +169,7 @@ new class extends Component {
                     ['id' => 'social', 'label' => 'Media Sosial', 'icon' => 'hashtag'],
                     ['id' => 'donations', 'label' => 'Metode Donasi', 'icon' => 'credit-card'],
                     ['id' => 'zakat', 'label' => 'Standar Zakat', 'icon' => 'calculator'],
+                    ['id' => 'integration', 'label' => 'Integrasi', 'icon' => 'variable'],
                 ] as $item)
                     <button 
                         wire:click="$set('tab', '{{ $item['id'] }}')"
@@ -223,6 +286,66 @@ new class extends Component {
                                 <flux:input wire:model="settings.zakat_silver_nisab" label="Nisab Perak (Gram)" type="number" />
                             </div>
                             <p class="text-xs text-zinc-500 italic">Nilai ini digunakan sebagai dasar perhitungan otomatis pada kalkulator zakat.</p>
+                        </div>
+                    @elseif($tab === 'integration')
+                        <div class="space-y-8">
+                            <div class="space-y-6">
+                                <h3 class="text-lg font-black tracking-tight text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-4">Verifikasi Developer</h3>
+                                @if(!$pinVerified)
+                                    <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
+                                        <p class="text-sm text-zinc-500 mb-4">Masukkan Developer PIN untuk mengelola pengaturan integrasi.</p>
+                                        <div class="flex gap-4 items-end">
+                                            <flux:input wire:model="pin" type="password" label="Developer PIN" placeholder="Masukkan PIN..." class="max-w-xs" />
+                                            <flux:button wire:click="verifyPin" variant="primary">Verifikasi</flux:button>
+                                        </div>
+                                        @if($pinError)
+                                            <p class="text-xs text-red-500 font-bold mt-2">{{ $pinError }}</p>
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <flux:icon name="check-circle" class="size-5 text-green-500" />
+                                                <span class="text-sm font-bold text-green-600">Terverifikasi</span>
+                                            </div>
+                                            <flux:button wire:click="lockPin" variant="ghost" size="sm">Kunci</flux:button>
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-4 space-y-6">
+                                        <h3 class="text-lg font-black tracking-tight text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-4">API Fonnte (WhatsApp Gateway)</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex gap-4 items-end">
+                                                <div class="flex-1">
+                                                    <flux:input 
+                                                        wire:model="settings.fonnte_api_key" 
+                                                        :type="$showApiKey ? 'text' : 'password'" 
+                                                        label="Fonnte API Key" 
+                                                        placeholder="Masukkan API Key Fonnte..." 
+                                                    />
+                                                </div>
+                                                <button type="button" wire:click="$toggle('showApiKey')" class="h-14 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-zinc-900">
+                                                    <flux:icon name="{{ $showApiKey ? 'eye-slash' : 'eye' }}" class="size-5" />
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-zinc-500">Gunakan API Key dari <a href="https://fonnte.com" target="_blank" class="text-primary font-bold hover:underline">Fonnte</a> untuk mengirim notifikasi WhatsApp otomatis. Data akan disimpan dalam keadaan terenkripsi.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-4 space-y-6">
+                                        <h3 class="text-lg font-black tracking-tight text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-4">Kontak Developer</h3>
+                                        @php
+                                            $developerContact = \App\Models\Setting::withoutGlobalScope('branch')->where('key', 'developer_contact')->value('value');
+                                        @endphp
+                                        @if($developerContact)
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $developerContact }}</p>
+                                        @else
+                                            <p class="text-sm text-zinc-500 italic">Belum ada informasi kontak developer.</p>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endif
 

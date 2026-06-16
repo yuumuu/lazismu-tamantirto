@@ -5,42 +5,55 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class ImpersonationController extends Controller
 {
-    /**
-     * Start impersonating a user.
-     */
     public function impersonate(int $id): RedirectResponse
     {
         $user = User::withoutGlobalScope('branch')->findOrFail($id);
 
-        // Only SuperAdmin can impersonate
         if (! Auth::user()->isSuperAdmin()) {
             abort(403);
         }
 
-        // Prevent self-impersonation
         if (Auth::id() === $user->id) {
             return redirect()->route('dashboard');
         }
 
-        // Store original user ID in session
-        session(['impersonated_by' => Auth::id()]);
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('dashboard')
+                ->with('notify', ['message' => 'Tidak dapat impersonate Super Admin lain.', 'type' => 'error']);
+        }
 
-        // Login as target user
+        if ($user->role !== 'admin') {
+            return redirect()->route('dashboard')
+                ->with('notify', ['message' => 'Hanya akun admin cabang yang bisa di-impersonate.', 'type' => 'error']);
+        }
+
+        if (! $user->branch_id) {
+            return redirect()->route('dashboard')
+                ->with('notify', ['message' => 'Akun ini tidak memiliki cabang.', 'type' => 'error']);
+        }
+
+        $branch = Branch::find($user->branch_id);
+        if (! $branch || ! $branch->is_active) {
+            return redirect()->route('dashboard')
+                ->with('notify', ['message' => 'Cabang tidak aktif atau tidak ditemukan.', 'type' => 'error']);
+        }
+
+        session(['impersonated_by' => Auth::id()]);
+        session(['active_branch_id' => $user->branch_id]);
+
         Auth::login($user);
 
         return redirect()->route('dashboard')
-            ->with('notify', ['message' => "Anda sekarang masuk sebagai {$user->name}", 'type' => 'success']);
+            ->with('notify', ['message' => "Anda sekarang masuk sebagai {$user->name} ({$branch->name})", 'type' => 'success']);
     }
 
-    /**
-     * Stop impersonating and return to original account.
-     */
     public function leave(): RedirectResponse
     {
         if (! session()->has('impersonated_by')) {
@@ -52,7 +65,9 @@ class ImpersonationController extends Controller
 
         Auth::login($originalUser);
 
-        return redirect()->route('admin.branchs.index')
+        session(['active_branch_id' => $originalUser->branch_id ?? 1]);
+
+        return redirect()->route('admin.branches.index')
             ->with('notify', ['message' => 'Kembali ke akun Super Admin', 'type' => 'success']);
     }
 }

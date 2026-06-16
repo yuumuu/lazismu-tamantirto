@@ -13,13 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Set the active masjid id so that the BelongsToMasjid trait
+        // Set the active branch id so that the BelongsTobranch trait
         // automatically assigns it to all seeded models.
-        session(['active_masjid_id' => 1]);
+        session(['active_branch_id' => 1]);
 
         $this->call([
-            RolePermissionSeeder::class,
-            MasjidSeeder::class,
+            BranchSeeder::class,
             UserSeeder::class,
             CampaignCategorySeeder::class,
             CampaignSeeder::class,

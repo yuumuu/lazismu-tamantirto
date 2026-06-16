@@ -1,11 +1,10 @@
 <?php
 
 use App\Models\User;
+use Livewire\Volt\Volt;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-    $this->user = User::factory()->create();
-    $this->user->assignRole('admin');
+    $this->user = User::factory()->create(['role' => 'admin']);
     $this->actingAs($this->user);
 });
 
@@ -47,7 +46,7 @@ test('tutorial menu shows correct tutorials for admin role', function () {
     $response->assertStatus(200);
 
     // Test the Livewire component directly
-    \Livewire\Volt\Volt::test('admin.tutorial-menu')
+    Volt::test('admin.tutorial-menu')
         ->assertSee('Tutorial')
         ->call('openModal')
         ->assertSet('showModal', true)
@@ -58,9 +57,9 @@ test('tutorial menu shows correct tutorials for admin role', function () {
 });
 
 test('tutorial menu shows correct tutorials for super admin role', function () {
-    $this->user->syncRoles(['super_admin']);
+    $this->user->update(['role' => 'super_admin']);
 
-    \Livewire\Volt\Volt::test('admin.tutorial-menu')
+    Volt::test('admin.tutorial-menu')
         ->assertSee('Tutorial')
         ->call('openModal')
         ->assertSet('showModal', true)
@@ -72,9 +71,9 @@ test('tutorial menu shows correct tutorials for super admin role', function () {
 });
 
 test('tutorial menu shows limited tutorials for viewer role', function () {
-    $this->user->syncRoles(['viewer']);
+    $this->user->update(['role' => 'viewer']);
 
-    \Livewire\Volt\Volt::test('admin.tutorial-menu')
+    Volt::test('admin.tutorial-menu')
         ->assertSee('Tutorial')
         ->call('openModal')
         ->assertSet('showModal', true)

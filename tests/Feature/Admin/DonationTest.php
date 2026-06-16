@@ -7,10 +7,7 @@ use App\Models\User;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
-    $this->user = User::factory()->create();
-    $this->user->assignRole('admin');
-    // Ensure user has permission if needed, but for now we use auth
+    $this->user = User::factory()->create(['role' => 'admin']);
     $this->campaign = Campaign::factory()->create();
 });
 

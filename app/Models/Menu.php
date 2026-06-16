@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Menu extends Model
 {
@@ -133,7 +134,7 @@ class Menu extends Model
     /**
      * Get menu tree for a location.
      */
-    public static function getTree(MenuLocation $location): \Illuminate\Support\Collection
+    public static function getTree(MenuLocation $location): Collection
     {
         return static::query()
             ->where('location', $location)

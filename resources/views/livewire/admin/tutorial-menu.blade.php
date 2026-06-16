@@ -7,7 +7,7 @@ new class extends Component {
 
     public function getAvailableTutorialsProperty()
     {
-        $userRole = auth()->check() ? (auth()->user()->roles->first()?->name ?? 'viewer') : 'guest';
+        $userRole = auth()->check() ? (auth()->user()->role?->value ?? 'viewer') : 'guest';
         
         $allTutorials = [
             [
