@@ -108,7 +108,7 @@ new class extends Component {
                     <flux:label>Pengaturan Akun</flux:label>
                     <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 space-y-6">
                         @if($isSuperAdmin)
-                            <flux:select wire:model="branch_id" label="Cabang / Branch" placeholder="Pilih Cabang...">
+                            <flux:select wire:model="branch_id" label="Cabang" placeholder="Pilih Cabang...">
                                 @foreach($branches as $branch)
                                     <flux:select.option value="{{ $branch->id }}">{{ $branch->name }}</flux:select.option>
                                 @endforeach

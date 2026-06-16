@@ -37,6 +37,13 @@
     let submitError = $state('');
     let selectedBank = $state('');
     let paymentMethod = $state('manual');
+    let branchSearch = $state('');
+    let branchDropdownOpen = $state(false);
+    let filteredBranches = $derived(
+        branchSearch
+            ? activeBranches.filter(b => b.name.toLowerCase().includes(branchSearch.toLowerCase()) || (b.city && b.city.toLowerCase().includes(branchSearch.toLowerCase())))
+            : activeBranches
+    );
 
     const amountPresets = [10000, 25000, 50000, 100000, 250000, 500000];
     let campaigns = $state([]);
@@ -234,19 +241,29 @@
                             {/if}
 
                             <!-- Branch Selection -->
-                            <div class="space-y-4">
+                            <div class="space-y-4 relative">
                                 <div class="flex items-center justify-between">
-                                    <label for="branch_id" class="text-sm font-black text-zinc-400 uppercase tracking-widest">Pilih Cabang Penyalur</label>
+                                    <label for="branch_search" class="text-sm font-black text-zinc-400 uppercase tracking-widest">Pilih Cabang Penyalur</label>
                                 </div>
-                                <select
-                                    id="branch_id"
-                                    bind:value={branchId}
-                                    class="w-full h-14 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/10 px-4 font-bold text-zinc-900 dark:text-white"
-                                >
-                                    {#each activeBranches as branch}
-                                        <option value={branch.id}>{branch.name}{branch.city ? ` - ${branch.city}` : ''}</option>
-                                    {/each}
-                                </select>
+                                <div class="relative">
+                                    <input id="branch_search" type="text" bind:value={branchSearch} onfocus={() => (branchDropdownOpen = true)} onblur={() => setTimeout(() => (branchDropdownOpen = false), 200)} placeholder="Cari cabang..."
+                                        class="w-full h-14 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/10 px-4 font-bold text-zinc-900 dark:text-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                                    />
+                                    {#if branchDropdownOpen}
+                                        <div class="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 shadow-xl">
+                                            {#each filteredBranches as branch}
+                                                <button type="button" onclick={() => { branchId = branch.id; branchSearch = ''; branchDropdownOpen = false; }}
+                                                    class="w-full px-4 py-3 text-left font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-white/5 transition {branchId === branch.id ? 'bg-primary/5 text-primary' : ''}"
+                                                >
+                                                    {branch.name}{branch.city ? ` - ${branch.city}` : ''}
+                                                </button>
+                                            {/each}
+                                            {#if filteredBranches.length === 0}
+                                                <p class="px-4 py-3 text-sm text-zinc-400">Cabang tidak ditemukan</p>
+                                            {/if}
+                                        </div>
+                                    {/if}
+                                </div>
                             </div>
 
                             <!-- Donation Type -->

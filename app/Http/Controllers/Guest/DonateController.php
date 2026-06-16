@@ -37,6 +37,8 @@ class DonateController extends Controller
             'icon' => $type->icon(),
         ]);
 
+        $qrisImage = setting('site_qris');
+
         return Inertia::render('Donate/Form', [
             'campaign' => $campaign ? [
                 'id' => $campaign->id,
@@ -56,6 +58,7 @@ class DonateController extends Controller
             'calculatorType' => request('type'),
             'calculatorSubtype' => request('subtype'),
             'fromCalculator' => request('from') === 'calculator',
+            'qrisImage' => $qrisImage,
         ]);
     }
 
@@ -71,6 +74,7 @@ class DonateController extends Controller
             'is_anonymous' => 'boolean',
             'branch_id' => 'required|exists:branches,id',
             'campaign_id' => 'nullable|exists:campaigns,id',
+            'payment_method' => 'required|in:manual,qris',
         ]);
 
         $campaign = null;
@@ -81,7 +85,7 @@ class DonateController extends Controller
             }
         }
 
-        $donation = Donation::create([
+        $data = [
             'transaction_id' => Donation::generateTransactionId(),
             'campaign_id' => $request->campaign_id,
             'branch_id' => $request->branch_id,
@@ -92,11 +96,13 @@ class DonateController extends Controller
             'donation_type' => $request->donation_type,
             'donor_message' => $request->message,
             'is_anonymous' => $request->is_anonymous ?? false,
-            'payment_method' => 'pending',
+            'payment_method' => $request->payment_method,
             'status' => DonationStatus::Pending,
-        ]);
+        ];
 
-        return redirect()->route('guest.donate.payment', ['donation_id' => $donation->id]);
+        $donation = Donation::create($data);
+
+        return redirect()->route('guest.donate.success', $donation->id);
     }
 
     public function payment($donation_id)
